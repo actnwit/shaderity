@@ -12,7 +12,8 @@ module.exports = {
         use: [
           {
             loader: path.resolve('./loader/index.js'),
-            options: {}
+            options: {
+            }
           }
         ]
       },

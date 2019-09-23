@@ -1,3 +1,3 @@
 import txt from '../assets/simple.frag';
 
-console.log(txt)
+console.log(txt.code)
