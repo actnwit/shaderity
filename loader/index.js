@@ -41,12 +41,24 @@ function transform(str, loader) {
   return str;
 }
 
+function shaderStage(loader) {
+  if (isVertexShader(loader.resourcePath)) {
+    return 'vertex';
+  } else {
+    return 'fragment';
+  }
+}
+
 module.exports = function(source, map, meta) {
   this.cacheable();
 
+  const json = {};
+
   const options = loaderUtils.getOptions(this);
 
-  const transformed = transform(source, this);
+  json.code = transform(source, this);
 
-  return `export default ${JSON.stringify({code: transformed})}`;
+  json.shaderStage = shaderStage(this);
+
+  return `export default ${JSON.stringify(json)}`;
 };

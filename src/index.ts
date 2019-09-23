@@ -1,3 +1,3 @@
-import txt from '../assets/simple.frag';
+import simpleShader from '../assets/simple.frag';
 
-console.log(txt.code)
+console.log(simpleShader);
