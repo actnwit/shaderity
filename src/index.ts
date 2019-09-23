@@ -1,1 +1,3 @@
-console.log('hello world')
+import simpleShader from '../assets/simple.frag';
+
+console.log(simpleShader);

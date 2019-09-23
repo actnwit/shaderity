@@ -1,21 +1,27 @@
+const path = require('path');
+
 module.exports = {
   entry: './src/index.ts',
 
   module: {
     rules: [
       {
+        test: /\.(glsl|vs|fs|vert|frag)$/i,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: path.resolve('./loader/index.js'),
+            options: {
+              ext: '[ext]'
+            }
+          }
+        ]
+      },
+      {
         test: /\.ts$/,
         exclude: [/node_modules/],
         loader: 'ts-loader'
       },
-      {
-        test: /\.(glsl|vs|fs|vert|frag)$/,
-        exclude: /node_modules/,
-        use: [
-          'raw-loader',
-          'glslify-loader'
-        ]
-      }
     ]
   },
   resolve: {
