@@ -8,14 +8,7 @@ module.exports = {
       {
         test: /\.(glsl|vs|fs|vert|frag)$/i,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: path.resolve('./loader/index.js'),
-            options: {
-              ext: '[ext]'
-            }
-          }
-        ]
+        use: ['shaderity-loader']
       },
       {
         test: /\.ts$/,

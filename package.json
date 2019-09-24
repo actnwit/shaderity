@@ -7,11 +7,9 @@
   "license": "MIT",
   "scripts": {
     "setup": "cp ./pre-commit ./.git/hooks",
-    "build": "yarn build-dev && yarn build-prod && yarn build-dev-ie11 && yarn build-prod-ie11 && yarn build-test && yarn build-type",
-    "build-dev-ie11": "webpack --config webpack.config.development.ie11.js",
+    "build": "yarn build-dev && yarn build-prod && yarn build-test && yarn build-type",
     "build-dev": "webpack --config webpack.config.development.js",
     "build-prod": "webpack --config webpack.config.production.js",
-    "build-prod-ie11": "webpack --config webpack.config.production.ie11.js",
     "build-test": "webpack --config webpack.config.test.js",
     "build-type": "npx tsc --emitDeclarationOnly",
     "serv": "node server.js",
@@ -40,7 +38,8 @@
     "webpack-cli": "^3.3.4",
     "webpack-merge": "^4.2.1",
     "glslify-loader": "^2.0.0",
-    "raw-loader": "^3.0.0"
+    "raw-loader": "^3.0.0",
+    "shaderity-loader": "git+https://github.com/emadurandal/shaderity-loader.git"
   },
   "dependencies": {
     "requirejs": "^2.3.6"
