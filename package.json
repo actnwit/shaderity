@@ -1,6 +1,6 @@
 {
   "name": "shaderity",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/shaderity.js",
   "repository": "https://github.com/emadurandal/shaderity.git",
   "author": "Yuki Shimada <emadurandal@gmail.com>",
