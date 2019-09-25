@@ -1,7 +1,7 @@
 {
   "name": "shaderity-ts",
   "version": "0.0.1",
-  "main": "loader/index.js",
+  "main": "index.ts",
   "repository": "https://github.com/emadurandal/shaderity.git",
   "author": "Yuki Shimada <emadurandal@gmail.com>",
   "license": "MIT",
