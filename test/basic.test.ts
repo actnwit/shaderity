@@ -1,5 +1,8 @@
-import '../dist/shaderity_test.js';
+import {simpleFragment} from '../dist/shaderity_test.js';
+import Shaderity from '../src/index';
 
 test('detect shader stage correctly', async () => {
-  expect(global._test.simpleFragment.shaderStage).toBe('fragment');
+  const shaderity = Shaderity.getInstance();
+  expect(simpleFragment.shaderStage).toBe('fragment');
+  expect(shaderity.isFragmentShader(simpleFragment)).toBe(true);
 });
