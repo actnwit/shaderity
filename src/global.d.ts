@@ -5,8 +5,3 @@ declare module '*.fs'
 declare module '*.ps'
 declare module '*.glsl'
 
-declare module NodeJS  {
-    interface Global {
-        _test: any
-    }
-}
