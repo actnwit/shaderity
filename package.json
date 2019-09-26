@@ -2,6 +2,7 @@
   "name": "shaderity",
   "version": "0.0.2",
   "main": "dist/shaderity.js",
+  "types": "dist/types/index.d.ts",
   "repository": "https://github.com/emadurandal/shaderity.git",
   "author": "Yuki Shimada <emadurandal@gmail.com>",
   "license": "MIT",
