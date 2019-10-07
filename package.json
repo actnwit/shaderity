@@ -1,6 +1,6 @@
 {
   "name": "shaderity",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/emadurandal/shaderity.git",
@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx tsc",
-    "build-test": "webpack --config webpack.config.test.js",
+    "build-test": "webpack",
     "prepare": "npx tsc",
     "serv": "node server.js",
     "test": "yarn test-unit",

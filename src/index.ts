@@ -39,12 +39,15 @@ export default class Shaderity {
   }
 
   private _convertIn(obj: ShaderityObject) {
-    const inReg = /([\t ]*)in[\t ]+/;
+    const inReg = /([\t ]*)in[\t ]+/g;
+    // const inReg = /[\t ]*in[\t ]+/;
     let inAsES1 = 'attribute ';
     if (this.isFragmentShader(obj)) {
       inAsES1 = 'varying ';
     }
-    return obj.code.replace(inReg, '$1' + inAsES1);
+    const replaced = obj.code.replace(inReg, inAsES1);
+
+    return replaced;
   }
 
   copyShaderityObject(obj: ShaderityObject) {
@@ -60,7 +63,8 @@ export default class Shaderity {
     const copy = this.copyShaderityObject(obj);
     copy.code = this._convertIn(obj);
 
-    return obj;
+    return copy;
   }
 
 }
+
