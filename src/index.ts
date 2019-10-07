@@ -39,7 +39,7 @@ export default class Shaderity {
   }
 
   private _convertIn(obj: ShaderityObject) {
-    const inReg = /([\s\S]*)in /;
+    const inReg = /([\t ]*)in[\t ]+/;
     let inAsES1 = 'attribute ';
     if (this.isFragmentShader(obj)) {
       inAsES1 = 'varying ';

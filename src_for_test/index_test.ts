@@ -1,8 +1,7 @@
 import simpleFragmentShader from '../assets/simple.frag';
 
-export default function simpleFragment() {
+function simpleFragment() {
   return simpleFragmentShader;
 }
 
 exports.simpleFragment = simpleFragment();
-
