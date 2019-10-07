@@ -1,4 +1,4 @@
-import {simpleFragment} from '../dist/shaderity_test.js';
+import {simpleFragment} from '../dist/index_test.js';
 import Shaderity from '../src/index';
 
 test('detect shader stage correctly', async () => {

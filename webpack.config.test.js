@@ -5,10 +5,9 @@ const baseConfig = require('./webpack.config.base.js');
 
 const config = merge(baseConfig, {
   mode: 'development',
-  entry: './src/index_test.ts',
+  entry: './src_for_test/index_test.ts',
   output: {
-    filename: 'shaderity_test.js',
-    chunkFilename: "shaderity-[name].js"
+    filename: 'index_test.js'
   }
 });
 
