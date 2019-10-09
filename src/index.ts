@@ -88,29 +88,36 @@ export default class Shaderity {
     return inout_splitedSource;
   }
 
+  private _regSymbols() {
+    return `[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^` + '`{|}~\t\n ]';
+  }
+
   private _convertTexture2D(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /texture2D/g;
+    const sbl = this._regSymbols();
+    const reg = new RegExp(`(${sbl}+)(texture2D)(${sbl}+)`, 'g');
     let inAsES3 = 'texture';
 
-    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+    this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
 
     return inout_splitedSource;
   }
 
   private _convertTextureCube(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /textureCube/g;
+    const sbl = this._regSymbols();
+    const reg = new RegExp(`(${sbl}+)(textureCube)(${sbl}+)`, 'g');
     let inAsES3 = 'texture';
 
-    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+    this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
 
     return inout_splitedSource;
   }
 
   private _convertTexture2DProd(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /texture2DProd/g;
-    let inAsES3 = 'textureProd';
+    const sbl = this._regSymbols();
+    const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
+    let inAsES3 = 'textureProj';
 
-    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+    this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
 
     return inout_splitedSource;
   }
