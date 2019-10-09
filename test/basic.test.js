@@ -2,6 +2,7 @@ const Shaderity = require('../dist/index').default;
 const simpleFragment = require('../dist/index_test').simpleFragment;
 const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragment = require('../dist/index_test').textureFragment;
+const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 
 test('detect shader stage correctly', async () => {
   const shaderity = Shaderity.getInstance();
@@ -47,6 +48,28 @@ void main (void) {
   gl_FragColor = texture(u_texture, v_texcoord);
   gl_FragColor = texture(u_textureCube, v_texcoord3);
   gl_FragColor = textureProj(u_texture, v_texcoord);
+}
+`);
+});
+
+test('test dynamic template', async () => {
+  const shaderity = Shaderity.getInstance();
+  expect(shaderity.fillTemplate(dynamicTemplateFragment, {
+    var_a: `Line1
+Line2
+Line3`,
+    var_b: 'foo'
+  }).code).toBe(`precision mediump float;
+
+in vec4 vColor;
+
+Line1
+Line2
+Line3
+foo
+
+void main() {
+  gl_FlagColor = zero_one(vColor);
 }
 `);
 });
