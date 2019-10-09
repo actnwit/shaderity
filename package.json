@@ -1,6 +1,6 @@
 {
   "name": "shaderity",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/emadurandal/shaderity.git",
@@ -39,6 +39,5 @@
     "shaderity-loader": "^0.0.5",
     "webpack-merge": "^4.2.1"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
