@@ -9,7 +9,7 @@ test('detect shader stage correctly', async () => {
   expect(shaderity.isFragmentShader(simpleFragment)).toBe(true);
 });
 
-test('convert to ES3 correctly (fragment)', async () => {
+test('convert to ES1 correctly (fragment)', async () => {
   const shaderity = Shaderity.getInstance();
   expect(shaderity.transformToGLSLES1(simpleFragment).code).toBe(`precision mediump float;
 
@@ -22,7 +22,7 @@ void main() {
 `);
 });
 
-test('convert to ES3 correctly (vertex)', async () => {
+test('convert to ES1 correctly (vertex)', async () => {
   const shaderity = Shaderity.getInstance();
   expect(shaderity.transformToGLSLES1(simpleVertex).code).toBe(`attribute vec3 position;
 attribute vec4 color;
