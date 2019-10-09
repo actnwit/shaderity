@@ -38,57 +38,44 @@ export default class Shaderity {
     return this.isFragmentShader(obj);
   }
 
-  private _convertIn(obj: ShaderityObject, source: string) {
-    const arr = source.split(/\r\n|\n/);
-    const newArr = [];
+  private _replaceRow(inout_splitedSource: string[], inReg: RegExp, inAsES1: string) {
+    for (let i = 0; i < inout_splitedSource.length; i++) {
+      inout_splitedSource[i] = inout_splitedSource[i].replace(inReg, inAsES1);
+    }
+  }
+
+  private _convertIn(obj: ShaderityObject, inout_splitedSource: string[]) {
     const inReg = /^in[\t ]+/g;
     let inAsES1 = 'attribute ';
     if (this.isFragmentShader(obj)) {
       inAsES1 = 'varying ';
     }
-    for (let row of arr) {
-      const replaced = row.replace(inReg, inAsES1);
-      newArr.push(replaced);
-    }
 
-    const result = newArr.join('\n');
+    this._replaceRow(inout_splitedSource, inReg, inAsES1);
 
-    return result;
+    return inout_splitedSource;
   }
 
-  private _convertOut(obj: ShaderityObject, source: string) {
-    const arr = source.split(/\r\n|\n/);
-    const newArr = [];
+
+  private _convertOut(obj: ShaderityObject, inout_splitedSource: string[]) {
     const inReg = /^out[\t ]+/g;
     let inAsES1 = 'varying ';
 
-    for (let row of arr) {
-      const replaced = row.replace(inReg, inAsES1);
-      newArr.push(replaced);
-    }
+    this._replaceRow(inout_splitedSource, inReg, inAsES1);
 
-    const result = newArr.join('\n');
-    return result;
+    return inout_splitedSource;
   }
 
-  private _convertAttribute(obj: ShaderityObject, source: string) {
-    const arr = source.split(/\r\n|\n/);
-    const newArr = [];
+  private _convertAttribute(obj: ShaderityObject, inout_splitedSource: string[]) {
     const inReg = /^attribute[\t ]+/g;
     let inAsES3 = 'in ';
 
-    for (let row of arr) {
-      const replaced = row.replace(inReg, inAsES3);
-      newArr.push(replaced);
-    }
+    this._replaceRow(inout_splitedSource, inReg, inAsES3);
 
-    const result = newArr.join('\n');
-    return result;
+    return inout_splitedSource;
   }
 
-  private _convertVarying(obj: ShaderityObject, source: string) {
-    const arr = source.split(/\r\n|\n/);
-    const newArr = [];
+  private _convertVarying(obj: ShaderityObject, inout_splitedSource: string[]) {
     const inReg = /^varying[\t ]+/g;
     let inAsES3 = 'out ';
 
@@ -96,14 +83,38 @@ export default class Shaderity {
       inAsES3 = 'in ';
     }
 
-    for (let row of arr) {
-      const replaced = row.replace(inReg, inAsES3);
-      newArr.push(replaced);
-    }
+    this._replaceRow(inout_splitedSource, inReg, inAsES3);
 
-    const result = newArr.join('\n');
-    return result;
+    return inout_splitedSource;
   }
+
+  private _convertTexture2D(obj: ShaderityObject, inout_splitedSource: string[]) {
+    const inReg = /texture2D/g;
+    let inAsES3 = 'texture';
+
+    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+
+    return inout_splitedSource;
+  }
+
+  private _convertTextureCube(obj: ShaderityObject, inout_splitedSource: string[]) {
+    const inReg = /textureCube/g;
+    let inAsES3 = 'texture';
+
+    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+
+    return inout_splitedSource;
+  }
+
+  private _convertTexture2DProd(obj: ShaderityObject, inout_splitedSource: string[]) {
+    const inReg = /texture2DProd/g;
+    let inAsES3 = 'textureProd';
+
+    this._replaceRow(inout_splitedSource, inReg, inAsES3);
+
+    return inout_splitedSource;
+  }
+
 
   copyShaderityObject(obj: ShaderityObject) {
     const copiedObj: ShaderityObject = {
@@ -116,18 +127,43 @@ export default class Shaderity {
 
   transformToGLSLES1(obj: ShaderityObject) {
     const copy = this.copyShaderityObject(obj);
-    copy.code = this._convertIn(obj, obj.code);
-    copy.code = this._convertOut(obj, copy.code);
+
+    let splited = this._splitShaderCode(obj.code);
+
+    this._convertIn(obj, splited);
+    this._convertOut(obj, splited);
+
+    copy.code = this._joinSplitedRow(splited);
 
     return copy;
   }
 
   transformToGLSLES3(obj: ShaderityObject) {
     const copy = this.copyShaderityObject(obj);
-    copy.code = this._convertAttribute(obj, obj.code);
-    copy.code = this._convertVarying(obj, copy.code);
+
+    let splited = this._splitShaderCode(obj.code);
+
+    this._convertAttribute(obj, splited);
+    this._convertVarying(obj, splited);
+    this._convertTexture2D(obj, splited);
+    this._convertTextureCube(obj, splited);
+    this._convertTexture2DProd(obj, splited);
+
+    copy.code = this._joinSplitedRow(splited);
 
     return copy;
+  }
+
+  private _splitShaderCode(source: string) {
+    return source.split(/\r\n|\n/);
+  }
+
+  private _joinSplitedRow(splitedRow: string[]) {
+    return splitedRow.join('\n');
+  }
+
+  private _defineGLSLES3() {
+
   }
 }
 
