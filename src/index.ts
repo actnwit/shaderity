@@ -71,6 +71,40 @@ export default class Shaderity {
     return result;
   }
 
+  private _convertAttribute(obj: ShaderityObject, source: string) {
+    const arr = source.split(/\r\n|\n/);
+    const newArr = [];
+    const inReg = /^attribute[\t ]+/g;
+    let inAsES3 = 'in ';
+
+    for (let row of arr) {
+      const replaced = row.replace(inReg, inAsES3);
+      newArr.push(replaced);
+    }
+
+    const result = newArr.join('\n');
+    return result;
+  }
+
+  private _convertVarying(obj: ShaderityObject, source: string) {
+    const arr = source.split(/\r\n|\n/);
+    const newArr = [];
+    const inReg = /^varying[\t ]+/g;
+    let inAsES3 = 'out ';
+
+    if (this.isFragmentShader(obj)) {
+      inAsES3 = 'in ';
+    }
+
+    for (let row of arr) {
+      const replaced = row.replace(inReg, inAsES3);
+      newArr.push(replaced);
+    }
+
+    const result = newArr.join('\n');
+    return result;
+  }
+
   copyShaderityObject(obj: ShaderityObject) {
     const copiedObj: ShaderityObject = {
       code: obj.code,
@@ -80,7 +114,7 @@ export default class Shaderity {
     return copiedObj;
   }
 
-  transform(obj: ShaderityObject) {
+  transformToGLSLES1(obj: ShaderityObject) {
     const copy = this.copyShaderityObject(obj);
     copy.code = this._convertIn(obj, obj.code);
     copy.code = this._convertOut(obj, copy.code);
@@ -88,5 +122,12 @@ export default class Shaderity {
     return copy;
   }
 
+  transformToGLSLES3(obj: ShaderityObject) {
+    const copy = this.copyShaderityObject(obj);
+    copy.code = this._convertAttribute(obj, obj.code);
+    copy.code = this._convertVarying(obj, copy.code);
+
+    return copy;
+  }
 }
 

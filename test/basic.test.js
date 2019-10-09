@@ -10,7 +10,7 @@ test('detect shader stage correctly', async () => {
 
 test('convert to ES3 correctly', async () => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transform(simpleFragment).code).toBe(`precision mediump float;
+  expect(shaderity.transformToGLSLES1(simpleFragment).code).toBe(`precision mediump float;
 
 varying vec4 vColor;
 varying vec4 vTexcoord;
@@ -23,7 +23,7 @@ void main() {
 
 test('convert to ES3 correctly 2', async () => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transform(simpleVertex).code).toBe(`attribute vec3 position;
+  expect(shaderity.transformToGLSLES1(simpleVertex).code).toBe(`attribute vec3 position;
 attribute vec4 color;
 uniform mat4 matrix;
 varying vec4 vColor;
