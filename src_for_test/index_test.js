@@ -1,7 +1,6 @@
 import simpleFragmentShader from '../assets/simple.frag';
+import simpleVertexShader from '../assets/simple.vert';
 
-function simpleFragment() {
-  return simpleFragmentShader;
-}
+exports.simpleFragment = simpleFragmentShader;
+exports.simpleVertex = simpleVertexShader;
 
-exports.simpleFragment = simpleFragment();
