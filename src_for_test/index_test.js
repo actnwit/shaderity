@@ -1,7 +1,7 @@
-import simpleFragmentShader from '../assets/simple.frag';
+import simpleFragmentShader from '../assets/simple_es3.frag';
+import simpleVertexShader from '../assets/simple_es3.vert';
+import textureFragmentShader from '../assets/texture_es1.frag';
 
-function simpleFragment() {
-  return simpleFragmentShader;
-}
-
-exports.simpleFragment = simpleFragment();
+exports.simpleFragment = simpleFragmentShader;
+exports.simpleVertex = simpleVertexShader;
+exports.textureFragment = textureFragmentShader;
