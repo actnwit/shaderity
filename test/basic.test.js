@@ -110,3 +110,14 @@ test('test varying variable reflection', async () => {
     }
     );
 });
+
+test('test uniform variable reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.uniforms[0]).toStrictEqual(
+    {
+      name: 'u_worldMatrix',
+      type: 'vec4',
+    }
+    );
+});

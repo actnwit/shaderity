@@ -16,7 +16,7 @@ type ReflectionAttribute = {
   semantic: 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0'
 };
 
-type ReflectionUnifom = {
+type ReflectionUniform = {
   name: string,
   type: string
 }
@@ -30,7 +30,7 @@ type ReflectionVarying = {
 type Reflection = {
   attributes: ReflectionAttribute[],
   varyings: ReflectionVarying[],
-  uniforms: ReflectionUnifom[]
+  uniforms: ReflectionUniform[]
 };
 
 export default class Shaderity {
@@ -237,6 +237,7 @@ export default class Shaderity {
       uniforms: []
     };
     const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
+    const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
     for (let row of splited) {
       const attributeMatch = row.match(/attribute[\t ]+/);
       if (attributeMatch) {
@@ -287,6 +288,23 @@ export default class Shaderity {
           reflectionVarying.inout = (obj.shaderStage === 'vertex') ? 'out' : 'in';
         }
         reflection.varyings.push(reflectionVarying);
+        continue;
+      }
+
+      const uniformMatch = row.match(/uniform[\t ]+/);
+      if (uniformMatch) {
+        const reflectionUniform: ReflectionUniform = {
+          name: '',
+          type: 'float',
+        };
+        const match = row.match(varTypes2);
+        if (match) {
+          const type = match[1];
+          reflectionUniform.type = type as any as VarType;
+          const name = match[2];
+          reflectionUniform.name = name;
+        }
+        reflection.uniforms.push(reflectionUniform);
         continue;
       }
     }
