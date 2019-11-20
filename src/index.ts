@@ -236,15 +236,16 @@ export default class Shaderity {
       varyings: [],
       uniforms: []
     };
+    const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
     for (let row of splited) {
-      const reflectionAttribute: ReflectionAttribute = {
-        name: '',
-        type: 'float',
-        semantic: 'POSITION'
-      };
       const attributeMatch = row.match(/attribute[\t ]+/);
       if (attributeMatch) {
-        const match = row.match(/[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/);
+        const reflectionAttribute: ReflectionAttribute = {
+          name: '',
+          type: 'float',
+          semantic: 'POSITION'
+        };
+        const match = row.match(varTypes);
         if (match) {
           const type = match[1];
           reflectionAttribute.type = type as any as VarType;
@@ -266,8 +267,28 @@ export default class Shaderity {
             reflectionAttribute.semantic = 'WEIGHTS_0';
           }
         }
+        reflection.attributes.push(reflectionAttribute);
+        continue;
       }
-      reflection.attributes.push(reflectionAttribute);
+
+      const varyingMatch = row.match(/varying[\t ]+/);
+      if (varyingMatch) {
+        const reflectionVarying: ReflectionVarying = {
+          name: '',
+          type: 'float',
+          inout: 'in'
+        };
+        const match = row.match(varTypes);
+        if (match) {
+          const type = match[1];
+          reflectionVarying.type = type as any as VarType;
+          const name = match[2];
+          reflectionVarying.name = name;
+          reflectionVarying.inout = (obj.shaderStage === 'vertex') ? 'out' : 'in';
+        }
+        reflection.varyings.push(reflectionVarying);
+        continue;
+      }
     }
 
     return reflection;

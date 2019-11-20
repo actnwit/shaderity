@@ -87,7 +87,7 @@ void main (void) {
 `);
 });
 
-test('test reflection', async () => {
+test('test attribute variable reflection', async () => {
   const shaderity = Shaderity.getInstance();
   const reflection = shaderity.reflect(reflectionVertex);
   expect(reflection.attributes[0]).toStrictEqual(
@@ -95,6 +95,18 @@ test('test reflection', async () => {
       name: 'a_position',
       type: 'vec3',
       semantic: 'POSITION'
+    }
+    );
+});
+
+test('test varying variable reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.varyings[0]).toStrictEqual(
+    {
+      name: 'v_position',
+      type: 'vec3',
+      inout: 'out'
     }
     );
 });
