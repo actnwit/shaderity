@@ -120,4 +120,10 @@ test('test uniform variable reflection', async () => {
       type: 'vec4',
     }
     );
+  expect(reflection.uniforms[1]).toStrictEqual(
+    {
+      name: 'u_texture',
+      type: 'sampler2D',
+    }
+    );
 });
