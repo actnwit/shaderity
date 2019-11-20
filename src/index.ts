@@ -3,7 +3,35 @@ type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
 type ShaderityObject = {
   code: string,
   shaderStage: ShaderStageStr
+};
+
+type VarType = 'float' | 'int' |
+               'vec2' | 'vec3' | 'vec4' |
+               'mat2' | 'mat3' | 'mat4' |
+               'ivec2' | 'ivec3' | 'ivec4';
+
+type ReflectionAttribute = {
+  name: string,
+  type: VarType,
+  semantic: 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0'
+};
+
+type ReflectionUnifom = {
+  name: string,
+  type: string
 }
+
+type ReflectionVarying = {
+  name: string,
+  inout: "in" | "out",
+  type: VarType
+}
+
+type Reflection = {
+  attributes: ReflectionAttribute[],
+  varyings: ReflectionVarying[],
+  uniforms: ReflectionUnifom[]
+};
 
 export default class Shaderity {
   private static __instance: Shaderity;
@@ -191,13 +219,55 @@ export default class Shaderity {
     const copy = this.copyShaderityObject(obj);
     let splited = this._splitShaderCode(obj.code);
 
-    const defStr = definition.replace('#define[\t ]+', '');
+    const defStr = definition.replace(/#define[\t ]+/, '');
 
     splited.unshift(`#define ${defStr}`);
 
     copy.code = this._joinSplitedRow(splited);
 
     return copy;
+  }
+
+  reflect(obj: ShaderityObject) {
+    let splited = this._splitShaderCode(obj.code);
+
+    const reflection: Reflection = {
+      attributes: [],
+      varyings: [],
+      uniforms: []
+    };
+    for (let row of splited) {
+      const reflectionAttribute: ReflectionAttribute = {
+        name: '',
+        type: 'float',
+        semantic: 'POSITION'
+      };
+      const attributeMatch = row.match(/attribute[\t ]+/);
+      if (attributeMatch) {
+        const match = row.match(/[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/);
+        if (match) {
+          const type = match[1];
+          reflectionAttribute.type = type as any as VarType;
+          const name = match[2];
+          reflectionAttribute.name = name;
+          if (name.match(/position/i)) {
+            reflectionAttribute.semantic = 'POSITION';
+          } else if (name.match(/color/i)) {
+            reflectionAttribute.semantic = 'COLOR_0';
+          } else if (name.match(/texcoord/i)) {
+            reflectionAttribute.semantic = 'TEXCOORD_0';
+          } else if (name.match(/normal/i)) {
+            reflectionAttribute.semantic = 'NORMAL';
+          } else if (name.match(/tangent/i)) {
+            reflectionAttribute.semantic = 'TANGENT';
+          } else if (name.match(/joint|bone/i)) {
+            reflectionAttribute.semantic = 'JOINTS_0';
+          } else if (name.match(/weight/i)) {
+            reflectionAttribute.semantic = 'WEIGHTS_0';
+          }
+        }
+      }
+    }
   }
 
   private _defineGLSLES3() {
