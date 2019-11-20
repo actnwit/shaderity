@@ -8,7 +8,7 @@ type ShaderityObject = {
 type VarType = 'float' | 'int' |
                'vec2' | 'vec3' | 'vec4' |
                'mat2' | 'mat3' | 'mat4' |
-               'ivec2' | 'ivec3' | 'ivec4';
+               'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
 
 type ReflectionAttribute = {
   name: string,
