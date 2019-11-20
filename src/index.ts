@@ -228,7 +228,7 @@ export default class Shaderity {
     return copy;
   }
 
-  reflect(obj: ShaderityObject) {
+  reflect(obj: ShaderityObject): Reflection {
     let splited = this._splitShaderCode(obj.code);
 
     const reflection: Reflection = {
@@ -267,7 +267,10 @@ export default class Shaderity {
           }
         }
       }
+      reflection.attributes.push(reflectionAttribute);
     }
+
+    return reflection;
   }
 
   private _defineGLSLES3() {

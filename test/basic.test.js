@@ -4,6 +4,7 @@ const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragment = require('../dist/index_test').textureFragment;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
+const reflectionVertex = require('../dist/index_test').reflectionVertex;
 
 test('detect shader stage correctly', async () => {
   const shaderity = Shaderity.getInstance();
@@ -84,4 +85,16 @@ void main (void) {
   gl_Position = vec4(position, 1.0);
 }
 `);
+});
+
+test('test reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.attributes[0]).toStrictEqual(
+    {
+      name: 'a_position',
+      type: 'vec3',
+      semantic: 'POSITION'
+    }
+    );
 });
