@@ -3,6 +3,7 @@ const simpleFragment = require('../dist/index_test').simpleFragment;
 const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragment = require('../dist/index_test').textureFragment;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
+const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
 
 test('detect shader stage correctly', async () => {
   const shaderity = Shaderity.getInstance();
@@ -70,6 +71,17 @@ foo
 
 void main() {
   gl_FlagColor = zero_one(vColor);
+}
+`);
+});
+
+test('test insert definition', async () => {
+  const shaderity = Shaderity.getInstance();
+  expect(shaderity.insertDefinition(insertDefinitionVertex, 'GLSL_ES3').code).toBe(`#define GLSL_ES3
+in vec3 position;
+
+void main (void) {
+  gl_Position = vec4(position, 1.0);
 }
 `);
 });

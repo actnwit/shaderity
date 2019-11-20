@@ -187,6 +187,19 @@ export default class Shaderity {
     return copy;
   }
 
+  insertDefinition(obj: ShaderityObject, definition: string) {
+    const copy = this.copyShaderityObject(obj);
+    let splited = this._splitShaderCode(obj.code);
+
+    const defStr = definition.replace('#define[\t ]+', '');
+
+    splited.unshift(`#define ${defStr}`);
+
+    copy.code = this._joinSplitedRow(splited);
+
+    return copy;
+  }
+
   private _defineGLSLES3() {
 
   }
