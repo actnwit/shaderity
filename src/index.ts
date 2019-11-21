@@ -18,7 +18,8 @@ type ReflectionAttribute = {
 
 type ReflectionUniform = {
   name: string,
-  type: string
+  type: string,
+  semantic: string
 }
 
 type ReflectionVarying = {
@@ -296,6 +297,7 @@ export default class Shaderity {
         const reflectionUniform: ReflectionUniform = {
           name: '',
           type: 'float',
+          semantic: ''
         };
         const match = row.match(varTypes2);
         if (match) {
@@ -303,6 +305,11 @@ export default class Shaderity {
           reflectionUniform.type = type as any as VarType;
           const name = match[2];
           reflectionUniform.name = name;
+        }
+        const match2 = row.match(/semantic[\t ]*=[\t ]*(\w+)/);
+        if (match2) {
+          const semantic = match2[1];
+          reflectionUniform.semantic = semantic;
         }
         reflection.uniforms.push(reflectionUniform);
         continue;

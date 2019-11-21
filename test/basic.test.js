@@ -118,12 +118,14 @@ test('test uniform variable reflection', async () => {
     {
       name: 'u_worldMatrix',
       type: 'vec4',
+      semantic: 'WorldMatrix'
     }
     );
   expect(reflection.uniforms[1]).toStrictEqual(
     {
       name: 'u_texture',
       type: 'sampler2D',
+      semantic: 'DataTexture'
     }
     );
 });
