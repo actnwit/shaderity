@@ -57,7 +57,7 @@ void main (void) {
 
 test('convert to ES1 correctly (texture)', async () => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES1(textureFragmentES3).code).toBe(`varying vec2 v_texcoord;
+  expect(shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D u_texture;
 uniform samplerCube u_textureCube;
