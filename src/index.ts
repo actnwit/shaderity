@@ -10,10 +10,12 @@ type VarType = 'float' | 'int' |
                'mat2' | 'mat3' | 'mat4' |
                'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
 
+type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0';
+
 type ReflectionAttribute = {
   name: string,
   type: VarType,
-  semantic: 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0'
+  semantic: AttributeSemantics
 };
 
 type ReflectionUniform = {
@@ -239,6 +241,7 @@ export default class Shaderity {
     };
     const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
     const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
+    const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
     for (let row of splited) {
       const attributeMatch = row.match(/attribute[\t ]+/);
       if (attributeMatch) {
@@ -253,20 +256,26 @@ export default class Shaderity {
           reflectionAttribute.type = type as any as VarType;
           const name = match[2];
           reflectionAttribute.name = name;
-          if (name.match(/position/i)) {
-            reflectionAttribute.semantic = 'POSITION';
-          } else if (name.match(/color/i)) {
-            reflectionAttribute.semantic = 'COLOR_0';
-          } else if (name.match(/texcoord/i)) {
-            reflectionAttribute.semantic = 'TEXCOORD_0';
-          } else if (name.match(/normal/i)) {
-            reflectionAttribute.semantic = 'NORMAL';
-          } else if (name.match(/tangent/i)) {
-            reflectionAttribute.semantic = 'TANGENT';
-          } else if (name.match(/joint|bone/i)) {
-            reflectionAttribute.semantic = 'JOINTS_0';
-          } else if (name.match(/weight/i)) {
-            reflectionAttribute.semantic = 'WEIGHTS_0';
+
+          const match2 = row.match(semanticRegExp)
+          if (match2) {
+            reflectionAttribute.semantic = match2[1] as AttributeSemantics;
+          } else {
+            if (name.match(/position/i)) {
+              reflectionAttribute.semantic = 'POSITION';
+            } else if (name.match(/color/i)) {
+              reflectionAttribute.semantic = 'COLOR_0';
+            } else if (name.match(/texcoord/i)) {
+              reflectionAttribute.semantic = 'TEXCOORD_0';
+            } else if (name.match(/normal/i)) {
+              reflectionAttribute.semantic = 'NORMAL';
+            } else if (name.match(/tangent/i)) {
+              reflectionAttribute.semantic = 'TANGENT';
+            } else if (name.match(/joint|bone/i)) {
+              reflectionAttribute.semantic = 'JOINTS_0';
+            } else if (name.match(/weight/i)) {
+              reflectionAttribute.semantic = 'WEIGHTS_0';
+            }
           }
         }
         reflection.attributes.push(reflectionAttribute);
@@ -306,7 +315,7 @@ export default class Shaderity {
           const name = match[2];
           reflectionUniform.name = name;
         }
-        const match2 = row.match(/semantic[\t ]*=[\t ]*(\w+)/);
+        const match2 = row.match(semanticRegExp);
         if (match2) {
           const semantic = match2[1];
           reflectionUniform.semantic = semantic;

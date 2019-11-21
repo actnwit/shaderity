@@ -97,6 +97,13 @@ test('test attribute variable reflection', async () => {
       semantic: 'POSITION'
     }
     );
+  expect(reflection.attributes[1]).toStrictEqual(
+    {
+      name: 'a_uv',
+      type: 'vec2',
+      semantic: 'TEXCOORD_0'
+    }
+    );
 });
 
 test('test varying variable reflection', async () => {

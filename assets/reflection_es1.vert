@@ -1,4 +1,5 @@
 attribute vec3 a_position;
+attribute vec2 a_uv; // < semantic=TEXCOORD_0 >
 varying vec3 v_position;
 
 uniform vec4 u_worldMatrix;  // < semantic = WorldMatrix >
