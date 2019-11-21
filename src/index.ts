@@ -113,6 +113,21 @@ export default class Shaderity {
     return inout_splitedSource;
   }
 
+  private _createUniformSamplerMap(obj: ShaderityObject, inout_splitedSource: string[]) {
+    const uniformSamplerMap = new Map();
+
+    for (let i = 0; i < inout_splitedSource.length; i++) {
+      const row = inout_splitedSource[i];
+      const match = row.match(/uniform[\t ]+(sampler\w+)[\t ]+(\w+)/);
+      if (match) {
+        const samplerType = match[1];
+        const name = match[2];
+        uniformSamplerMap.set(name, samplerType);
+      }
+    }
+    return uniformSamplerMap;
+  }
+
   private _convertAttribute(obj: ShaderityObject, inout_splitedSource: string[]) {
     const inReg = /^attribute[\t ]+/g;
     let inAsES3 = 'in ';
@@ -179,6 +194,50 @@ export default class Shaderity {
     return copiedObj;
   }
 
+  _convertTextureFunctionToES1(inout_splitedSource: string[], uniformSamplerMap: Map<string, string>) {
+    const sbl = this._regSymbols();
+
+    for (let i = 0; i < inout_splitedSource.length; i++) {
+      const row = inout_splitedSource[i];
+
+      let reg = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
+      let match = row.match(/textureProj[\t ]*\([\t ]*(\w+),/);
+      if (match) {
+        const name = match[1];
+        const samplerType = uniformSamplerMap.get(name);
+        if (samplerType != null) {
+          let textureFunc = '';
+          switch(samplerType) {
+            case 'sampler2D': textureFunc = 'texture2DProj'; break;
+            case 'sampler3D': textureFunc = 'texture3DProj'; break;
+            default: console.log('not found');
+          }
+          inout_splitedSource[i] = inout_splitedSource[i].replace(reg, '$1' + textureFunc + '$3');
+        }
+        continue;
+      }
+
+      reg = new RegExp(`(${sbl}+)(texture)(${sbl}+)`, 'g');
+      match = row.match(/texture[\t ]*\([\t ]*(\w+),/);
+      if (match) {
+        const name = match[1];
+        const samplerType = uniformSamplerMap.get(name);
+        if (samplerType != null) {
+          let textureFunc = '';
+          switch(samplerType) {
+            case 'sampler2D': textureFunc = 'texture2D'; break;
+            case 'sampler3D': textureFunc = 'texture3D'; break;
+            case 'samplerCube': textureFunc = 'textureCube'; break;
+            default: console.log('not found');
+          }
+          inout_splitedSource[i] = inout_splitedSource[i].replace(reg, '$1' + textureFunc + '$3');
+        }
+      }
+    }
+
+    return inout_splitedSource;
+  }
+
   transformToGLSLES1(obj: ShaderityObject) {
     const copy = this.copyShaderityObject(obj);
 
@@ -186,6 +245,9 @@ export default class Shaderity {
 
     this._convertIn(obj, splited);
     this._convertOut(obj, splited);
+
+    const uniformSamplerMap = this._createUniformSamplerMap(obj, splited);
+    splited = this._convertTextureFunctionToES1(splited, uniformSamplerMap);
 
     copy.code = this._joinSplitedRow(splited);
 

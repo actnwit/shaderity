@@ -1,7 +1,8 @@
 const Shaderity = require('../dist/index').default;
 const simpleFragment = require('../dist/index_test').simpleFragment;
 const simpleVertex = require('../dist/index_test').simpleVertex;
-const textureFragment = require('../dist/index_test').textureFragment;
+const textureFragmentES1 = require('../dist/index_test').textureFragmentES1;
+const textureFragmentES3 = require('../dist/index_test').textureFragmentES3;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
 const reflectionVertex = require('../dist/index_test').reflectionVertex;
@@ -41,7 +42,7 @@ void main (void) {
 
 test('convert to ES3 correctly (texture)', async () => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES3(textureFragment).code).toBe(`in vec2 v_texcoord;
+  expect(shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`in vec2 v_texcoord;
 in vec3 v_texcoord3;
 uniform sampler2D u_texture;
 uniform samplerCube u_textureCube;
@@ -50,6 +51,21 @@ void main (void) {
   gl_FragColor = texture(u_texture, v_texcoord);
   gl_FragColor = texture(u_textureCube, v_texcoord3);
   gl_FragColor = textureProj(u_texture, v_texcoord);
+}
+`);
+});
+
+test('convert to ES1 correctly (texture)', async () => {
+  const shaderity = Shaderity.getInstance();
+  expect(shaderity.transformToGLSLES1(textureFragmentES3).code).toBe(`varying vec2 v_texcoord;
+varying vec3 v_texcoord3;
+uniform sampler2D u_texture;
+uniform samplerCube u_textureCube;
+
+void main (void) {
+  gl_FragColor = texture2D(u_texture, v_texcoord);
+  gl_FragColor = textureCube(u_textureCube, v_texcoord3);
+  gl_FragColor = texture2DProj(u_texture, v_texcoord);
 }
 `);
 });
