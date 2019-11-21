@@ -270,6 +270,17 @@ export default class Shaderity {
     return copy;
   }
 
+  transformTo(version: string, obj: ShaderityObject) {
+    if (version.match(/webgl2|es3/i)) {
+      return this.transformToGLSLES3(obj);
+    } else if (version.match(/webgl1|es1/i)) {
+      return this.transformToGLSLES1(obj);
+    } else {
+      console.error('Invalid Version')
+      return obj;
+    }
+  }
+
   private _splitShaderCode(source: string) {
     return source.split(/\r\n|\n/);
   }
