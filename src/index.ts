@@ -283,13 +283,13 @@ export default class Shaderity {
    * @param obj a shaderity object
    * @returns a copied and processed shaderity object
    */
-  fillTemplate(obj: ShaderityObject, arg: {[s: string]: string}) {
+  fillTemplate(obj: ShaderityObject, arg: {[s: string]: any}) {
     const copy = this.copyShaderityObject(obj);
 
 
     const templateString = obj.code.replace(/\/\*[\t ]*shaderity:[\t ]*(\${[\t ]*)(\S+)([\t ]*})[\t ]*\*\//g, `$1this.$2$3`)
 
-    const fillTemplate = function(templateString: string, arg:{[s: string]: string}){
+    const fillTemplate = function(templateString: string, arg:{[s: string]: any}){
       return new Function("return `"+templateString +"`;").call(arg);
     }
     copy.code = fillTemplate(templateString, arg);
