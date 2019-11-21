@@ -39,6 +39,7 @@ type Reflection = {
 export default class Shaderity {
   private static __instance: Shaderity;
   private __attributeSemanticsMap = new Map();
+  private __uniformSemanticsMap = new Map();
 
   private constructor() {
     this.__attributeSemanticsMap.set('position', 'POSITION');
@@ -49,6 +50,12 @@ export default class Shaderity {
     this.__attributeSemanticsMap.set('joint', 'JOINTS_0');
     this.__attributeSemanticsMap.set('bone', 'JOINTS_0');
     this.__attributeSemanticsMap.set('weight', 'WEIGHTS`_0');
+
+    this.__uniformSemanticsMap.set('worldmatrix', 'WorldMatrix');
+    this.__uniformSemanticsMap.set('normalmatrix', 'NormalMatrix');
+    this.__uniformSemanticsMap.set('viewmatrix', 'ViewMatrix');
+    this.__uniformSemanticsMap.set('projectionmatrix', 'ProjectionMatrix');
+    this.__uniformSemanticsMap.set('modelviewmatrix', 'ModelViewMatrix');
   }
 
   static getInstance(): Shaderity {
@@ -313,11 +320,17 @@ export default class Shaderity {
           reflectionUniform.type = type as any as VarType;
           const name = match[2];
           reflectionUniform.name = name;
-        }
-        const match2 = row.match(semanticRegExp);
-        if (match2) {
-          const semantic = match2[1];
-          reflectionUniform.semantic = semantic;
+
+          const match2 = row.match(semanticRegExp)
+          if (match2) {
+            reflectionUniform.semantic = match2[1] as AttributeSemantics;
+          } else {
+            for (let [key, value] of this.__uniformSemanticsMap) {
+              if (name.match(new RegExp(key, 'i'))) {
+                reflectionUniform.semantic = value;
+              }
+            }
+          }
         }
         reflection.uniforms.push(reflectionUniform);
         continue;
