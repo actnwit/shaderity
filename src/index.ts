@@ -38,8 +38,17 @@ type Reflection = {
 
 export default class Shaderity {
   private static __instance: Shaderity;
+  private __attributeSemanticsMap = new Map();
 
   private constructor() {
+    this.__attributeSemanticsMap.set('position', 'POSITION');
+    this.__attributeSemanticsMap.set('color', 'COLOR_0');
+    this.__attributeSemanticsMap.set('texcoord', 'TEXCOORD_0');
+    this.__attributeSemanticsMap.set('normal', 'NORMAL');
+    this.__attributeSemanticsMap.set('tangent', 'TANGENT');
+    this.__attributeSemanticsMap.set('joint', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('bone', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('weight', 'WEIGHTS`_0');
   }
 
   static getInstance(): Shaderity {
@@ -261,20 +270,10 @@ export default class Shaderity {
           if (match2) {
             reflectionAttribute.semantic = match2[1] as AttributeSemantics;
           } else {
-            if (name.match(/position/i)) {
-              reflectionAttribute.semantic = 'POSITION';
-            } else if (name.match(/color/i)) {
-              reflectionAttribute.semantic = 'COLOR_0';
-            } else if (name.match(/texcoord/i)) {
-              reflectionAttribute.semantic = 'TEXCOORD_0';
-            } else if (name.match(/normal/i)) {
-              reflectionAttribute.semantic = 'NORMAL';
-            } else if (name.match(/tangent/i)) {
-              reflectionAttribute.semantic = 'TANGENT';
-            } else if (name.match(/joint|bone/i)) {
-              reflectionAttribute.semantic = 'JOINTS_0';
-            } else if (name.match(/weight/i)) {
-              reflectionAttribute.semantic = 'WEIGHTS_0';
+            for (let [key, value] of this.__attributeSemanticsMap) {
+              if (name.match(new RegExp(key, 'i'))) {
+                reflectionAttribute.semantic = value;
+              }
             }
           }
         }
