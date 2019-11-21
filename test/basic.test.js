@@ -4,6 +4,7 @@ const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragment = require('../dist/index_test').textureFragment;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
+const reflectionVertex = require('../dist/index_test').reflectionVertex;
 
 test('detect shader stage correctly', async () => {
   const shaderity = Shaderity.getInstance();
@@ -84,4 +85,54 @@ void main (void) {
   gl_Position = vec4(position, 1.0);
 }
 `);
+});
+
+test('test attribute variable reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.attributes[0]).toStrictEqual(
+    {
+      name: 'a_position',
+      type: 'vec3',
+      semantic: 'POSITION'
+    }
+    );
+  expect(reflection.attributes[1]).toStrictEqual(
+    {
+      name: 'a_uv',
+      type: 'vec2',
+      semantic: 'TEXCOORD_0'
+    }
+    );
+});
+
+test('test varying variable reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.varyings[0]).toStrictEqual(
+    {
+      name: 'v_position',
+      type: 'vec3',
+      inout: 'out'
+    }
+    );
+});
+
+test('test uniform variable reflection', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertex);
+  expect(reflection.uniforms[0]).toStrictEqual(
+    {
+      name: 'u_worldMatrix',
+      type: 'vec4',
+      semantic: 'WorldMatrix'
+    }
+    );
+  expect(reflection.uniforms[1]).toStrictEqual(
+    {
+      name: 'u_texture',
+      type: 'sampler2D',
+      semantic: 'DataTexture'
+    }
+    );
 });
