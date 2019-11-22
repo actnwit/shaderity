@@ -333,36 +333,43 @@ export default class Shaderity {
     const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
     const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
     for (let row of splited) {
-      const attributeMatch = row.match(/attribute[\t ]+/);
-      if (attributeMatch) {
-        const reflectionAttribute: ReflectionAttribute = {
-          name: '',
-          type: 'float',
-          semantic: 'UNKNOWN'
-        };
-        const match = row.match(varTypes);
-        if (match) {
-          const type = match[1];
-          reflectionAttribute.type = type as any as VarType;
-          const name = match[2];
-          reflectionAttribute.name = name;
+      if (obj.shaderStage === 'vertex') {
+        const attributeMatch = row.match(/(attribute|in)[\t ]+/);
+        if (attributeMatch) {
+          const reflectionAttribute: ReflectionAttribute = {
+            name: '',
+            type: 'float',
+            semantic: 'UNKNOWN'
+          };
+          const match = row.match(varTypes);
+          if (match) {
+            const type = match[1];
+            reflectionAttribute.type = type as any as VarType;
+            const name = match[2];
+            reflectionAttribute.name = name;
 
-          const match2 = row.match(semanticRegExp)
-          if (match2) {
-            reflectionAttribute.semantic = match2[1] as AttributeSemantics;
-          } else {
-            for (let [key, value] of this.__attributeSemanticsMap) {
-              if (name.match(new RegExp(key, 'i'))) {
-                reflectionAttribute.semantic = value;
+            const match2 = row.match(semanticRegExp)
+            if (match2) {
+              reflectionAttribute.semantic = match2[1] as AttributeSemantics;
+            } else {
+              for (let [key, value] of this.__attributeSemanticsMap) {
+                if (name.match(new RegExp(key, 'i'))) {
+                  reflectionAttribute.semantic = value;
+                }
               }
             }
           }
+          reflection.attributes.push(reflectionAttribute);
+          continue;
         }
-        reflection.attributes.push(reflectionAttribute);
-        continue;
       }
 
-      const varyingMatch = row.match(/varying[\t ]+/);
+      let varyingMatch;
+      if (obj.shaderStage === 'vertex') {
+        varyingMatch = row.match(/(varying|out)[\t ]+/);
+      } else {
+        varyingMatch = row.match(/(varying|in)[\t ]+/);
+      }
       if (varyingMatch) {
         const reflectionVarying: ReflectionVarying = {
           name: '',
