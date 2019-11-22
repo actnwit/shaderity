@@ -10,7 +10,7 @@ export type VarType = 'float' | 'int' |
                'mat2' | 'mat3' | 'mat4' |
                'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
 
-export type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0';
+export type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0' | 'UNKNOWN';
 
 export type ReflectionAttribute = {
   name: string,
@@ -338,7 +338,7 @@ export default class Shaderity {
         const reflectionAttribute: ReflectionAttribute = {
           name: '',
           type: 'float',
-          semantic: 'POSITION'
+          semantic: 'UNKNOWN'
         };
         const match = row.match(varTypes);
         if (match) {
@@ -386,7 +386,7 @@ export default class Shaderity {
         const reflectionUniform: ReflectionUniform = {
           name: '',
           type: 'float',
-          semantic: ''
+          semantic: 'UNKNOWN'
         };
         const match = row.match(varTypes2);
         if (match) {
