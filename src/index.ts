@@ -36,15 +36,15 @@ export class Reflection {
   uniforms: ReflectionUniform[] = [];
 
   get attributesNames() {
-    return this.attributes.map((attribute) => {attribute.name});
+    return this.attributes.map((attribute) => {return attribute.name});
   }
 
   get attributesSemantics() {
-    return this.attributes.map((attribute) => {attribute.semantic});
+    return this.attributes.map((attribute) => {return attribute.semantic});
   }
 
   get attributesTypes() {
-    return this.attributes.map((attribute) => {attribute.type});
+    return this.attributes.map((attribute) => {return attribute.type});
   }
 };
 
