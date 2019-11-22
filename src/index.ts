@@ -5,7 +5,7 @@ export type ShaderityObject = {
   shaderStage: ShaderStageStr
 };
 
-export type VarType = 'float' | 'int' |
+export type VarType = 'unknown' | 'float' | 'int' |
                'vec2' | 'vec3' | 'vec4' |
                'mat2' | 'mat3' | 'mat4' |
                'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
@@ -30,10 +30,22 @@ export type ReflectionVarying = {
   type: VarType
 }
 
-export type Reflection = {
-  attributes: ReflectionAttribute[],
-  varyings: ReflectionVarying[],
-  uniforms: ReflectionUniform[]
+export class Reflection {
+  attributes: ReflectionAttribute[] = []
+  varyings: ReflectionVarying[] = [];
+  uniforms: ReflectionUniform[] = [];
+
+  get attributesNames() {
+    return this.attributes.map((attribute) => {attribute.name});
+  }
+
+  get attributesSemantics() {
+    return this.attributes.map((attribute) => {attribute.semantic});
+  }
+
+  get attributesTypes() {
+    return this.attributes.map((attribute) => {attribute.type});
+  }
 };
 
 export default class Shaderity {
@@ -332,11 +344,7 @@ export default class Shaderity {
   reflect(obj: ShaderityObject): Reflection {
     let splited = this._splitShaderCode(obj.code);
 
-    const reflection: Reflection = {
-      attributes: [],
-      varyings: [],
-      uniforms: []
-    };
+    const reflection = new Reflection();
     const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
     const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
     const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
