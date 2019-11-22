@@ -5,7 +5,8 @@ const textureFragmentES1 = require('../dist/index_test').textureFragmentES1;
 const textureFragmentES3 = require('../dist/index_test').textureFragmentES3;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
-const reflectionVertex = require('../dist/index_test').reflectionVertex;
+const reflectionVertexES1 = require('../dist/index_test').reflectionVertexES1;
+const reflectionVertexES3 = require('../dist/index_test').reflectionVertexES3;
 
 test('detect shader stage correctly', async () => {
   const shaderity = Shaderity.getInstance();
@@ -103,9 +104,9 @@ void main (void) {
 `);
 });
 
-test('test attribute variable reflection', async () => {
+test('test attribute variable reflection (ES1)', async () => {
   const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertex);
+  const reflection = shaderity.reflect(reflectionVertexES1);
   expect(reflection.attributes[0]).toStrictEqual(
     {
       name: 'a_position',
@@ -122,9 +123,9 @@ test('test attribute variable reflection', async () => {
     );
 });
 
-test('test varying variable reflection', async () => {
+test('test varying variable reflection (ES1)', async () => {
   const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertex);
+  const reflection = shaderity.reflect(reflectionVertexES1);
   expect(reflection.varyings[0]).toStrictEqual(
     {
       name: 'v_position',
@@ -134,9 +135,9 @@ test('test varying variable reflection', async () => {
     );
 });
 
-test('test uniform variable reflection', async () => {
+test('test uniform variable reflection (ES1)', async () => {
   const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertex);
+  const reflection = shaderity.reflect(reflectionVertexES1);
   expect(reflection.uniforms[0]).toStrictEqual(
     {
       name: 'u_worldMatrix',
@@ -149,6 +150,25 @@ test('test uniform variable reflection', async () => {
       name: 'u_texture',
       type: 'sampler2D',
       semantic: 'DataTexture'
+    }
+    );
+});
+
+test('test attribute variable reflection (ES3)', async () => {
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertexES3);
+  expect(reflection.attributes[0]).toStrictEqual(
+    {
+      name: 'a_position',
+      type: 'vec3',
+      semantic: 'POSITION'
+    }
+    );
+  expect(reflection.attributes[1]).toStrictEqual(
+    {
+      name: 'a_uv',
+      type: 'vec2',
+      semantic: 'TEXCOORD_0'
     }
     );
 });
