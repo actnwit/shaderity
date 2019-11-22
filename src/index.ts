@@ -1,36 +1,36 @@
-type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
+export type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
 
-type ShaderityObject = {
+export type ShaderityObject = {
   code: string,
   shaderStage: ShaderStageStr
 };
 
-type VarType = 'float' | 'int' |
+export type VarType = 'float' | 'int' |
                'vec2' | 'vec3' | 'vec4' |
                'mat2' | 'mat3' | 'mat4' |
                'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
 
-type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0';
+export type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0';
 
-type ReflectionAttribute = {
+export type ReflectionAttribute = {
   name: string,
   type: VarType,
   semantic: AttributeSemantics
 };
 
-type ReflectionUniform = {
+export type ReflectionUniform = {
   name: string,
   type: string,
   semantic: string
 }
 
-type ReflectionVarying = {
+export type ReflectionVarying = {
   name: string,
   inout: "in" | "out",
   type: VarType
 }
 
-type Reflection = {
+export type Reflection = {
   attributes: ReflectionAttribute[],
   varyings: ReflectionVarying[],
   uniforms: ReflectionUniform[]
