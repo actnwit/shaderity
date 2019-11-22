@@ -61,7 +61,7 @@ export default class Shaderity {
     this.__attributeSemanticsMap.set('tangent', 'TANGENT');
     this.__attributeSemanticsMap.set('joint', 'JOINTS_0');
     this.__attributeSemanticsMap.set('bone', 'JOINTS_0');
-    this.__attributeSemanticsMap.set('weight', 'WEIGHTS`_0');
+    this.__attributeSemanticsMap.set('weight', 'WEIGHTS_0');
 
     this.__uniformSemanticsMap.set('worldmatrix', 'WorldMatrix');
     this.__uniformSemanticsMap.set('normalmatrix', 'NormalMatrix');
