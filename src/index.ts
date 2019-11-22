@@ -65,6 +65,14 @@ export default class Shaderity {
     return this.__instance;
   }
 
+  addAttributeSemanticsMap(map: Map<string, string>) {
+    this.__attributeSemanticsMap = new Map([...this.__attributeSemanticsMap, ...map]);
+  }
+
+  addUniformSemanticsMap(map: Map<string, string>) {
+    this.__uniformSemanticsMap = new Map([...this.__uniformSemanticsMap, ...map]);
+  }
+
   isVertexShader(obj: ShaderityObject) {
     if (obj.shaderStage === 'vertex') {
       return true;
