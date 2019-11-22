@@ -350,7 +350,7 @@ export default class Shaderity {
     const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
     for (let row of splited) {
       if (obj.shaderStage === 'vertex') {
-        const attributeMatch = row.match(/(attribute|in)[\t ]+/);
+        const attributeMatch = row.match(/(attribute|in)[\t ]+.+;/);
         if (attributeMatch) {
           const reflectionAttribute: ReflectionAttribute = {
             name: '',
@@ -382,9 +382,9 @@ export default class Shaderity {
 
       let varyingMatch;
       if (obj.shaderStage === 'vertex') {
-        varyingMatch = row.match(/(varying|out)[\t ]+/);
+        varyingMatch = row.match(/(varying|out)[\t ]+.+;/);
       } else {
-        varyingMatch = row.match(/(varying|in)[\t ]+/);
+        varyingMatch = row.match(/(varying|in)[\t ]+.+;/);
       }
       if (varyingMatch) {
         const reflectionVarying: ReflectionVarying = {
