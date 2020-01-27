@@ -112,7 +112,7 @@ export default class Shaderity {
   }
 
   private _convertIn(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^in[\t ]+/g;
+    const inReg = /^(?![\/])[\t ]*in[\t ]+/g;
     let inAsES1 = 'attribute ';
     if (this.isFragmentShader(obj)) {
       inAsES1 = 'varying ';
@@ -125,7 +125,7 @@ export default class Shaderity {
 
 
   private _convertOut(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^out[\t ]+/g;
+    const inReg = /^(?![\/])[\t ]*out[\t ]+/g;
     let inAsES1 = 'varying ';
 
     this._replaceRow(inout_splitedSource, inReg, inAsES1);
@@ -138,7 +138,7 @@ export default class Shaderity {
 
     for (let i = 0; i < inout_splitedSource.length; i++) {
       const row = inout_splitedSource[i];
-      const match = row.match(/uniform[\t ]+(sampler\w+)[\t ]+(\w+)/);
+      const match = row.match(/^(?![\/])[\t ]*uniform[\t ]+(sampler\w+)[\t ]+(\w+)/);
       if (match) {
         const samplerType = match[1];
         const name = match[2];
@@ -149,7 +149,7 @@ export default class Shaderity {
   }
 
   private _convertAttribute(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^attribute[\t ]+/g;
+    const inReg = /^(?![\/])[\t ]*attribute[\t ]+/g;
     let inAsES3 = 'in ';
 
     this._replaceRow(inout_splitedSource, inReg, inAsES3);
@@ -158,7 +158,7 @@ export default class Shaderity {
   }
 
   private _convertVarying(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^varying[\t ]+/g;
+    const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
     let inAsES3 = 'out ';
 
     if (this.isFragmentShader(obj)) {
@@ -382,9 +382,9 @@ export default class Shaderity {
 
       let varyingMatch;
       if (obj.shaderStage === 'vertex') {
-        varyingMatch = row.match(/(varying|out)[\t ]+.+;/);
+        varyingMatch = row.match(/^(?![\/])[\t ]*(varying|out)[\t ]+.+;/);
       } else {
-        varyingMatch = row.match(/(varying|in)[\t ]+.+;/);
+        varyingMatch = row.match(/^(?![\/])[\t ]*(varying|in)[\t ]+.+;/);
       }
       if (varyingMatch) {
         const reflectionVarying: ReflectionVarying = {
@@ -404,7 +404,7 @@ export default class Shaderity {
         continue;
       }
 
-      const uniformMatch = row.match(/uniform[\t ]+/);
+      const uniformMatch = row.match(/^(?![\/])[\t ]*uniform[\t ]+/);
       if (uniformMatch) {
         const reflectionUniform: ReflectionUniform = {
           name: '',
