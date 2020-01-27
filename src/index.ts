@@ -105,17 +105,21 @@ export default class Shaderity {
     return this.isFragmentShader(obj);
   }
 
-  private _replaceRow(inout_splitedSource: string[], inReg: RegExp, inAsES1: string) {
+  private _replaceRow(inout_splitedSource: string[], inReg: RegExp, inAsES1: any) {
     for (let i = 0; i < inout_splitedSource.length; i++) {
       inout_splitedSource[i] = inout_splitedSource[i].replace(inReg, inAsES1);
     }
   }
 
   private _convertIn(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^(?![\/])[\t ]*in[\t ]+/g;
-    let inAsES1 = 'attribute ';
+    const inReg = /^(?![\/])[\t ]*in[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
+    let inAsES1 = function(match: string, p1: string){
+      return 'attribute ' + p1;
+    }
     if (this.isFragmentShader(obj)) {
-      inAsES1 = 'varying ';
+      inAsES1 = function(match: string, p1: string){
+        return 'varying ' + p1;
+      }
     }
 
     this._replaceRow(inout_splitedSource, inReg, inAsES1);
@@ -125,8 +129,10 @@ export default class Shaderity {
 
 
   private _convertOut(obj: ShaderityObject, inout_splitedSource: string[]) {
-    const inReg = /^(?![\/])[\t ]*out[\t ]+/g;
-    let inAsES1 = 'varying ';
+    const inReg = /^(?![\/])[\t ]*out[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
+    let inAsES1 = function(match: string, p1: string){
+      return 'varying ' + p1;
+    }
 
     this._replaceRow(inout_splitedSource, inReg, inAsES1);
 
