@@ -356,7 +356,7 @@ export default class Shaderity {
     const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
     for (let row of splited) {
       if (obj.shaderStage === 'vertex') {
-        const attributeMatch = row.match(/(attribute|in)[\t ]+.+;/);
+        const attributeMatch = row.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
         if (attributeMatch) {
           const reflectionAttribute: ReflectionAttribute = {
             name: '',
