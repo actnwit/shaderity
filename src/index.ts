@@ -139,12 +139,12 @@ export default class Shaderity {
     return inout_splitedSource;
   }
 
-  private _createUniformSamplerMap(obj: ShaderityObject, inout_splitedSource: string[]) {
+  private _createUniformSamplerMap(inout_splitedSource: string[], row_i: number) {
     const uniformSamplerMap = new Map();
 
-    for (let i = 0; i < inout_splitedSource.length; i++) {
+    for (let i = 0; i < row_i; i++) {
       const row = inout_splitedSource[i];
-      const match = row.match(/^(?![\/])[\t ]*uniform[\t ]+(sampler\w+)[\t ]+(\w+)/);
+      const match = row.match(/^(?![\/])[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
       if (match) {
         const samplerType = match[1];
         const name = match[2];
@@ -220,7 +220,7 @@ export default class Shaderity {
     return copiedObj;
   }
 
-  _convertTextureFunctionToES1(inout_splitedSource: string[], uniformSamplerMap: Map<string, string>) {
+  _convertTextureFunctionToES1(inout_splitedSource: string[]) {
     const sbl = this._regSymbols();
 
     for (let i = 0; i < inout_splitedSource.length; i++) {
@@ -230,6 +230,7 @@ export default class Shaderity {
       let match = row.match(/textureProj[\t ]*\([\t ]*(\w+),/);
       if (match) {
         const name = match[1];
+        const uniformSamplerMap = this._createUniformSamplerMap(inout_splitedSource, i);
         const samplerType = uniformSamplerMap.get(name);
         if (samplerType != null) {
           let textureFunc = '';
@@ -247,6 +248,7 @@ export default class Shaderity {
       match = row.match(/texture[\t ]*\([\t ]*(\w+),/);
       if (match) {
         const name = match[1];
+        const uniformSamplerMap = this._createUniformSamplerMap(inout_splitedSource, i);
         const samplerType = uniformSamplerMap.get(name);
         if (samplerType != null) {
           let textureFunc = '';
@@ -272,8 +274,7 @@ export default class Shaderity {
     this._convertIn(obj, splited);
     this._convertOut(obj, splited);
 
-    const uniformSamplerMap = this._createUniformSamplerMap(obj, splited);
-    splited = this._convertTextureFunctionToES1(splited, uniformSamplerMap);
+    splited = this._convertTextureFunctionToES1(splited);
 
     copy.code = this._joinSplitedRow(splited);
 
