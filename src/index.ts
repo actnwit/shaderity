@@ -1,3 +1,7 @@
+import {shaderStage, requireFile} from "./static_load"
+
+export {shaderStage, requireFile}
+
 export type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
 
 export type ShaderityObject = {
