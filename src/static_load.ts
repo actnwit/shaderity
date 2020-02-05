@@ -1,5 +1,9 @@
-const path = require('path');
-const fs = require('fs');
+var isNode=new Function("try {return this===global;}catch(e){return false;}");
+
+if(isNode()) {
+  var path = require('path');
+  var fs = require('fs');
+}
 
 function isVertexShader(path: string) {
   const ext = fileExtension(path);
