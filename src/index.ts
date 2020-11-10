@@ -56,7 +56,8 @@ export default class Shaderity {
   private constructor() {
     this.__attributeSemanticsMap.set('position', 'POSITION');
     this.__attributeSemanticsMap.set('color', 'COLOR_0');
-    this.__attributeSemanticsMap.set('texcoord', 'TEXCOORD_0');
+    this.__attributeSemanticsMap.set('texcoord_0', 'TEXCOORD_0');
+    this.__attributeSemanticsMap.set('texcoord_1', 'TEXCOORD_1');
     this.__attributeSemanticsMap.set('normal', 'NORMAL');
     this.__attributeSemanticsMap.set('tangent', 'TANGENT');
     this.__attributeSemanticsMap.set('joint', 'JOINTS_0');
