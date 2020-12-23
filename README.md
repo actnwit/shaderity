@@ -2,7 +2,7 @@
 
 Shaderity is a shader tool set.
 
-Shaderity are composed from several components.
+Shaderity are composed from the several components.
 
 - shaderity: This. for runtime features
 - shaderity-loader: for static features
@@ -22,7 +22,7 @@ With this `shaderity`, you can do the following things:
 With [shaderity-loader](https://github.com/actnwit/shaderity-loader), you can do the following things:
 
 - Provide `#include` like statement for GLSL shader files. (similar syntax to glslify)
-- Embed GLSL shader files into TypeScript/JavaScript with WebPack Loader.
+- Embed GLSL shader files into TypeScript/JavaScript as a WebPack Loader.
 - Can be used in conjunction with glslify.
 
 ## How to use
