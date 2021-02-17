@@ -11,6 +11,7 @@ export type VarType = 'unknown' | 'float' | 'int' |
                'ivec2' | 'ivec3' | 'ivec4' | 'sampler2D' | 'sampler3D' | 'samplerCube';
 
 export type AttributeSemantics = 'POSITION' | 'COLOR_0' | 'NORMAL' | 'TANGENT' | 'TEXCOORD_0' | 'TEXCOORD_1' | 'JOINTS_0' | 'WEIGHTS_0' | 'UNKNOWN';
+export type UniformSemantics = 'UNKNOWN';
 
 export type ReflectionAttribute = {
   name: string,
@@ -177,6 +178,13 @@ export default class Shaderity {
     return inout_splitedSource;
   }
 
+  private _removeLayout(obj: ShaderityObject, inout_splitedSource: string[]) {
+    const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
+    this._replaceRow(inout_splitedSource, inReg, '');
+    
+    return inout_splitedSource;
+  }
+
   private _regSymbols() {
     return `[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^` + '`{|}~\t\n ]';
   }
@@ -274,6 +282,7 @@ export default class Shaderity {
 
     this._convertIn(obj, splited);
     this._convertOut(obj, splited);
+    this._removeLayout(obj, splited);
 
     splited = this._convertTextureFunctionToES1(splited);
 
@@ -429,7 +438,7 @@ export default class Shaderity {
 
           const match2 = row.match(semanticRegExp)
           if (match2) {
-            reflectionUniform.semantic = match2[1] as AttributeSemantics;
+            reflectionUniform.semantic = match2[1] as UniformSemantics;
           } else {
             for (let [key, value] of this.__uniformSemanticsMap) {
               if (name.match(new RegExp(key, 'i'))) {
