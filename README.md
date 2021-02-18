@@ -60,6 +60,75 @@ void main() {
 */
 ```
 
+## Reflection
+
+Shaderity analogizes the names of attribute variables in the vertex shader for mapping to the CPU-side vertex attributes semantics.
+
+In this sample, Shaderity determines that `a_position` is a `POSITION` semantics. `a_uv` is not in the current Shaderity's analogy dictionary, so it is `UNKNOWN` as is, but the comment `// < semantic=TEXCOORD_0 >` allows Shaderity to determine that it is a `TEXCOORD_0` semantics. 
+
+```glsl
+in vec3 a_position;
+in vec2 a_uv; // < semantic=TEXCOORD_0 >
+out vec3 v_position;
+
+uniform vec4 u_worldMatrix;
+uniform sampler2D u_texture; // <semantic=DataTexture, min=10, max=100, default=>
+
+int main() {
+  gl_Position = a_position;
+  v_position = a_position;
+}
+```
+
+Here is the current analogy dictionary for vertex attribute variables.
+(The key of the map is written in regular expression.)
+
+```javascript
+    this.__attributeSemanticsMap.set('position', 'POSITION');
+    this.__attributeSemanticsMap.set('color', 'COLOR_0');
+    this.__attributeSemanticsMap.set('color_?0', 'COLOR_0');
+    this.__attributeSemanticsMap.set('texcoord', 'TEXCOORD_0');
+    this.__attributeSemanticsMap.set('texcoord_?0', 'TEXCOORD_0');
+    this.__attributeSemanticsMap.set('texcoord_?1', 'TEXCOORD_1');
+    this.__attributeSemanticsMap.set('normal', 'NORMAL');
+    this.__attributeSemanticsMap.set('tangent', 'TANGENT');
+    this.__attributeSemanticsMap.set('joint', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('bone', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('joint_?0', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('bone_?0', 'JOINTS_0');
+    this.__attributeSemanticsMap.set('weight', 'WEIGHTS_0');
+    this.__attributeSemanticsMap.set('weight_?0', 'WEIGHTS_0');
+```
+
+You can get the reflection data by like this.
+
+```javascript
+  const shaderity = Shaderity.getInstance();
+  const reflection = shaderity.reflect(reflectionVertexES3);
+  expect(reflection.attributes[0]).toStrictEqual(
+    {
+      name: 'a_position',
+      type: 'vec3',
+      semantic: 'POSITION'
+    }
+    );
+  expect(reflection.attributes[1]).toStrictEqual(
+    {
+      name: 'a_uv',
+      type: 'vec2',
+      semantic: 'TEXCOORD_0'
+    }
+    );
+```
+
+You can add other words to analogy dictionary by this method.
+
+```typescript
+  addAttributeSemanticsMap(map: Map<string, string>) {
+    this.__attributeSemanticsMap = new Map([...this.__attributeSemanticsMap, ...map]);
+  }
+```
+
 You can check more functionalities in [test/basic.test.js](./test/basic.test.js) .
 
 ## LICENSE
