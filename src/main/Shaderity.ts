@@ -1,47 +1,14 @@
 import Reflection from './Reflection';
-import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderityObject, UniformSemantics, VarType} from '../types/type';
+import {ShaderityObject} from '../types/type';
 
 export default class Shaderity {
 	private static __instance: Shaderity;
-	private __attributeSemanticsMap = new Map();
-	private __uniformSemanticsMap = new Map();
-
-	private constructor() {
-		this.__attributeSemanticsMap.set('position', 'POSITION');
-		this.__attributeSemanticsMap.set('color$', 'COLOR_0');
-		this.__attributeSemanticsMap.set('color_?0', 'COLOR_0');
-		this.__attributeSemanticsMap.set('texcoord$', 'TEXCOORD_0');
-		this.__attributeSemanticsMap.set('texcoord_?0', 'TEXCOORD_0');
-		this.__attributeSemanticsMap.set('texcoord_?1', 'TEXCOORD_1');
-		this.__attributeSemanticsMap.set('normal', 'NORMAL');
-		this.__attributeSemanticsMap.set('tangent', 'TANGENT');
-		this.__attributeSemanticsMap.set('joint$', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('bone$', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('joint_?0', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('bone_?0', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('weight$', 'WEIGHTS_0');
-		this.__attributeSemanticsMap.set('weight_?0', 'WEIGHTS_0');
-
-		this.__uniformSemanticsMap.set('worldmatrix', 'WorldMatrix');
-		this.__uniformSemanticsMap.set('normalmatrix', 'NormalMatrix');
-		this.__uniformSemanticsMap.set('viewmatrix', 'ViewMatrix');
-		this.__uniformSemanticsMap.set('projectionmatrix', 'ProjectionMatrix');
-		this.__uniformSemanticsMap.set('modelviewmatrix', 'ModelViewMatrix');
-	}
 
 	static getInstance(): Shaderity {
 		if (!this.__instance) {
 			this.__instance = new Shaderity();
 		}
 		return this.__instance;
-	}
-
-	addAttributeSemanticsMap(map: Map<string, string>) {
-		this.__attributeSemanticsMap = new Map([...this.__attributeSemanticsMap, ...map]);
-	}
-
-	addUniformSemanticsMap(map: Map<string, string>) {
-		this.__uniformSemanticsMap = new Map([...this.__uniformSemanticsMap, ...map]);
 	}
 
 	isVertexShader(obj: ShaderityObject) {
@@ -318,97 +285,10 @@ export default class Shaderity {
 
 	reflect(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+		const shaderStage = obj.shaderStage;
 
-		const reflection = new Reflection();
-		const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
-		const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
-		const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
-		for (let row of splittedShaderCode) {
-			if (obj.shaderStage === 'vertex') {
-				const attributeMatch = row.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
-				if (attributeMatch) {
-					const reflectionAttribute: ReflectionAttribute = {
-						name: '',
-						type: 'float',
-						semantic: 'UNKNOWN'
-					};
-					const match = row.match(varTypes);
-					if (match) {
-						const type = match[1];
-						reflectionAttribute.type = type as any as VarType;
-						const name = match[2];
-						reflectionAttribute.name = name;
-
-						const match2 = row.match(semanticRegExp)
-						if (match2) {
-							reflectionAttribute.semantic = match2[1] as AttributeSemantics;
-						} else {
-							for (let [key, value] of this.__attributeSemanticsMap) {
-								if (name.match(new RegExp(key, 'i'))) {
-									reflectionAttribute.semantic = value;
-								}
-							}
-						}
-					}
-					reflection.attributes.push(reflectionAttribute);
-					continue;
-				}
-			}
-
-			let varyingMatch;
-			if (obj.shaderStage === 'vertex') {
-				varyingMatch = row.match(/^(?![\/])[\t ]*(varying|out)[\t ]+.+;/);
-			} else {
-				varyingMatch = row.match(/^(?![\/])[\t ]*(varying|in)[\t ]+.+;/);
-			}
-			if (varyingMatch) {
-				const reflectionVarying: ReflectionVarying = {
-					name: '',
-					type: 'float',
-					inout: 'in'
-				};
-				const match = row.match(varTypes);
-				if (match) {
-					const type = match[1];
-					reflectionVarying.type = type as any as VarType;
-					const name = match[2];
-					reflectionVarying.name = name;
-					reflectionVarying.inout = (obj.shaderStage === 'vertex') ? 'out' : 'in';
-				}
-				reflection.varyings.push(reflectionVarying);
-				continue;
-			}
-
-			const uniformMatch = row.match(/^(?![\/])[\t ]*uniform[\t ]+/);
-			if (uniformMatch) {
-				const reflectionUniform: ReflectionUniform = {
-					name: '',
-					type: 'float',
-					semantic: 'UNKNOWN'
-				};
-				const match = row.match(varTypes2);
-				if (match) {
-					const type = match[1];
-					reflectionUniform.type = type as any as VarType;
-					const name = match[2];
-					reflectionUniform.name = name;
-
-					const match2 = row.match(semanticRegExp)
-					if (match2) {
-						reflectionUniform.semantic = match2[1] as UniformSemantics;
-					} else {
-						for (let [key, value] of this.__uniformSemanticsMap) {
-							if (name.match(new RegExp(key, 'i'))) {
-								reflectionUniform.semantic = value;
-							}
-						}
-					}
-				}
-				reflection.uniforms.push(reflectionUniform);
-				continue;
-			}
-		}
-
+		const reflection = new Reflection(splittedShaderCode, shaderStage);
+		reflection.reflect();
 		return reflection;
 	}
 
