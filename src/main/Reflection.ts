@@ -5,6 +5,12 @@ export default class Reflection {
 	varyings: ReflectionVarying[] = [];
 	uniforms: ReflectionUniform[] = [];
 
+	private static readonly attributeAndVaryingTypeRegExp
+		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
+	private static readonly uniformTypeRegExp
+		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
+	private static readonly semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
+
 	private __attributeSemanticsMap = new Map();
 	private __uniformSemanticsMap = new Map();
 
@@ -61,11 +67,6 @@ export default class Reflection {
 		const splittedShaderCode = this.__splittedShaderCode;
 		const shaderStage = this.__shaderStage;
 
-		const attributeAndVaryingTypeRegExp
-			= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
-		const uniformTypeRegExp
-			= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
-		const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
 		for (const shaderCodeLine of splittedShaderCode) {
 			if (shaderStage === 'vertex') {
 				const attributeMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
@@ -75,14 +76,14 @@ export default class Reflection {
 						type: 'float',
 						semantic: 'UNKNOWN'
 					};
-					const match = shaderCodeLine.match(attributeAndVaryingTypeRegExp);
+					const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
 					if (match) {
 						const type = match[1];
 						reflectionAttribute.type = type as VarType;
 						const name = match[2];
 						reflectionAttribute.name = name;
 
-						const match2 = shaderCodeLine.match(semanticRegExp)
+						const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
 						if (match2) {
 							reflectionAttribute.semantic = match2[1] as AttributeSemantics;
 						} else {
@@ -110,7 +111,7 @@ export default class Reflection {
 					type: 'float',
 					inout: 'in'
 				};
-				const match = shaderCodeLine.match(attributeAndVaryingTypeRegExp);
+				const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
 				if (match) {
 					const type = match[1];
 					reflectionVarying.type = type as VarType;
@@ -129,14 +130,14 @@ export default class Reflection {
 					type: 'float',
 					semantic: 'UNKNOWN'
 				};
-				const match = shaderCodeLine.match(uniformTypeRegExp);
+				const match = shaderCodeLine.match(Reflection.uniformTypeRegExp);
 				if (match) {
 					const type = match[1];
 					reflectionUniform.type = type as VarType;
 					const name = match[2];
 					reflectionUniform.name = name;
 
-					const match2 = shaderCodeLine.match(semanticRegExp)
+					const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
 					if (match2) {
 						reflectionUniform.semantic = match2[1] as UniformSemantics;
 					} else {
