@@ -1,7 +1,6 @@
 import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderStageStr, UniformSemantics, VarType} from '../types/type';
 
 export default class Reflection {
-	attributes: ReflectionAttribute[] = []
 	varyings: ReflectionVarying[] = [];
 	uniforms: ReflectionUniform[] = [];
 
@@ -13,6 +12,7 @@ export default class Reflection {
 
 	private __attributeSemanticsMap = new Map();
 	private __uniformSemanticsMap = new Map();
+	private __attributes: ReflectionAttribute[] = [];
 
 	private readonly __splittedShaderCode: string[];
 	private readonly __shaderStage: ShaderStageStr;
@@ -43,16 +43,20 @@ export default class Reflection {
 		this.__uniformSemanticsMap.set('modelviewmatrix', 'ModelViewMatrix');
 	}
 
+	get attributes() {
+		return this.__attributes;
+	}
+
 	get attributesNames() {
-		return this.attributes.map((attribute) => {return attribute.name});
+		return this.__attributes.map((attribute) => {return attribute.name});
 	}
 
 	get attributesSemantics() {
-		return this.attributes.map((attribute) => {return attribute.semantic});
+		return this.__attributes.map((attribute) => {return attribute.semantic});
 	}
 
 	get attributesTypes() {
-		return this.attributes.map((attribute) => {return attribute.type});
+		return this.__attributes.map((attribute) => {return attribute.type});
 	}
 
 	addAttributeSemanticsMap(map: Map<string, string>) {
@@ -120,7 +124,7 @@ export default class Reflection {
 				}
 			}
 		}
-		this.attributes.push(reflectionAttribute);
+		this.__attributes.push(reflectionAttribute);
 	}
 
 	private __matchVarying(shaderCodeLine: string, shaderStage: ShaderStageStr) {
