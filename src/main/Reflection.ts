@@ -61,8 +61,10 @@ export default class Reflection {
 		const splittedShaderCode = this.__splittedShaderCode;
 		const shaderStage = this.__shaderStage;
 
-		const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
-		const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
+		const attributeAndVaryingTypeRegExp
+			= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
+		const uniformTypeRegExp
+			= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
 		const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
 		for (const shaderCodeLine of splittedShaderCode) {
 			if (shaderStage === 'vertex') {
@@ -73,7 +75,7 @@ export default class Reflection {
 						type: 'float',
 						semantic: 'UNKNOWN'
 					};
-					const match = shaderCodeLine.match(varTypes);
+					const match = shaderCodeLine.match(attributeAndVaryingTypeRegExp);
 					if (match) {
 						const type = match[1];
 						reflectionAttribute.type = type as VarType;
@@ -108,7 +110,7 @@ export default class Reflection {
 					type: 'float',
 					inout: 'in'
 				};
-				const match = shaderCodeLine.match(varTypes);
+				const match = shaderCodeLine.match(attributeAndVaryingTypeRegExp);
 				if (match) {
 					const type = match[1];
 					reflectionVarying.type = type as VarType;
@@ -127,7 +129,7 @@ export default class Reflection {
 					type: 'float',
 					semantic: 'UNKNOWN'
 				};
-				const match = shaderCodeLine.match(varTypes2);
+				const match = shaderCodeLine.match(uniformTypeRegExp);
 				if (match) {
 					const type = match[1];
 					reflectionUniform.type = type as VarType;
