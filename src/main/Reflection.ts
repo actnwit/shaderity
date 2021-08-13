@@ -1,5 +1,19 @@
-import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderStageStr, UniformSemantics, VarType} from '../types/type';
+import {
+	AttributeSemantics,
+	ReflectionAttribute,
+	ReflectionUniform,
+	ReflectionVarying,
+	ShaderStageStr,
+	UniformSemantics,
+	VarType,
+} from '../types/type';
 
+/**
+ * This class gets the attribute, varying, and uniform information from a shader code of the shaderity.
+ * The methods of the Shaderity instance create an instance of this class.
+ *
+ * Before getting the information of the attribute, varying, and uniform, you need to call the reflect method of this instance.
+ */
 export default class Reflection {
 	private static readonly attributeAndVaryingTypeRegExp
 		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
@@ -22,54 +36,119 @@ export default class Reflection {
 		this.__setDefaultAttributeAndUniformSemanticsMap();
 	}
 
+	/**
+	 * Gets all attribute variable information in the shader code.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of ReflectionAttribute object
+	 */
 	public get attributes() {
 		return this.__attributes;
 	}
 
+	/**
+	 * Gets all varying variable information in the shader code.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of ReflectionVarying object
+	 */
 	public get varyings() {
 		return this.__varyings;
 	}
 
+	/**
+	 * Gets all uniform variable information in the shader code.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of ReflectionUniform object
+	 */
 	public get uniforms() {
 		return this.__uniforms;
 	}
 
+	/**
+	 * Get the names of all attributes included in the shader.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of string
+	 */
 	public get attributesNames() {
 		return this.__attributes.map((attribute) => {return attribute.name});
 	}
 
+	/**
+	 * Get the attribute semantic (e.g. 'POSITION') of all attributes included in the shader.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of AttributeSemantics object
+	 */
 	public get attributesSemantics() {
 		return this.__attributes.map((attribute) => {return attribute.semantic});
 	}
 
+	/**
+	 * Get the variable type (e.g. 'vec4') of all attributes included in the shader.
+	 * Before calling this method, you need to call the reflect method of this instance.
+	 * @returns Array of VarType object
+	 */
 	public get attributesTypes() {
 		return this.__attributes.map((attribute) => {return attribute.type});
 	}
 
+	/**
+	 * Add an attributeSemantics.
+	 * The attributeSemantics is used in the ReflectionAttribute.semantics
+	 * (See reflect method of this class)
+	 */
 	public addAttributeSemanticsMap(map: Map<string, string>) {
 		this.__attributeSemanticsMap = new Map([...this.__attributeSemanticsMap, ...map]);
 	}
 
+	/**
+	 * Add a uniformSemantics.
+	 * The attributeSemantics is used in the ReflectionAttribute.semantics
+	 * (See reflect method of this class)
+	 */
 	public addUniformSemanticsMap(map: Map<string, string>) {
 		this.__uniformSemanticsMap = new Map([...this.__uniformSemanticsMap, ...map]);
 	}
 
+	/**
+	 * Add an attributeSemantics.
+	 * The attributeSemantics is used in the ReflectionAttribute.semantics
+	 * (See reflect method of this class)
+	 */
 	public addAttributeSemantics(key: string, value: string) {
 		this.__attributeSemanticsMap.set(key, value);
 	}
 
+	/**
+	 * Add a uniformSemantics.
+	 * The attributeSemantics is used in the ReflectionAttribute.semantics
+	 * (See reflect method of this class)
+	 */
 	public addUniformSemantics(key: string, value: string) {
-		this.__uniformSemanticsMap.set(key, value);;
+		this.__uniformSemanticsMap.set(key, value);
 	}
 
+	/**
+	 * Initialize attributeSemantics
+	 */
 	public resetAttributeSemantics() {
 		this.__attributeSemanticsMap = new Map<string, string>();
 	}
 
+	/**
+	 * Initialize uniformSemantics
+	 */
 	public resetUniformSemantics() {
 		this.__uniformSemanticsMap = new Map<string, string>();
 	}
 
+	/**
+	 * Analyze shader code of the shaderity and get information of attribute, varying and uniform.
+	 * The information can be retrieved from the get method of this instance.
+	 *
+	 * The semantic property of the ReflectionAttribute is assigned to the value of the semantic if
+	 * it is specified in the attribute line of the shader code. If not, the AttributeSemanticsMap
+	 * is searched for matching semantics, or UNKNOWN. The same applies to the semantic property of
+	 * ReflectionUniform.
+	 */
 	public reflect() {
 		const splittedShaderCode = this.__splittedShaderCode;
 		const shaderStage = this.__shaderStage;
