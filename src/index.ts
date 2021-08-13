@@ -1,3 +1,4 @@
+import Reflection from './main/Reflection';
 import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderityObject, UniformSemantics, VarType} from './types/type';
 
 export type {
@@ -10,23 +11,7 @@ export type {
   VarType,
 }
 
-export class Reflection {
-  attributes: ReflectionAttribute[] = []
-  varyings: ReflectionVarying[] = [];
-  uniforms: ReflectionUniform[] = [];
-
-  get attributesNames() {
-    return this.attributes.map((attribute) => {return attribute.name});
-  }
-
-  get attributesSemantics() {
-    return this.attributes.map((attribute) => {return attribute.semantic});
-  }
-
-  get attributesTypes() {
-    return this.attributes.map((attribute) => {return attribute.type});
-  }
-};
+export {Reflection};
 
 export default class Shaderity {
   private static __instance: Shaderity;
