@@ -68,31 +68,31 @@ export default class Reflection {
 		const shaderStage = this.__shaderStage;
 
 		for (const shaderCodeLine of splittedShaderCode) {
-			if (shaderStage === 'vertex') {
-				const attributeMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
-				if (attributeMatch) {
-					this.__addAttribute(shaderCodeLine);
-					continue;
-				}
+			const isAttributeLine = this.__matchAttribute(shaderCodeLine, shaderStage);
+			if (isAttributeLine) {
+				this.__addAttribute(shaderCodeLine);
+				continue;
 			}
 
-			let varyingMatch;
-			if (shaderStage === 'vertex') {
-				varyingMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(varying|out)[\t ]+.+;/);
-			} else {
-				varyingMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(varying|in)[\t ]+.+;/);
-			}
-			if (varyingMatch) {
+			const isVaryingLine = this.__matchVarying(shaderCodeLine, shaderStage);
+			if (isVaryingLine) {
 				this.__addVarying(shaderCodeLine, shaderStage);
 				continue;
 			}
 
-			const uniformMatch = shaderCodeLine.match(/^(?![\/])[\t ]*uniform[\t ]+/);
-			if (uniformMatch) {
+			const isUniformLine = shaderCodeLine.match(/^(?![\/])[\t ]*uniform[\t ]+/);
+			if (isUniformLine) {
 				this.__addUniform(shaderCodeLine);
 				continue;
 			}
 		}
+	}
+
+	private __matchAttribute(shaderCodeLine: string, shaderStage: ShaderStageStr) {
+		if (shaderStage !== 'vertex') {
+			return false;
+		}
+		return shaderCodeLine.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
 	}
 
 	private __addAttribute(shaderCodeLine: string) {
@@ -120,6 +120,14 @@ export default class Reflection {
 			}
 		}
 		this.attributes.push(reflectionAttribute);
+	}
+
+	private __matchVarying(shaderCodeLine: string, shaderStage: ShaderStageStr) {
+		if (shaderStage === 'vertex') {
+			return shaderCodeLine.match(/^(?![\/])[\t ]*(varying|out)[\t ]+.+;/);
+		} else {
+			return shaderCodeLine.match(/^(?![\/])[\t ]*(varying|in)[\t ]+.+;/);
+		}
 	}
 
 	private __addVarying(shaderCodeLine: string, shaderStage: ShaderStageStr) {
