@@ -235,15 +235,15 @@ export default class Shaderity {
 	transformToGLSLES1(obj: ShaderityObject) {
 		const copy = this.copyShaderityObject(obj);
 
-		let splited = this._splitByLineFeedCode(obj.code);
+		let splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		this._convertIn(obj, splited);
-		this._convertOut(obj, splited);
-		this._removeLayout(obj, splited);
+		this._convertIn(obj, splittedShaderCode);
+		this._convertOut(obj, splittedShaderCode);
+		this._removeLayout(obj, splittedShaderCode);
 
-		splited = this._convertTextureFunctionToES1(splited);
+		splittedShaderCode = this._convertTextureFunctionToES1(splittedShaderCode);
 
-		copy.code = this._joinSplitedRow(splited);
+		copy.code = this._joinSplitedRow(splittedShaderCode);
 
 		return copy;
 	}
@@ -251,15 +251,15 @@ export default class Shaderity {
 	transformToGLSLES3(obj: ShaderityObject) {
 		const copy = this.copyShaderityObject(obj);
 
-		let splited = this._splitByLineFeedCode(obj.code);
+		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		this._convertAttribute(obj, splited);
-		this._convertVarying(obj, splited);
-		this._convertTexture2D(obj, splited);
-		this._convertTextureCube(obj, splited);
-		this._convertTexture2DProd(obj, splited);
+		this._convertAttribute(obj, splittedShaderCode);
+		this._convertVarying(obj, splittedShaderCode);
+		this._convertTexture2D(obj, splittedShaderCode);
+		this._convertTextureCube(obj, splittedShaderCode);
+		this._convertTexture2DProd(obj, splittedShaderCode);
 
-		copy.code = this._joinSplitedRow(splited);
+		copy.code = this._joinSplitedRow(splittedShaderCode);
 
 		return copy;
 	}
@@ -305,25 +305,25 @@ export default class Shaderity {
 
 	insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.copyShaderityObject(obj);
-		let splited = this._splitByLineFeedCode(obj.code);
+		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const defStr = definition.replace(/#define[\t ]+/, '');
 
-		splited.unshift(`#define ${defStr}`);
+		splittedShaderCode.unshift(`#define ${defStr}`);
 
-		copy.code = this._joinSplitedRow(splited);
+		copy.code = this._joinSplitedRow(splittedShaderCode);
 
 		return copy;
 	}
 
 	reflect(obj: ShaderityObject): Reflection {
-		let splited = this._splitByLineFeedCode(obj.code);
+		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const reflection = new Reflection();
 		const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
 		const varTypes2 = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
 		const semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
-		for (let row of splited) {
+		for (let row of splittedShaderCode) {
 			if (obj.shaderStage === 'vertex') {
 				const attributeMatch = row.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
 				if (attributeMatch) {
