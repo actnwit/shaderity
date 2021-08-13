@@ -19,27 +19,7 @@ export default class Reflection {
 	constructor(splittedShaderityShaderCode: string[], shaderStage: ShaderStageStr) {
 		this.__splittedShaderCode = splittedShaderityShaderCode;
 		this.__shaderStage = shaderStage;
-
-		this.__attributeSemanticsMap.set('position', 'POSITION');
-		this.__attributeSemanticsMap.set('color$', 'COLOR_0');
-		this.__attributeSemanticsMap.set('color_?0', 'COLOR_0');
-		this.__attributeSemanticsMap.set('texcoord$', 'TEXCOORD_0');
-		this.__attributeSemanticsMap.set('texcoord_?0', 'TEXCOORD_0');
-		this.__attributeSemanticsMap.set('texcoord_?1', 'TEXCOORD_1');
-		this.__attributeSemanticsMap.set('normal', 'NORMAL');
-		this.__attributeSemanticsMap.set('tangent', 'TANGENT');
-		this.__attributeSemanticsMap.set('joint$', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('bone$', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('joint_?0', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('bone_?0', 'JOINTS_0');
-		this.__attributeSemanticsMap.set('weight$', 'WEIGHTS_0');
-		this.__attributeSemanticsMap.set('weight_?0', 'WEIGHTS_0');
-
-		this.__uniformSemanticsMap.set('worldmatrix', 'WorldMatrix');
-		this.__uniformSemanticsMap.set('normalmatrix', 'NormalMatrix');
-		this.__uniformSemanticsMap.set('viewmatrix', 'ViewMatrix');
-		this.__uniformSemanticsMap.set('projectionmatrix', 'ProjectionMatrix');
-		this.__uniformSemanticsMap.set('modelviewmatrix', 'ModelViewMatrix');
+		this.__setDefaultAttributeAndUniformSemanticsMap();
 	}
 
 	get attributes() {
@@ -97,6 +77,29 @@ export default class Reflection {
 				continue;
 			}
 		}
+	}
+
+	private __setDefaultAttributeAndUniformSemanticsMap() {
+		this.__attributeSemanticsMap.set('position', 'POSITION');
+		this.__attributeSemanticsMap.set('color$', 'COLOR_0');
+		this.__attributeSemanticsMap.set('color_?0', 'COLOR_0');
+		this.__attributeSemanticsMap.set('texcoord$', 'TEXCOORD_0');
+		this.__attributeSemanticsMap.set('texcoord_?0', 'TEXCOORD_0');
+		this.__attributeSemanticsMap.set('texcoord_?1', 'TEXCOORD_1');
+		this.__attributeSemanticsMap.set('normal', 'NORMAL');
+		this.__attributeSemanticsMap.set('tangent', 'TANGENT');
+		this.__attributeSemanticsMap.set('joint$', 'JOINTS_0');
+		this.__attributeSemanticsMap.set('bone$', 'JOINTS_0');
+		this.__attributeSemanticsMap.set('joint_?0', 'JOINTS_0');
+		this.__attributeSemanticsMap.set('bone_?0', 'JOINTS_0');
+		this.__attributeSemanticsMap.set('weight$', 'WEIGHTS_0');
+		this.__attributeSemanticsMap.set('weight_?0', 'WEIGHTS_0');
+
+		this.__uniformSemanticsMap.set('worldmatrix', 'WorldMatrix');
+		this.__uniformSemanticsMap.set('normalmatrix', 'NormalMatrix');
+		this.__uniformSemanticsMap.set('viewmatrix', 'ViewMatrix');
+		this.__uniformSemanticsMap.set('projectionmatrix', 'ProjectionMatrix');
+		this.__uniformSemanticsMap.set('modelviewmatrix', 'ModelViewMatrix');
 	}
 
 	private __matchAttribute(shaderCodeLine: string, shaderStage: ShaderStageStr) {
