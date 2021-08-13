@@ -1,8 +1,6 @@
 import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderStageStr, UniformSemantics, VarType} from '../types/type';
 
 export default class Reflection {
-	uniforms: ReflectionUniform[] = [];
-
 	private static readonly attributeAndVaryingTypeRegExp
 		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
 	private static readonly uniformTypeRegExp
@@ -13,6 +11,7 @@ export default class Reflection {
 	private __uniformSemanticsMap = new Map();
 	private __attributes: ReflectionAttribute[] = [];
 	private __varyings: ReflectionVarying[] = [];
+	private __uniforms: ReflectionUniform[] = [];
 
 	private readonly __splittedShaderCode: string[];
 	private readonly __shaderStage: ShaderStageStr;
@@ -49,6 +48,10 @@ export default class Reflection {
 
 	get varyings() {
 		return this.__varyings;
+	}
+
+	get uniforms() {
+		return this.__uniforms;
 	}
 
 	get attributesNames() {
@@ -182,6 +185,6 @@ export default class Reflection {
 				}
 			}
 		}
-		this.uniforms.push(reflectionUniform);
+		this.__uniforms.push(reflectionUniform);
 	}
 };
