@@ -7,8 +7,8 @@ export default class Reflection {
 		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
 	private static readonly semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
 
-	private __attributeSemanticsMap = new Map();
-	private __uniformSemanticsMap = new Map();
+	private __attributeSemanticsMap = new Map<string, string>();
+	private __uniformSemanticsMap = new Map<string, string>();
 	private __attributes: ReflectionAttribute[] = [];
 	private __varyings: ReflectionVarying[] = [];
 	private __uniforms: ReflectionUniform[] = [];
@@ -129,7 +129,7 @@ export default class Reflection {
 			} else {
 				for (let [key, value] of this.__attributeSemanticsMap) {
 					if (name.match(new RegExp(key, 'i'))) {
-						reflectionAttribute.semantic = value;
+						reflectionAttribute.semantic = value as AttributeSemantics;
 					}
 				}
 			}
