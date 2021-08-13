@@ -101,16 +101,17 @@ export default class Reflection {
 			type: 'float',
 			semantic: 'UNKNOWN'
 		};
-		const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
-		if (match) {
-			const type = match[1];
+
+		const matchType = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
+		if (matchType) {
+			const type = matchType[1];
 			reflectionAttribute.type = type as VarType;
-			const name = match[2];
+			const name = matchType[2];
 			reflectionAttribute.name = name;
 
-			const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
-			if (match2) {
-				reflectionAttribute.semantic = match2[1] as AttributeSemantics;
+			const matchSemantic = shaderCodeLine.match(Reflection.semanticRegExp)
+			if (matchSemantic) {
+				reflectionAttribute.semantic = matchSemantic[1] as AttributeSemantics;
 			} else {
 				for (let [key, value] of this.__attributeSemanticsMap) {
 					if (name.match(new RegExp(key, 'i'))) {
@@ -136,11 +137,12 @@ export default class Reflection {
 			type: 'float',
 			inout: 'in'
 		};
-		const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
-		if (match) {
-			const type = match[1];
+
+		const matchType = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
+		if (matchType) {
+			const type = matchType[1];
 			reflectionVarying.type = type as VarType;
-			const name = match[2];
+			const name = matchType[2];
 			reflectionVarying.name = name;
 			reflectionVarying.inout = (shaderStage === 'vertex') ? 'out' : 'in';
 		}
@@ -153,16 +155,17 @@ export default class Reflection {
 			type: 'float',
 			semantic: 'UNKNOWN'
 		};
-		const match = shaderCodeLine.match(Reflection.uniformTypeRegExp);
-		if (match) {
-			const type = match[1];
+
+		const matchType = shaderCodeLine.match(Reflection.uniformTypeRegExp);
+		if (matchType) {
+			const type = matchType[1];
 			reflectionUniform.type = type as VarType;
-			const name = match[2];
+			const name = matchType[2];
 			reflectionUniform.name = name;
 
-			const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
-			if (match2) {
-				reflectionUniform.semantic = match2[1] as UniformSemantics;
+			const matchSemantics = shaderCodeLine.match(Reflection.semanticRegExp)
+			if (matchSemantics) {
+				reflectionUniform.semantic = matchSemantics[1] as UniformSemantics;
 			} else {
 				for (let [key, value] of this.__uniformSemanticsMap) {
 					if (name.match(new RegExp(key, 'i'))) {
