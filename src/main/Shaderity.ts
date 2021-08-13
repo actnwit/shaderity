@@ -292,6 +292,14 @@ export default class Shaderity {
 		return reflection;
 	}
 
+	createReflectionObject(obj: ShaderityObject): Reflection {
+		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+		const shaderStage = obj.shaderStage;
+
+		const reflection = new Reflection(splittedShaderCode, shaderStage);
+		return reflection;
+	}
+
 	private _defineGLSLES3() {
 
 	}
