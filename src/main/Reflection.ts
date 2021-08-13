@@ -71,30 +71,7 @@ export default class Reflection {
 			if (shaderStage === 'vertex') {
 				const attributeMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(attribute|in)[\t ]+.+;/);
 				if (attributeMatch) {
-					const reflectionAttribute: ReflectionAttribute = {
-						name: '',
-						type: 'float',
-						semantic: 'UNKNOWN'
-					};
-					const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
-					if (match) {
-						const type = match[1];
-						reflectionAttribute.type = type as VarType;
-						const name = match[2];
-						reflectionAttribute.name = name;
-
-						const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
-						if (match2) {
-							reflectionAttribute.semantic = match2[1] as AttributeSemantics;
-						} else {
-							for (let [key, value] of this.__attributeSemanticsMap) {
-								if (name.match(new RegExp(key, 'i'))) {
-									reflectionAttribute.semantic = value;
-								}
-							}
-						}
-					}
-					this.attributes.push(reflectionAttribute);
+					this.__addAttribute(shaderCodeLine);
 					continue;
 				}
 			}
@@ -106,51 +83,86 @@ export default class Reflection {
 				varyingMatch = shaderCodeLine.match(/^(?![\/])[\t ]*(varying|in)[\t ]+.+;/);
 			}
 			if (varyingMatch) {
-				const reflectionVarying: ReflectionVarying = {
-					name: '',
-					type: 'float',
-					inout: 'in'
-				};
-				const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
-				if (match) {
-					const type = match[1];
-					reflectionVarying.type = type as VarType;
-					const name = match[2];
-					reflectionVarying.name = name;
-					reflectionVarying.inout = (shaderStage === 'vertex') ? 'out' : 'in';
-				}
-				this.varyings.push(reflectionVarying);
+				this.__addVarying(shaderCodeLine, shaderStage);
 				continue;
 			}
 
 			const uniformMatch = shaderCodeLine.match(/^(?![\/])[\t ]*uniform[\t ]+/);
 			if (uniformMatch) {
-				const reflectionUniform: ReflectionUniform = {
-					name: '',
-					type: 'float',
-					semantic: 'UNKNOWN'
-				};
-				const match = shaderCodeLine.match(Reflection.uniformTypeRegExp);
-				if (match) {
-					const type = match[1];
-					reflectionUniform.type = type as VarType;
-					const name = match[2];
-					reflectionUniform.name = name;
-
-					const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
-					if (match2) {
-						reflectionUniform.semantic = match2[1] as UniformSemantics;
-					} else {
-						for (let [key, value] of this.__uniformSemanticsMap) {
-							if (name.match(new RegExp(key, 'i'))) {
-								reflectionUniform.semantic = value;
-							}
-						}
-					}
-				}
-				this.uniforms.push(reflectionUniform);
+				this.__addUniform(shaderCodeLine);
 				continue;
 			}
 		}
+	}
+
+	private __addAttribute(shaderCodeLine: string) {
+		const reflectionAttribute: ReflectionAttribute = {
+			name: '',
+			type: 'float',
+			semantic: 'UNKNOWN'
+		};
+		const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
+		if (match) {
+			const type = match[1];
+			reflectionAttribute.type = type as VarType;
+			const name = match[2];
+			reflectionAttribute.name = name;
+
+			const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
+			if (match2) {
+				reflectionAttribute.semantic = match2[1] as AttributeSemantics;
+			} else {
+				for (let [key, value] of this.__attributeSemanticsMap) {
+					if (name.match(new RegExp(key, 'i'))) {
+						reflectionAttribute.semantic = value;
+					}
+				}
+			}
+		}
+		this.attributes.push(reflectionAttribute);
+	}
+
+	private __addVarying(shaderCodeLine: string, shaderStage: ShaderStageStr) {
+		const reflectionVarying: ReflectionVarying = {
+			name: '',
+			type: 'float',
+			inout: 'in'
+		};
+		const match = shaderCodeLine.match(Reflection.attributeAndVaryingTypeRegExp);
+		if (match) {
+			const type = match[1];
+			reflectionVarying.type = type as VarType;
+			const name = match[2];
+			reflectionVarying.name = name;
+			reflectionVarying.inout = (shaderStage === 'vertex') ? 'out' : 'in';
+		}
+		this.varyings.push(reflectionVarying);
+	}
+
+	private __addUniform(shaderCodeLine: string) {
+		const reflectionUniform: ReflectionUniform = {
+			name: '',
+			type: 'float',
+			semantic: 'UNKNOWN'
+		};
+		const match = shaderCodeLine.match(Reflection.uniformTypeRegExp);
+		if (match) {
+			const type = match[1];
+			reflectionUniform.type = type as VarType;
+			const name = match[2];
+			reflectionUniform.name = name;
+
+			const match2 = shaderCodeLine.match(Reflection.semanticRegExp)
+			if (match2) {
+				reflectionUniform.semantic = match2[1] as UniformSemantics;
+			} else {
+				for (let [key, value] of this.__uniformSemanticsMap) {
+					if (name.match(new RegExp(key, 'i'))) {
+						reflectionUniform.semantic = value;
+					}
+				}
+			}
+		}
+		this.uniforms.push(reflectionUniform);
 	}
 };
