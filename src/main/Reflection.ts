@@ -22,55 +22,55 @@ export default class Reflection {
 		this.__setDefaultAttributeAndUniformSemanticsMap();
 	}
 
-	get attributes() {
+	public get attributes() {
 		return this.__attributes;
 	}
 
-	get varyings() {
+	public get varyings() {
 		return this.__varyings;
 	}
 
-	get uniforms() {
+	public get uniforms() {
 		return this.__uniforms;
 	}
 
-	get attributesNames() {
+	public get attributesNames() {
 		return this.__attributes.map((attribute) => {return attribute.name});
 	}
 
-	get attributesSemantics() {
+	public get attributesSemantics() {
 		return this.__attributes.map((attribute) => {return attribute.semantic});
 	}
 
-	get attributesTypes() {
+	public get attributesTypes() {
 		return this.__attributes.map((attribute) => {return attribute.type});
 	}
 
-	addAttributeSemanticsMap(map: Map<string, string>) {
+	public addAttributeSemanticsMap(map: Map<string, string>) {
 		this.__attributeSemanticsMap = new Map([...this.__attributeSemanticsMap, ...map]);
 	}
 
-	addUniformSemanticsMap(map: Map<string, string>) {
+	public addUniformSemanticsMap(map: Map<string, string>) {
 		this.__uniformSemanticsMap = new Map([...this.__uniformSemanticsMap, ...map]);
 	}
 
-	addAttributeSemantics(key: string, value: string) {
+	public addAttributeSemantics(key: string, value: string) {
 		this.__attributeSemanticsMap.set(key, value);
 	}
 
-	addUniformSemantics(key: string, value: string) {
+	public addUniformSemantics(key: string, value: string) {
 		this.__uniformSemanticsMap.set(key, value);;
 	}
 
-	resetAttributeSemantics() {
+	public resetAttributeSemantics() {
 		this.__attributeSemanticsMap = new Map<string, string>();
 	}
 
-	resetUniformSemantics() {
+	public resetUniformSemantics() {
 		this.__uniformSemanticsMap = new Map<string, string>();
 	}
 
-	reflect() {
+	public reflect() {
 		const splittedShaderCode = this.__splittedShaderCode;
 		const shaderStage = this.__shaderStage;
 
