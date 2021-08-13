@@ -235,7 +235,7 @@ export default class Shaderity {
 	transformToGLSLES1(obj: ShaderityObject) {
 		const copy = this.copyShaderityObject(obj);
 
-		let splited = this._splitShaderCode(obj.code);
+		let splited = this._splitByLineFeedCode(obj.code);
 
 		this._convertIn(obj, splited);
 		this._convertOut(obj, splited);
@@ -251,7 +251,7 @@ export default class Shaderity {
 	transformToGLSLES3(obj: ShaderityObject) {
 		const copy = this.copyShaderityObject(obj);
 
-		let splited = this._splitShaderCode(obj.code);
+		let splited = this._splitByLineFeedCode(obj.code);
 
 		this._convertAttribute(obj, splited);
 		this._convertVarying(obj, splited);
@@ -275,7 +275,7 @@ export default class Shaderity {
 		}
 	}
 
-	private _splitShaderCode(source: string) {
+	private _splitByLineFeedCode(source: string) {
 		return source.split(/\r\n|\n/);
 	}
 
@@ -305,7 +305,7 @@ export default class Shaderity {
 
 	insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.copyShaderityObject(obj);
-		let splited = this._splitShaderCode(obj.code);
+		let splited = this._splitByLineFeedCode(obj.code);
 
 		const defStr = definition.replace(/#define[\t ]+/, '');
 
@@ -317,7 +317,7 @@ export default class Shaderity {
 	}
 
 	reflect(obj: ShaderityObject): Reflection {
-		let splited = this._splitShaderCode(obj.code);
+		let splited = this._splitByLineFeedCode(obj.code);
 
 		const reflection = new Reflection();
 		const varTypes = /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
