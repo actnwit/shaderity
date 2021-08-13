@@ -54,6 +54,22 @@ export default class Reflection {
 		this.__uniformSemanticsMap = new Map([...this.__uniformSemanticsMap, ...map]);
 	}
 
+	addAttributeSemantics(key: string, value: string) {
+		this.__attributeSemanticsMap.set(key, value);
+	}
+
+	addUniformSemantics(key: string, value: string) {
+		this.__uniformSemanticsMap.set(key, value);;
+	}
+
+	resetAttributeSemantics() {
+		this.__attributeSemanticsMap = new Map<string, string>();
+	}
+
+	resetUniformSemantics() {
+		this.__uniformSemanticsMap = new Map<string, string>();
+	}
+
 	reflect() {
 		const splittedShaderCode = this.__splittedShaderCode;
 		const shaderStage = this.__shaderStage;
