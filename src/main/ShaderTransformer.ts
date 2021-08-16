@@ -31,7 +31,7 @@ export default class ShaderTransformer {
 		}
 	}
 
-	private static __convertIn(inout_splittedSource: string[], isFragmentShader: boolean) {
+	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*in[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
 
 		// inAsES1 is used as the second argument to the String.prototype.replace method.
@@ -46,35 +46,35 @@ export default class ShaderTransformer {
 			}
 		}
 
-		this.__replaceRow(inout_splittedSource, inReg, inAsES1);
+		this.__replaceRow(splittedShaderCode, inReg, inAsES1);
 	}
 
 
-	private static __convertOut(inout_splittedSource: string[]) {
+	private static __convertOut(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*out[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
 		const inAsES1 = function (match: string, p1: string) {
 			return 'varying ' + p1;
 		}
 
-		this.__replaceRow(inout_splittedSource, inReg, inAsES1);
+		this.__replaceRow(splittedShaderCode, inReg, inAsES1);
 	}
 
-	private static __removeLayout(inout_splittedSource: string[]) {
+	private static __removeLayout(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
-		this.__replaceRow(inout_splittedSource, inReg, '');
+		this.__replaceRow(splittedShaderCode, inReg, '');
 	}
 
-	private static __convertTextureFunctionToES1(inout_splittedSource: string[]) {
+	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 
-		for (let i = 0; i < inout_splittedSource.length; i++) {
-			const row = inout_splittedSource[i];
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			const row = splittedShaderCode[i];
 
 			let reg = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
 			let match = row.match(/textureProj[\t ]*\([\t ]*(\w+),/);
 			if (match) {
 				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(inout_splittedSource, i);
+				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
 				const samplerType = uniformSamplerMap.get(name);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -89,7 +89,7 @@ export default class ShaderTransformer {
 							textureFunc = '';
 							console.log('not found');
 					}
-					inout_splittedSource[i] = inout_splittedSource[i].replace(reg, '$1' + textureFunc + '$3');
+					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
 				}
 				continue;
 			}
@@ -98,7 +98,7 @@ export default class ShaderTransformer {
 			match = row.match(/texture[\t ]*\([\t ]*(\w+),/);
 			if (match) {
 				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(inout_splittedSource, i);
+				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
 				const samplerType = uniformSamplerMap.get(name);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -116,17 +116,17 @@ export default class ShaderTransformer {
 							textureFunc = '';
 							console.log('not found');
 					}
-					inout_splittedSource[i] = inout_splittedSource[i].replace(reg, '$1' + textureFunc + '$3');
+					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
 				}
 			}
 		}
 	}
 
-	private static __createUniformSamplerMap(inout_splittedSource: string[], row_i: number) {
+	private static __createUniformSamplerMap(splittedShaderCode: string[], row_i: number) {
 		const uniformSamplerMap = new Map();
 
 		for (let i = 0; i < row_i; i++) {
-			const row = inout_splittedSource[i];
+			const row = splittedShaderCode[i];
 			const match = row.match(/^(?![\/])[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
 			if (match) {
 				const samplerType = match[1];
@@ -137,51 +137,51 @@ export default class ShaderTransformer {
 		return uniformSamplerMap;
 	}
 
-	private static __convertAttribute(inout_splittedSource: string[]) {
+	private static __convertAttribute(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*attribute[\t ]+/g;
 		const inAsES3 = 'in ';
 
-		this.__replaceRow(inout_splittedSource, inReg, inAsES3);
+		this.__replaceRow(splittedShaderCode, inReg, inAsES3);
 	}
 
-	private static __convertVarying(inout_splittedSource: string[], isFragmentShader: boolean) {
+	private static __convertVarying(splittedShaderCode: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
 		const inAsES3 = isFragmentShader ? 'in ' : 'out ';
 
-		this.__replaceRow(inout_splittedSource, inReg, inAsES3);
+		this.__replaceRow(splittedShaderCode, inReg, inAsES3);
 	}
 
-	private static __convertTextureCube(inout_splittedSource: string[]) {
+	private static __convertTextureCube(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(textureCube)(${sbl}+)`, 'g');
 		const inAsES3 = 'texture';
 
-		this.__replaceRow(inout_splittedSource, reg, '$1' + inAsES3 + '$3');
+		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
-	private static __convertTexture2D(inout_splittedSource: string[]) {
+	private static __convertTexture2D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2D)(${sbl}+)`, 'g');
 		const inAsES3 = 'texture';
 
-		this.__replaceRow(inout_splittedSource, reg, '$1' + inAsES3 + '$3');
+		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
-	private static __convertTexture2DProd(inout_splittedSource: string[]) {
+	private static __convertTexture2DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
 		const inAsES3 = 'textureProj';
 
-		this.__replaceRow(inout_splittedSource, reg, '$1' + inAsES3 + '$3');
+		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
 	private static __regSymbols() {
 		return `[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^` + '`{|}~\t\n ]';
 	}
 
-	private static __replaceRow(inout_splittedSource: string[], inReg: RegExp, inAsES1: any) {
-		for (let i = 0; i < inout_splittedSource.length; i++) {
-			inout_splittedSource[i] = inout_splittedSource[i].replace(inReg, inAsES1);
+	private static __replaceRow(splittedShaderCode: string[], inReg: RegExp, inAsES1: any) {
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			splittedShaderCode[i] = splittedShaderCode[i].replace(inReg, inAsES1);
 		}
 	}
 }
