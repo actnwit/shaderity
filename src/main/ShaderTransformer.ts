@@ -1,4 +1,8 @@
 export default class ShaderTransformer {
+	/**
+	 * @private
+	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
+	 */
 	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode);
@@ -9,6 +13,10 @@ export default class ShaderTransformer {
 		return transformedSplittedShaderCode;
 	}
 
+	/**
+	 * @private
+	 * Translate a GLSL ES1 shader code to a GLSL ES3 shader code
+	 */
 	static _transformToGLSLES3(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertAttribute(splittedShaderCode, isFragmentShader);
 		this.__convertVarying(splittedShaderCode, isFragmentShader);
@@ -22,6 +30,10 @@ export default class ShaderTransformer {
 		return transformedSplittedShaderCode;
 	}
 
+	/**
+	 * @private
+	 * Translate a GLSL shader code to a shader code of specified GLSL version
+	 */
 	static _transformTo(version: string, splittedShaderCode: string[], isFragmentShader: boolean) {
 		if (version.match(/webgl2|es3/i)) {
 			return this._transformToGLSLES3(splittedShaderCode, isFragmentShader);
@@ -33,6 +45,11 @@ export default class ShaderTransformer {
 		}
 	}
 
+	/**
+	 * @private
+	 * Find the 'in' modifier in the shader code and replace it with the GLSL ES1 modifier('attribute' or 'varying')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*in[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
 
@@ -51,7 +68,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, inReg, inAsES1);
 	}
 
-
+	/**
+	 * @private
+	 * Find the "out" modifier in the shader code and replace it with the GLSL ES1 modifier('varying')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertOut(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*out[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
 		const inAsES1 = function (match: string, p1: string) {
@@ -61,11 +82,24 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, inReg, inAsES1);
 	}
 
+	/**
+	 * @private
+	 * Find the "layout" modifier in the shader code and remove it
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __removeLayout(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
 		this.__replaceRow(splittedShaderCode, inReg, '');
 	}
 
+	/**
+	 * @private
+	 * Find the "texture" and "textureProj" method in the shader code and
+	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 *
+	 * TODO: fix algorithm of type inference
+	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 
@@ -139,6 +173,11 @@ export default class ShaderTransformer {
 		return uniformSamplerMap;
 	}
 
+	/**
+	 * @private
+	 * Find the 'attribute' modifier in the vertex shader code and replace it with the GLSL ES3 modifier('in')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertAttribute(splittedShaderCode: string[], isFragmentShader: boolean) {
 		if (isFragmentShader) {
 			return;
@@ -150,6 +189,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, inReg, inAsES3);
 	}
 
+	/**
+	 * @private
+	 * Find the 'varying' modifier in the shader code and replace it with the GLSL ES3 modifier('in' or 'out')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertVarying(splittedShaderCode: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
 		const inAsES3 = isFragmentShader ? 'in ' : 'out ';
@@ -157,6 +201,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, inReg, inAsES3);
 	}
 
+	/**
+	 * @private
+	 * Find the 'textureCube' method in the shader code and replace it with the GLSL ES3 method('texture')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertTextureCube(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(textureCube)(${sbl}+)`, 'g');
@@ -165,6 +214,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
+	/**
+	 * @private
+	 * Find the 'texture2D' method in the shader code and replace it with the GLSL ES3 method('texture')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertTexture2D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2D)(${sbl}+)`, 'g');
@@ -173,6 +227,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
+	/**
+	 * @private
+	 * Find the 'texture2DProj' method in the shader code and replace it with the GLSL ES3 method('textureProj')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertTexture2DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
@@ -181,6 +240,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
+	/**
+	 * @private
+	 * Find the 'texture3D' method in the shader code and replace it with the GLSL ES3 method('texture')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertTexture3D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3D)(${sbl}+)`, 'g');
@@ -189,6 +253,11 @@ export default class ShaderTransformer {
 		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
 	}
 
+	/**
+	 * @private
+	 * Find the 'texture3DProj' method in the shader code and replace it with the GLSL ES3 method('textureProj')
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
 	private static __convertTexture3DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3DProj)(${sbl}+)`, 'g');
