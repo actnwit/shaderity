@@ -10,7 +10,7 @@ export default class ShaderTransformer {
 	}
 
 	static _transformToGLSLES3(splittedShaderCode: string[], isFragmentShader: boolean) {
-		this.__convertAttribute(splittedShaderCode);
+		this.__convertAttribute(splittedShaderCode, isFragmentShader);
 		this.__convertVarying(splittedShaderCode, isFragmentShader);
 		this.__convertTexture2D(splittedShaderCode);
 		this.__convertTextureCube(splittedShaderCode);
@@ -137,7 +137,11 @@ export default class ShaderTransformer {
 		return uniformSamplerMap;
 	}
 
-	private static __convertAttribute(splittedShaderCode: string[]) {
+	private static __convertAttribute(splittedShaderCode: string[], isFragmentShader: boolean) {
+		if (isFragmentShader) {
+			return;
+		}
+
 		const inReg = /^(?![\/])[\t ]*attribute[\t ]+/g;
 		const inAsES3 = 'in ';
 
