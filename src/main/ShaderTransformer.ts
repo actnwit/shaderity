@@ -12,9 +12,11 @@ export default class ShaderTransformer {
 	static _transformToGLSLES3(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertAttribute(splittedShaderCode, isFragmentShader);
 		this.__convertVarying(splittedShaderCode, isFragmentShader);
-		this.__convertTexture2D(splittedShaderCode);
 		this.__convertTextureCube(splittedShaderCode);
+		this.__convertTexture2D(splittedShaderCode);
 		this.__convertTexture2DProd(splittedShaderCode);
+		this.__convertTexture3D(splittedShaderCode);
+		this.__convertTexture3DProd(splittedShaderCode);
 		const transformedSplittedShaderCode = splittedShaderCode;
 
 		return transformedSplittedShaderCode;
@@ -174,6 +176,22 @@ export default class ShaderTransformer {
 	private static __convertTexture2DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
+		const inAsES3 = 'textureProj';
+
+		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+	}
+
+	private static __convertTexture3D(splittedShaderCode: string[]) {
+		const sbl = this.__regSymbols();
+		const reg = new RegExp(`(${sbl}+)(texture3D)(${sbl}+)`, 'g');
+		const inAsES3 = 'texture';
+
+		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+	}
+
+	private static __convertTexture3DProd(splittedShaderCode: string[]) {
+		const sbl = this.__regSymbols();
+		const reg = new RegExp(`(${sbl}+)(texture3DProj)(${sbl}+)`, 'g');
 		const inAsES3 = 'textureProj';
 
 		this.__replaceRow(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
