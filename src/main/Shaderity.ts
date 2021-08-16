@@ -51,8 +51,6 @@ export default class Shaderity {
 		}
 
 		this._replaceRow(inout_splitedSource, inReg, inAsES1);
-
-		return inout_splitedSource;
 	}
 
 
@@ -63,8 +61,6 @@ export default class Shaderity {
 		}
 
 		this._replaceRow(inout_splitedSource, inReg, inAsES1);
-
-		return inout_splitedSource;
 	}
 
 	private _createUniformSamplerMap(inout_splitedSource: string[], row_i: number) {
@@ -87,8 +83,6 @@ export default class Shaderity {
 		let inAsES3 = 'in ';
 
 		this._replaceRow(inout_splitedSource, inReg, inAsES3);
-
-		return inout_splitedSource;
 	}
 
 	private _convertVarying(inout_splitedSource: string[], isFragmentShader: boolean) {
@@ -100,15 +94,11 @@ export default class Shaderity {
 		}
 
 		this._replaceRow(inout_splitedSource, inReg, inAsES3);
-
-		return inout_splitedSource;
 	}
 
 	private _removeLayout(inout_splitedSource: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
 		this._replaceRow(inout_splitedSource, inReg, '');
-
-		return inout_splitedSource;
 	}
 
 	private _regSymbols() {
@@ -121,8 +111,6 @@ export default class Shaderity {
 		let inAsES3 = 'texture';
 
 		this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
-
-		return inout_splitedSource;
 	}
 
 	private _convertTextureCube(inout_splitedSource: string[]) {
@@ -131,8 +119,6 @@ export default class Shaderity {
 		let inAsES3 = 'texture';
 
 		this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
-
-		return inout_splitedSource;
 	}
 
 	private _convertTexture2DProd(inout_splitedSource: string[]) {
@@ -141,8 +127,6 @@ export default class Shaderity {
 		let inAsES3 = 'textureProj';
 
 		this._replaceRow(inout_splitedSource, reg, '$1' + inAsES3 + '$3');
-
-		return inout_splitedSource;
 	}
 
 
@@ -197,21 +181,19 @@ export default class Shaderity {
 				}
 			}
 		}
-
-		return inout_splitedSource;
 	}
 
 	transformToGLSLES1(obj: ShaderityObject) {
 		const copy = this.copyShaderityObject(obj);
 
-		let splittedShaderCode = this._splitByLineFeedCode(obj.code);
+		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const isFragmentShader = this.isFragmentShader(obj);
 		this._convertIn(splittedShaderCode, isFragmentShader);
 		this._convertOut(splittedShaderCode);
 		this._removeLayout(splittedShaderCode);
+		this._convertTextureFunctionToES1(splittedShaderCode);
 
-		splittedShaderCode = this._convertTextureFunctionToES1(splittedShaderCode);
 
 		copy.code = this._joinSplitedRow(splittedShaderCode);
 
