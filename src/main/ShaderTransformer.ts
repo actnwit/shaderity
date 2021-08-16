@@ -4,6 +4,7 @@ export default class ShaderTransformer {
 	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
 	 */
 	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
+		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode);
 		this.__removeLayout(splittedShaderCode);
@@ -18,6 +19,7 @@ export default class ShaderTransformer {
 	 * Translate a GLSL ES1 shader code to a GLSL ES3 shader code
 	 */
 	static _transformToGLSLES3(splittedShaderCode: string[], isFragmentShader: boolean) {
+		this.__convertOrInsertVersionGLSLES3(splittedShaderCode);
 		this.__convertAttribute(splittedShaderCode, isFragmentShader);
 		this.__convertVarying(splittedShaderCode, isFragmentShader);
 		this.__convertTextureCube(splittedShaderCode);
@@ -43,6 +45,21 @@ export default class ShaderTransformer {
 			console.error('Invalid Version')
 			return splittedShaderCode;
 		}
+	}
+
+	private static __convertOrInsertVersionGLSLES1(splittedShaderCode: string[]) {
+		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+
+		splittedShaderCode.unshift('#version 100');
+	}
+
+	private static __convertOrInsertVersionGLSLES3(splittedShaderCode: string[]) {
+		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+
+		splittedShaderCode.unshift('#define GLSL_ES3');
+		splittedShaderCode.unshift('#version 300 es');
 	}
 
 	/**
@@ -273,6 +290,15 @@ export default class ShaderTransformer {
 	private static __replaceRow(splittedShaderCode: string[], inReg: RegExp, inAsES1: any) {
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			splittedShaderCode[i] = splittedShaderCode[i].replace(inReg, inAsES1);
+		}
+	}
+
+	private static __removeFirstMatchingLine(splittedShaderCode: string[], inReg: RegExp) {
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			if (splittedShaderCode[i].match(inReg)) {
+				splittedShaderCode.splice(i, 1);
+				break;
+			}
 		}
 	}
 }

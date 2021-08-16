@@ -19,7 +19,8 @@ test('detect shader stage correctly', async() => {
 
 test('convert to ES1 correctly (fragment)', async() => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES1(simpleFragment).code).toBe(`precision mediump float;
+  expect(shaderity.transformToGLSLES1(simpleFragment).code).toBe(`#version 100
+precision mediump float;
 
 varying vec4 vColor;
 varying vec4 vTexcoord;
@@ -32,7 +33,8 @@ void main() {
 
 test('convert to ES1 correctly (vertex)', async() => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES1(simpleVertex).code).toBe(`attribute vec3 position;
+  expect(shaderity.transformToGLSLES1(simpleVertex).code).toBe(`#version 100
+attribute vec3 position;
 attribute vec4 color;
 uniform mat4 matrix;
 varying vec4 vColor;
@@ -46,7 +48,9 @@ void main (void) {
 
 test('convert to ES3 correctly (texture)', async() => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`in vec2 v_texcoord;
+  expect(shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`#version 300 es
+#define GLSL_ES3
+in vec2 v_texcoord;
 in vec3 v_texcoord3;
 uniform sampler2D u_texture;
 uniform sampler3D u_texture_3D;
@@ -64,7 +68,8 @@ void main (void) {
 
 test('convert to ES1 correctly (texture)', async() => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`varying vec2 v_texcoord;
+  expect(shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`#version 100
+varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D u_texture;
 uniform sampler3D u_texture_3D;
@@ -82,7 +87,8 @@ void main (void) {
 
 test('convert to ES1 correctly (texture 2)', async() => {
   const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformTo('WebGL1', textureFuncFragmentES3).code).toBe(`varying vec2 v_texcoord;
+  expect(shaderity.transformTo('WebGL1', textureFuncFragmentES3).code).toBe(`#version 100
+varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D texture1;
 uniform samplerCube texture2;
@@ -204,7 +210,8 @@ test('test removing `layout(location = x)` from ES3 shader to ES1 shader', async
   const shaderity = Shaderity.getInstance();
   const shaderityObject = shaderity.transformToGLSLES1(layoutUniformFragmentES3);
   expect(shaderityObject.code).toBe(
-    `varying vec2 v_texcoord;
+    `#version 100
+varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D u_texture;
 uniform samplerCube u_textureCube;
