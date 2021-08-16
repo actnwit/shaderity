@@ -47,6 +47,15 @@ export default class ShaderTransformer {
 		}
 	}
 
+	/**
+	 * @private
+	 * If the first line contains version information, overwrite the first line with '#version 100'.
+	 * If not, add '#version 100' to the first line.
+	 *
+	 * Note: If the first line is commented out and the version information is written in the second or later line,
+	 * the appropriate version information will be added to the first line and the user-defined version information
+	 * in the second or later line will be removed.
+	 */
 	private static __convertOrInsertVersionGLSLES1(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
 		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
@@ -54,6 +63,17 @@ export default class ShaderTransformer {
 		splittedShaderCode.unshift('#version 100');
 	}
 
+	/**
+	 * @private
+	 * If the first line contains version information, overwrite the first line with '#version 300 es'.
+	 * If not, add '#version 300 es' to the first line.
+	 * In both cases, '#define GLSL_ES3' will be inserted in the second line.
+	 * Use the '#define GLSL_ES3' directive if you want to write a shader code that will only run in the case of webgl2.
+	 *
+   * Note: If the first line is commented out and the version information is written in the second or later line,
+	 * the appropriate version information will be added to the first line and the user-defined version information
+	 * in the second or later line will be removed.
+	 */
 	private static __convertOrInsertVersionGLSLES3(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
 		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
