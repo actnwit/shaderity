@@ -184,8 +184,6 @@ export default class Shaderity {
 	}
 
 	transformToGLSLES1(obj: ShaderityObject) {
-		const copy = this.copyShaderityObject(obj);
-
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const isFragmentShader = this.isFragmentShader(obj);
@@ -193,16 +191,17 @@ export default class Shaderity {
 		this._convertOut(splittedShaderCode);
 		this._removeLayout(splittedShaderCode);
 		this._convertTextureFunctionToES1(splittedShaderCode);
+		const resultCode = this._joinSplittedRow(splittedShaderCode);
 
+		const resultObj: ShaderityObject = {
+			code: resultCode,
+			shaderStage: obj.shaderStage,
+		};
 
-		copy.code = this._joinSplittedRow(splittedShaderCode);
-
-		return copy;
+		return resultObj;
 	}
 
 	transformToGLSLES3(obj: ShaderityObject) {
-		const copy = this.copyShaderityObject(obj);
-
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const isFragmentShader = this.isFragmentShader(obj);
@@ -211,10 +210,14 @@ export default class Shaderity {
 		this._convertTexture2D(splittedShaderCode);
 		this._convertTextureCube(splittedShaderCode);
 		this._convertTexture2DProd(splittedShaderCode);
+		const resultCode = this._joinSplittedRow(splittedShaderCode);
 
-		copy.code = this._joinSplittedRow(splittedShaderCode);
+		const resultObj: ShaderityObject = {
+			code: resultCode,
+			shaderStage: obj.shaderStage,
+		};
 
-		return copy;
+		return resultObj;
 	}
 
 	transformTo(version: string, obj: ShaderityObject) {
