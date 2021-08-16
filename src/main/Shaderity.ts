@@ -37,14 +37,16 @@ export default class Shaderity {
 		}
 	}
 
-	private _convertIn(obj: ShaderityObject, inout_splitedSource: string[]) {
+	private _convertIn(inout_splitedSource: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*in[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
-		let inAsES1 = function (match: string, p1: string) {
-			return 'attribute ' + p1;
-		}
-		if (this.isFragmentShader(obj)) {
+		let inAsES1;
+		if (isFragmentShader) {
 			inAsES1 = function (match: string, p1: string) {
 				return 'varying ' + p1;
+			}
+		} else {
+			inAsES1 = function (match: string, p1: string) {
+				return 'attribute ' + p1;
 			}
 		}
 
@@ -89,11 +91,11 @@ export default class Shaderity {
 		return inout_splitedSource;
 	}
 
-	private _convertVarying(obj: ShaderityObject, inout_splitedSource: string[]) {
+	private _convertVarying(inout_splitedSource: string[], isFragmentShader: boolean) {
 		const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
 		let inAsES3 = 'out ';
 
-		if (this.isFragmentShader(obj)) {
+		if (isFragmentShader) {
 			inAsES3 = 'in ';
 		}
 
@@ -204,7 +206,8 @@ export default class Shaderity {
 
 		let splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		this._convertIn(obj, splittedShaderCode);
+		const isFragmentShader = this.isFragmentShader(obj);
+		this._convertIn(splittedShaderCode, isFragmentShader);
 		this._convertOut(splittedShaderCode);
 		this._removeLayout(splittedShaderCode);
 
@@ -220,8 +223,9 @@ export default class Shaderity {
 
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
+		const isFragmentShader = this.isFragmentShader(obj);
 		this._convertAttribute(splittedShaderCode);
-		this._convertVarying(obj, splittedShaderCode);
+		this._convertVarying(splittedShaderCode, isFragmentShader);
 		this._convertTexture2D(splittedShaderCode);
 		this._convertTextureCube(splittedShaderCode);
 		this._convertTexture2DProd(splittedShaderCode);
