@@ -50,6 +50,8 @@ test('convert to ES3 correctly (texture)', async() => {
   const shaderity = Shaderity.getInstance();
   expect(shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`#version 300 es
 #define GLSL_ES3
+// texture_es1.frag
+
 in vec2 v_texcoord;
 in vec3 v_texcoord3;
 uniform sampler2D u_texture;
@@ -69,6 +71,7 @@ void main (void) {
 test('convert to ES1 correctly (texture)', async() => {
   const shaderity = Shaderity.getInstance();
   expect(shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`#version 100
+
 varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D u_texture;

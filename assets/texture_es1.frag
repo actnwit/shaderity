@@ -1,3 +1,6 @@
+// texture_es1.frag
+#version 100
+
 varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D u_texture;
