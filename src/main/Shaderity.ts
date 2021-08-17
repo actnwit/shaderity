@@ -47,7 +47,7 @@ export default class Shaderity {
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, isFragmentShader);
-		const resultCode = this._joinSplittedRow(transformedSplittedShaderCode);
+		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -63,7 +63,7 @@ export default class Shaderity {
 		const isFragmentShader = this.isFragmentShader(obj);
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES3(splittedShaderCode, isFragmentShader);
-		const resultCode = this._joinSplittedRow(transformedSplittedShaderCode);
+		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -79,7 +79,7 @@ export default class Shaderity {
 		const isFragmentShader = this.isFragmentShader(obj);
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformTo(version, splittedShaderCode, isFragmentShader);
-		const resultCode = this._joinSplittedRow(transformedSplittedShaderCode);
+		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -93,8 +93,8 @@ export default class Shaderity {
 		return source.split(/\r\n|\n/);
 	}
 
-	private _joinSplittedRow(splittedRow: string[]) {
-		return splittedRow.join('\n');
+	private _joinSplittedLine(splittedLine: string[]) {
+		return splittedLine.join('\n');
 	}
 
 	/**
@@ -125,7 +125,7 @@ export default class Shaderity {
 
 		splittedShaderCode.unshift(`#define ${defStr}`);
 
-		copy.code = this._joinSplittedRow(splittedShaderCode);
+		copy.code = this._joinSplittedLine(splittedShaderCode);
 
 		return copy;
 	}
