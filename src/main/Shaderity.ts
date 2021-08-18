@@ -1,5 +1,5 @@
 import Reflection from './Reflection';
-import {ShaderityObject} from '../types/type';
+import {ShaderityObject, TemplateObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
@@ -103,7 +103,7 @@ export default class Shaderity {
 	 * @param obj a shaderity object
 	 * @returns a copied and processed shaderity object
 	 */
-	fillTemplate(obj: ShaderityObject, arg: {[s: string]: any}) {
+	fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
 		const copy = this.copyShaderityObject(obj);
 
 		copy.code = ShaderEditor._fillTemplate(copy.code, arg);

@@ -30,3 +30,7 @@ export type ReflectionVarying = {
 	inout: "in" | "out",
 	type: VarType
 }
+
+export type TemplateObject = {
+	[key: string]: string | TemplateObject
+};

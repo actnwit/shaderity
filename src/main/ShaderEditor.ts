@@ -1,3 +1,5 @@
+import {TemplateObject} from '../types/type';
+
 export default class ShaderEditor {
 	static _insertDefinition(splittedShaderCode: string[], definition: string) {
 		const defStr = definition.replace(/#define[\t ]+/, '');
@@ -5,10 +7,10 @@ export default class ShaderEditor {
 		splittedShaderCode.unshift(`#define ${defStr}`);
 	}
 
-	static _fillTemplate(shaderCode: string, arg: {[s: string]: any}) {
+	static _fillTemplate(shaderCode: string, templateObject: TemplateObject) {
 		const templateString = shaderCode.replace(/\/\*[\t ]*shaderity:[\t ]*(@{[\t ]*)(\S+)([\t ]*})[\t ]*\*\//g, '${this.$2}');
 
-		const resultCode = new Function("return `" + templateString + "`;").call(arg);
+		const resultCode = new Function("return `" + templateString + "`;").call(templateObject);
 		return resultCode;
 	}
 }
