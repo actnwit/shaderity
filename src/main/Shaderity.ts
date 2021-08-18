@@ -1,6 +1,7 @@
 import Reflection from './Reflection';
 import {ShaderityObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
+import ShaderEditor from './ShaderEditor';
 
 export default class Shaderity {
 	private static __instance: Shaderity;
@@ -105,14 +106,7 @@ export default class Shaderity {
 	fillTemplate(obj: ShaderityObject, arg: {[s: string]: any}) {
 		const copy = this.copyShaderityObject(obj);
 
-
-		const templateString = obj.code.replace(/\/\*[\t ]*shaderity:[\t ]*(@{[\t ]*)(\S+)([\t ]*})[\t ]*\*\//g, '${this.$2}');
-
-
-		const fillTemplate = function (templateString: string, arg: {[s: string]: any}) {
-			return new Function("return `" + templateString + "`;").call(arg);
-		}
-		copy.code = fillTemplate(templateString, arg);
+		copy.code = ShaderEditor._fillTemplate(copy.code, arg);
 
 		return copy;
 	}
@@ -121,10 +115,7 @@ export default class Shaderity {
 		const copy = this.copyShaderityObject(obj);
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		const defStr = definition.replace(/#define[\t ]+/, '');
-
-		splittedShaderCode.unshift(`#define ${defStr}`);
-
+		ShaderEditor._insertDefinition(splittedShaderCode, definition);
 		copy.code = this._joinSplittedLine(splittedShaderCode);
 
 		return copy;
