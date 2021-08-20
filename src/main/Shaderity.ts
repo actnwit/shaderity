@@ -4,16 +4,6 @@ import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
 export default class Shaderity {
-	static copyShaderityObject(obj: ShaderityObject) {
-		const copiedObj: ShaderityObject = {
-			code: obj.code,
-			shaderStage: obj.shaderStage,
-			isFragmentShader: obj.isFragmentShader,
-		}
-
-		return copiedObj;
-	}
-
 	static transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
@@ -60,14 +50,6 @@ export default class Shaderity {
 		};
 
 		return resultObj;
-	}
-
-	private static _splitByLineFeedCode(source: string) {
-		return source.split(/\r\n|\n/);
-	}
-
-	private static _joinSplittedLine(splittedLine: string[]) {
-		return splittedLine.join('\n');
 	}
 
 	/**
@@ -117,5 +99,23 @@ export default class Shaderity {
 
 		const reflection = new Reflection(splittedShaderCode, shaderStage);
 		return reflection;
+	}
+
+	private static copyShaderityObject(obj: ShaderityObject) {
+		const copiedObj: ShaderityObject = {
+			code: obj.code,
+			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
+		}
+
+		return copiedObj;
+	}
+
+	private static _splitByLineFeedCode(source: string) {
+		return source.split(/\r\n|\n/);
+	}
+
+	private static _joinSplittedLine(splittedLine: string[]) {
+		return splittedLine.join('\n');
 	}
 }
