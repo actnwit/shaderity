@@ -1,5 +1,14 @@
 import Shaderity from './main/Shaderity';
-import {AttributeSemantics, ReflectionAttribute, ReflectionUniform, ReflectionVarying, ShaderityObject, UniformSemantics, VarType} from './types/type';
+import {
+  AttributeSemantics,
+  ReflectionAttribute,
+  ReflectionUniform,
+  ReflectionVarying,
+  ShaderityObject,
+  TemplateObject,
+  UniformSemantics,
+  VarType,
+} from './types/type';
 
 export type {
   AttributeSemantics,
@@ -7,6 +16,7 @@ export type {
   ReflectionUniform,
   ReflectionVarying,
   ShaderityObject,
+  TemplateObject,
   UniformSemantics,
   VarType,
 }

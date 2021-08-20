@@ -1,5 +1,5 @@
 import Reflection from './Reflection';
-import {ShaderityObject} from '../types/type';
+import {ShaderityObject, TemplateObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
@@ -99,11 +99,20 @@ export default class Shaderity {
 	}
 
 	/**
-	 * Fill arguments into template shader text in ShaderityObject.
-	 * @param obj a shaderity object
-	 * @returns a copied and processed shaderity object
+	 * Find the following template pattern in the shader code and replace key to value
+	 * @param templateObject An object that represents the string before and after the replacement
+	 * The key can be a string or an object. If an object is used as the key,
+	 * the key in the pattern of shaderCode must also match the object.
+	 * For example, if templateObject is
+		{
+			sample {
+				sampleA: 0
+			}
+		}
+	 * then the key in a shader code is sample.sampleA.
 	 */
-	fillTemplate(obj: ShaderityObject, arg: {[s: string]: any}) {
+	// The template pattern is	/* shaderity: @{key} */
+	fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
 		const copy = this.copyShaderityObject(obj);
 
 		copy.code = ShaderEditor._fillTemplate(copy.code, arg);
