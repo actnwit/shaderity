@@ -13,30 +13,11 @@ export default class Shaderity {
 		return this.__instance;
 	}
 
-	isVertexShader(obj: ShaderityObject) {
-		if (obj.shaderStage === 'vertex') {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	isFragmentShader(obj: ShaderityObject) {
-		if (obj.shaderStage === 'fragment' || obj.shaderStage === 'pixel') {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	isPixelShader(obj: ShaderityObject) {
-		return this.isFragmentShader(obj);
-	}
-
 	copyShaderityObject(obj: ShaderityObject) {
 		const copiedObj: ShaderityObject = {
 			code: obj.code,
-			shaderStage: obj.shaderStage
+			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		}
 
 		return copiedObj;
@@ -44,15 +25,15 @@ export default class Shaderity {
 
 	transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
-		const isFragmentShader = this.isFragmentShader(obj);
 
 		const transformedSplittedShaderCode
-			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, isFragmentShader);
+			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, obj.isFragmentShader);
 		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;
@@ -61,14 +42,14 @@ export default class Shaderity {
 	transformToGLSLES3(obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		const isFragmentShader = this.isFragmentShader(obj);
 		const transformedSplittedShaderCode
-			= ShaderTransformer._transformToGLSLES3(splittedShaderCode, isFragmentShader);
+			= ShaderTransformer._transformToGLSLES3(splittedShaderCode, obj.isFragmentShader);
 		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;
@@ -77,14 +58,14 @@ export default class Shaderity {
 	transformTo(version: string, obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
-		const isFragmentShader = this.isFragmentShader(obj);
 		const transformedSplittedShaderCode
-			= ShaderTransformer._transformTo(version, splittedShaderCode, isFragmentShader);
+			= ShaderTransformer._transformTo(version, splittedShaderCode, obj.isFragmentShader);
 		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;

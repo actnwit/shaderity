@@ -12,9 +12,8 @@ const layoutUniformFragmentES3 = require('../dist/index_test').layoutUniformFrag
 
 
 test('detect shader stage correctly', async() => {
-  const shaderity = Shaderity.getInstance();
   expect(simpleFragment.shaderStage).toBe('fragment');
-  expect(shaderity.isFragmentShader(simpleFragment)).toBe(true);
+  expect(simpleFragment.isFragmentShader).toBe(true);
 });
 
 test('convert to ES1 correctly (fragment)', async() => {

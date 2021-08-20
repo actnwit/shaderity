@@ -1,8 +1,9 @@
-export type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
+export type ShaderStageStr = 'vertex' | 'fragment';
 
 export type ShaderityObject = {
 	code: string,
-	shaderStage: ShaderStageStr
+	shaderStage: ShaderStageStr,
+	isFragmentShader: boolean
 };
 
 export type VarType = 'unknown' | 'float' | 'int' |
