@@ -5,8 +5,8 @@ Shaderity is a shader tool set.
 Shaderity are composed from the several components.
 
 - shaderity: This. for runtime features
-- shaderity-loader: for static features
-- shaderity-node: The internal component for shaderity-loader.
+    - [shaderity-loader](https://github.com/actnwit/shaderity-loader): for static features
+        - [shaderity-node](https://github.com/actnwit/shaderity-node): The internal component for shaderity-loader.
 
 The name "Shaderity" was coined from the combination of "Shader" and "Integrity".
 
