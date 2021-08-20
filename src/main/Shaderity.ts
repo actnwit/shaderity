@@ -7,7 +7,7 @@ export default class Shaderity {
 	// =========================================================================================================
 	// shader transformation functions
 	// =========================================================================================================
-	static transformToGLSLES1(obj: ShaderityObject) {
+	public static transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -23,7 +23,7 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	static transformToGLSLES3(obj: ShaderityObject) {
+	public static transformToGLSLES3(obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -39,7 +39,7 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	static transformTo(version: string, obj: ShaderityObject) {
+	public static transformTo(version: string, obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -72,7 +72,7 @@ export default class Shaderity {
 	 * then the key in a shader code is sample.sampleA.
 	 */
 	// The template pattern is	/* shaderity: @{key} */
-	static fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
+	public static fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
 		const copy = this.__copyShaderityObject(obj);
 
 		copy.code = ShaderEditor._fillTemplate(copy.code, arg);
@@ -80,7 +80,7 @@ export default class Shaderity {
 		return copy;
 	}
 
-	static insertDefinition(obj: ShaderityObject, definition: string) {
+	public static insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.__copyShaderityObject(obj);
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -94,7 +94,7 @@ export default class Shaderity {
 	// reflection functions
 	// =========================================================================================================
 
-	static createReflectionObject(obj: ShaderityObject): Reflection {
+	public static createReflectionObject(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const reflection = new Reflection(splittedShaderCode, obj.shaderStage);
