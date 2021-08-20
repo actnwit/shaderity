@@ -7,6 +7,10 @@ export default class Shaderity {
 	// =========================================================================================================
 	// shader transformation functions
 	// =========================================================================================================
+
+	/**
+	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
+	 */
 	public static transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -23,6 +27,9 @@ export default class Shaderity {
 		return resultObj;
 	}
 
+	/**
+	 * Translate a GLSL ES1 shader code to a GLSL ES3 shader code
+	 */
 	public static transformToGLSLES3(obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -39,6 +46,9 @@ export default class Shaderity {
 		return resultObj;
 	}
 
+	/**
+	 * Translate a GLSL shader code to a shader code of specified GLSL version
+	 */
 	public static transformTo(version: ShaderVersion, obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -58,6 +68,7 @@ export default class Shaderity {
 	// =========================================================================================================
 	// shader edit functions
 	// =========================================================================================================
+
 	/**
 	 * Find the following template pattern in the shader code and replace key to value
 	 * @param templateObject An object that represents the string before and after the replacement
@@ -80,6 +91,9 @@ export default class Shaderity {
 		return copy;
 	}
 
+	/**
+	 * Insert define directive
+	 */
 	public static insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.__copyShaderityObject(obj);
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
@@ -94,6 +108,10 @@ export default class Shaderity {
 	// reflection functions
 	// =========================================================================================================
 
+	/**
+	 * Create an instance to get the attribute, varying, and uniform information from a shader code of the shaderity.
+	 * To get these information, you need to call reflection.reflect method.
+	 */
 	public static createReflectionObject(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -104,6 +122,7 @@ export default class Shaderity {
 	// =========================================================================================================
 	// private functions
 	// =========================================================================================================
+
 	private static __copyShaderityObject(obj: ShaderityObject) {
 		const copiedObj: ShaderityObject = {
 			code: obj.code,
