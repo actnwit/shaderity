@@ -1,3 +1,5 @@
+import {ShaderVersion} from '../types/type';
+
 export default class ShaderTransformer {
 	/**
 	 * @private
@@ -36,7 +38,7 @@ export default class ShaderTransformer {
 	 * @private
 	 * Translate a GLSL shader code to a shader code of specified GLSL version
 	 */
-	static _transformTo(version: string, splittedShaderCode: string[], isFragmentShader: boolean) {
+	static _transformTo(version: ShaderVersion, splittedShaderCode: string[], isFragmentShader: boolean) {
 		if (version.match(/webgl2|es3/i)) {
 			return this._transformToGLSLES3(splittedShaderCode, isFragmentShader);
 		} else if (version.match(/webgl1|es1/i)) {

@@ -1,5 +1,5 @@
 import Reflection from './Reflection';
-import {ShaderityObject, TemplateObject} from '../types/type';
+import {ShaderityObject, ShaderVersion, TemplateObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
@@ -39,7 +39,7 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	public static transformTo(version: string, obj: ShaderityObject) {
+	public static transformTo(version: ShaderVersion, obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode

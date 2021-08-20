@@ -1,3 +1,4 @@
+
 export type ShaderStageStr = 'vertex' | 'fragment';
 
 export type ShaderityObject = {
@@ -35,3 +36,5 @@ export type ReflectionVarying = {
 export type TemplateObject = {
 	[key: string]: string | TemplateObject
 };
+
+export type ShaderVersion = 'webgl1' | 'webgl2' | 'es1' | 'es3' | 'glsl es1' | 'glsl es3';
