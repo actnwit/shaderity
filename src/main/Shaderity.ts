@@ -4,31 +4,15 @@ import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
 export default class Shaderity {
-	private static __instance: Shaderity;
-
-	static getInstance(): Shaderity {
-		if (!this.__instance) {
-			this.__instance = new Shaderity();
-		}
-		return this.__instance;
-	}
-
-	copyShaderityObject(obj: ShaderityObject) {
-		const copiedObj: ShaderityObject = {
-			code: obj.code,
-			shaderStage: obj.shaderStage,
-			isFragmentShader: obj.isFragmentShader,
-		}
-
-		return copiedObj;
-	}
-
-	transformToGLSLES1(obj: ShaderityObject) {
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+	// =========================================================================================================
+	// shader transformation functions
+	// =========================================================================================================
+	public static transformToGLSLES1(obj: ShaderityObject) {
+		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -39,12 +23,12 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	transformToGLSLES3(obj: ShaderityObject) {
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+	public static transformToGLSLES3(obj: ShaderityObject) {
+		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES3(splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -55,12 +39,12 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	transformTo(version: string, obj: ShaderityObject) {
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+	public static transformTo(version: string, obj: ShaderityObject) {
+		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformTo(version, splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this._joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -71,14 +55,9 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	private _splitByLineFeedCode(source: string) {
-		return source.split(/\r\n|\n/);
-	}
-
-	private _joinSplittedLine(splittedLine: string[]) {
-		return splittedLine.join('\n');
-	}
-
+	// =========================================================================================================
+	// shader edit functions
+	// =========================================================================================================
 	/**
 	 * Find the following template pattern in the shader code and replace key to value
 	 * @param templateObject An object that represents the string before and after the replacement
@@ -93,38 +72,53 @@ export default class Shaderity {
 	 * then the key in a shader code is sample.sampleA.
 	 */
 	// The template pattern is	/* shaderity: @{key} */
-	fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
-		const copy = this.copyShaderityObject(obj);
+	public static fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
+		const copy = this.__copyShaderityObject(obj);
 
 		copy.code = ShaderEditor._fillTemplate(copy.code, arg);
 
 		return copy;
 	}
 
-	insertDefinition(obj: ShaderityObject, definition: string) {
-		const copy = this.copyShaderityObject(obj);
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
+	public static insertDefinition(obj: ShaderityObject, definition: string) {
+		const copy = this.__copyShaderityObject(obj);
+		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
 		ShaderEditor._insertDefinition(splittedShaderCode, definition);
-		copy.code = this._joinSplittedLine(splittedShaderCode);
+		copy.code = this.__joinSplittedLine(splittedShaderCode);
 
 		return copy;
 	}
 
-	reflect(obj: ShaderityObject): Reflection {
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
-		const shaderStage = obj.shaderStage;
+	// =========================================================================================================
+	// reflection functions
+	// =========================================================================================================
 
-		const reflection = new Reflection(splittedShaderCode, shaderStage);
-		reflection.reflect();
+	public static createReflectionObject(obj: ShaderityObject): Reflection {
+		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+
+		const reflection = new Reflection(splittedShaderCode, obj.shaderStage);
 		return reflection;
 	}
 
-	createReflectionObject(obj: ShaderityObject): Reflection {
-		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
-		const shaderStage = obj.shaderStage;
+	// =========================================================================================================
+	// private functions
+	// =========================================================================================================
+	private static __copyShaderityObject(obj: ShaderityObject) {
+		const copiedObj: ShaderityObject = {
+			code: obj.code,
+			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
+		}
 
-		const reflection = new Reflection(splittedShaderCode, shaderStage);
-		return reflection;
+		return copiedObj;
+	}
+
+	private static __splitByLineFeedCode(source: string) {
+		return source.split(/\r\n|\n/);
+	}
+
+	private static __joinSplittedLine(splittedLine: string[]) {
+		return splittedLine.join('\n');
 	}
 }
