@@ -93,14 +93,6 @@ export default class Shaderity {
 	// =========================================================================================================
 	// reflection functions
 	// =========================================================================================================
-	static reflect(obj: ShaderityObject): Reflection {
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
-		const shaderStage = obj.shaderStage;
-
-		const reflection = new Reflection(splittedShaderCode, shaderStage);
-		reflection.reflect();
-		return reflection;
-	}
 
 	static createReflectionObject(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);

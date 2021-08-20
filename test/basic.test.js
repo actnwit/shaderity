@@ -147,7 +147,8 @@ void main (void) {
 });
 
 test('test attribute variable reflection (ES1)', async() => {
-  const reflection = Shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.createReflectionObject(reflectionVertexES1);
+  reflection.reflect();
   expect(reflection.attributes[0]).toStrictEqual({
     name: 'a_position',
     type: 'vec3',
@@ -161,7 +162,8 @@ test('test attribute variable reflection (ES1)', async() => {
 });
 
 test('test varying variable reflection (ES1)', async() => {
-  const reflection = Shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.createReflectionObject(reflectionVertexES1);
+  reflection.reflect();
   expect(reflection.varyings[0]).toStrictEqual({
     name: 'v_position',
     type: 'vec3',
@@ -170,7 +172,8 @@ test('test varying variable reflection (ES1)', async() => {
 });
 
 test('test uniform variable reflection (ES1)', async() => {
-  const reflection = Shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.createReflectionObject(reflectionVertexES1);
+  reflection.reflect();
   expect(reflection.uniforms[0]).toStrictEqual({
     name: 'u_worldMatrix',
     type: 'vec4',
@@ -184,7 +187,8 @@ test('test uniform variable reflection (ES1)', async() => {
 });
 
 test('test attribute variable reflection (ES3)', async() => {
-  const reflection = Shaderity.reflect(reflectionVertexES3);
+  const reflection = Shaderity.createReflectionObject(reflectionVertexES3);
+  reflection.reflect();
   expect(reflection.attributes[0]).toStrictEqual({
     name: 'a_position',
     type: 'vec3',
@@ -214,8 +218,9 @@ void main (void) {
 }
 `
   );
-  const layoutUniform = Shaderity.reflect(shaderityObject);
-  expect(layoutUniform.uniforms[1]).toStrictEqual({
+  const reflection = Shaderity.createReflectionObject(shaderityObject);
+  reflection.reflect();
+  expect(reflection.uniforms[1]).toStrictEqual({
     name: 'u_textureCube',
     type: 'samplerCube',
     semantic: 'UNKNOWN'
