@@ -4,6 +4,9 @@ import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
 export default class Shaderity {
+	// =========================================================================================================
+	// shader transformation functions
+	// =========================================================================================================
 	static transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 
@@ -52,6 +55,9 @@ export default class Shaderity {
 		return resultObj;
 	}
 
+	// =========================================================================================================
+	// shader edit functions
+	// =========================================================================================================
 	/**
 	 * Find the following template pattern in the shader code and replace key to value
 	 * @param templateObject An object that represents the string before and after the replacement
@@ -84,6 +90,9 @@ export default class Shaderity {
 		return copy;
 	}
 
+	// =========================================================================================================
+	// reflection functions
+	// =========================================================================================================
 	static reflect(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
 		const shaderStage = obj.shaderStage;
@@ -101,6 +110,9 @@ export default class Shaderity {
 		return reflection;
 	}
 
+	// =========================================================================================================
+	// private functions
+	// =========================================================================================================
 	private static __copyShaderityObject(obj: ShaderityObject) {
 		const copiedObj: ShaderityObject = {
 			code: obj.code,
