@@ -17,8 +17,7 @@ test('detect shader stage correctly', async() => {
 });
 
 test('convert to ES1 correctly (fragment)', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES1(simpleFragment).code).toBe(`#version 100
+  expect(Shaderity.transformToGLSLES1(simpleFragment).code).toBe(`#version 100
 precision mediump float;
 
 varying vec4 vColor;
@@ -31,8 +30,7 @@ void main() {
 });
 
 test('convert to ES1 correctly (vertex)', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES1(simpleVertex).code).toBe(`#version 100
+  expect(Shaderity.transformToGLSLES1(simpleVertex).code).toBe(`#version 100
 attribute vec3 position;
 attribute vec4 color;
 uniform mat4 matrix;
@@ -46,8 +44,7 @@ void main (void) {
 });
 
 test('convert to ES3 correctly (texture)', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`#version 300 es
+  expect(Shaderity.transformToGLSLES3(textureFragmentES1).code).toBe(`#version 300 es
 #define GLSL_ES3
 // texture_es1.frag
 
@@ -68,8 +65,7 @@ void main (void) {
 });
 
 test('convert to ES1 correctly (texture)', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`#version 100
+  expect(Shaderity.transformTo('WebGL1', textureFragmentES3).code).toBe(`#version 100
 
 varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
@@ -88,8 +84,7 @@ void main (void) {
 });
 
 test('convert to ES1 correctly (texture 2)', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.transformTo('WebGL1', textureFuncFragmentES3).code).toBe(`#version 100
+  expect(Shaderity.transformTo('WebGL1', textureFuncFragmentES3).code).toBe(`#version 100
 varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D texture1;
@@ -121,8 +116,7 @@ void main (void) {
 });
 
 test('test dynamic template', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.fillTemplate(dynamicTemplateFragment, {
+  expect(Shaderity.fillTemplate(dynamicTemplateFragment, {
     var_a: `Line1
 Line2
 Line3`,
@@ -143,8 +137,7 @@ void main() {
 });
 
 test('test insert definition', async() => {
-  const shaderity = Shaderity.getInstance();
-  expect(shaderity.insertDefinition(insertDefinitionVertex, 'GLSL_ES3').code).toBe(`#define GLSL_ES3
+  expect(Shaderity.insertDefinition(insertDefinitionVertex, 'GLSL_ES3').code).toBe(`#define GLSL_ES3
 in vec3 position;
 
 void main (void) {
@@ -154,8 +147,7 @@ void main (void) {
 });
 
 test('test attribute variable reflection (ES1)', async() => {
-  const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.reflect(reflectionVertexES1);
   expect(reflection.attributes[0]).toStrictEqual({
     name: 'a_position',
     type: 'vec3',
@@ -169,8 +161,7 @@ test('test attribute variable reflection (ES1)', async() => {
 });
 
 test('test varying variable reflection (ES1)', async() => {
-  const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.reflect(reflectionVertexES1);
   expect(reflection.varyings[0]).toStrictEqual({
     name: 'v_position',
     type: 'vec3',
@@ -179,8 +170,7 @@ test('test varying variable reflection (ES1)', async() => {
 });
 
 test('test uniform variable reflection (ES1)', async() => {
-  const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertexES1);
+  const reflection = Shaderity.reflect(reflectionVertexES1);
   expect(reflection.uniforms[0]).toStrictEqual({
     name: 'u_worldMatrix',
     type: 'vec4',
@@ -194,8 +184,7 @@ test('test uniform variable reflection (ES1)', async() => {
 });
 
 test('test attribute variable reflection (ES3)', async() => {
-  const shaderity = Shaderity.getInstance();
-  const reflection = shaderity.reflect(reflectionVertexES3);
+  const reflection = Shaderity.reflect(reflectionVertexES3);
   expect(reflection.attributes[0]).toStrictEqual({
     name: 'a_position',
     type: 'vec3',
@@ -209,8 +198,7 @@ test('test attribute variable reflection (ES3)', async() => {
 });
 
 test('test removing `layout(location = x)` from ES3 shader to ES1 shader', async() => {
-  const shaderity = Shaderity.getInstance();
-  const shaderityObject = shaderity.transformToGLSLES1(layoutUniformFragmentES3);
+  const shaderityObject = Shaderity.transformToGLSLES1(layoutUniformFragmentES3);
   expect(shaderityObject.code).toBe(
     `#version 100
 varying vec2 v_texcoord;
@@ -226,7 +214,7 @@ void main (void) {
 }
 `
   );
-  const layoutUniform = shaderity.reflect(shaderityObject);
+  const layoutUniform = Shaderity.reflect(shaderityObject);
   expect(layoutUniform.uniforms[1]).toStrictEqual({
     name: 'u_textureCube',
     type: 'samplerCube',

@@ -4,16 +4,7 @@ import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 
 export default class Shaderity {
-	private static __instance: Shaderity;
-
-	static getInstance(): Shaderity {
-		if (!this.__instance) {
-			this.__instance = new Shaderity();
-		}
-		return this.__instance;
-	}
-
-	copyShaderityObject(obj: ShaderityObject) {
+	static copyShaderityObject(obj: ShaderityObject) {
 		const copiedObj: ShaderityObject = {
 			code: obj.code,
 			shaderStage: obj.shaderStage,
@@ -23,7 +14,7 @@ export default class Shaderity {
 		return copiedObj;
 	}
 
-	transformToGLSLES1(obj: ShaderityObject) {
+	static transformToGLSLES1(obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -39,7 +30,7 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	transformToGLSLES3(obj: ShaderityObject) {
+	static transformToGLSLES3(obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -55,7 +46,7 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	transformTo(version: string, obj: ShaderityObject) {
+	static transformTo(version: string, obj: ShaderityObject) {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
@@ -71,11 +62,11 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	private _splitByLineFeedCode(source: string) {
+	private static _splitByLineFeedCode(source: string) {
 		return source.split(/\r\n|\n/);
 	}
 
-	private _joinSplittedLine(splittedLine: string[]) {
+	private static _joinSplittedLine(splittedLine: string[]) {
 		return splittedLine.join('\n');
 	}
 
@@ -93,7 +84,7 @@ export default class Shaderity {
 	 * then the key in a shader code is sample.sampleA.
 	 */
 	// The template pattern is	/* shaderity: @{key} */
-	fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
+	static fillTemplate(obj: ShaderityObject, arg: TemplateObject) {
 		const copy = this.copyShaderityObject(obj);
 
 		copy.code = ShaderEditor._fillTemplate(copy.code, arg);
@@ -101,7 +92,7 @@ export default class Shaderity {
 		return copy;
 	}
 
-	insertDefinition(obj: ShaderityObject, definition: string) {
+	static insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.copyShaderityObject(obj);
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 
@@ -111,7 +102,7 @@ export default class Shaderity {
 		return copy;
 	}
 
-	reflect(obj: ShaderityObject): Reflection {
+	static reflect(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 		const shaderStage = obj.shaderStage;
 
@@ -120,7 +111,7 @@ export default class Shaderity {
 		return reflection;
 	}
 
-	createReflectionObject(obj: ShaderityObject): Reflection {
+	static createReflectionObject(obj: ShaderityObject): Reflection {
 		const splittedShaderCode = this._splitByLineFeedCode(obj.code);
 		const shaderStage = obj.shaderStage;
 
