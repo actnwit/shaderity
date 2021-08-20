@@ -1,4 +1,4 @@
-export type ShaderStageStr = 'vertex' | 'fragment' | 'pixel'
+export type ShaderStageStr = 'vertex' | 'fragment';
 
 export type ShaderityObject = {
 	code: string,

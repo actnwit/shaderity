@@ -22,7 +22,7 @@ export default class Shaderity {
 	}
 
 	isFragmentShader(obj: ShaderityObject) {
-		if (obj.shaderStage === 'fragment' || obj.shaderStage === 'pixel') {
+		if (obj.shaderStage === 'fragment') {
 			return true;
 		} else {
 			return false;
