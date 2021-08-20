@@ -36,7 +36,8 @@ export default class Shaderity {
 	copyShaderityObject(obj: ShaderityObject) {
 		const copiedObj: ShaderityObject = {
 			code: obj.code,
-			shaderStage: obj.shaderStage
+			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		}
 
 		return copiedObj;
@@ -53,6 +54,7 @@ export default class Shaderity {
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;
@@ -69,6 +71,7 @@ export default class Shaderity {
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;
@@ -85,6 +88,7 @@ export default class Shaderity {
 		const resultObj: ShaderityObject = {
 			code: resultCode,
 			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
 		};
 
 		return resultObj;
