@@ -84,7 +84,7 @@ void main (void) {
 });
 
 test('convert to ES1 correctly (texture 2)', async() => {
-  expect(Shaderity.transformTo('WebGL1', textureFuncFragmentES3).code).toBe(`#version 100
+  expect(Shaderity.transformTo('glsl es1', textureFuncFragmentES3).code).toBe(`#version 100
 varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D texture1;
