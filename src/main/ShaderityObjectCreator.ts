@@ -40,6 +40,18 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public removeExtension(extensionName: string) {
+		const matchedIndex =
+			this.__extensions.findIndex(extension => extension.extensionName === extensionName);
+
+		if (matchedIndex === -1) {
+			console.warn('removeExtension: this extension is not exist');
+			return;
+		}
+
+		this.__extensions.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
