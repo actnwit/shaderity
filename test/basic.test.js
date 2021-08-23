@@ -226,3 +226,22 @@ void main (void) {
     semantic: 'UNKNOWN'
   });
 });
+
+test('test addExtension method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addExtension('GL_OES_standard_derivatives', 'enable');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`#extension GL_OES_standard_derivatives: enable
+
+`);
+});
+
+test('test removeExtension method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addExtension('GL_OES_standard_derivatives', 'enable');
+  shaderityObjectCreator.removeExtension('GL_OES_standard_derivatives', 'enable');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual('');
+});
