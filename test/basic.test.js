@@ -243,5 +243,5 @@ test('test removeExtension method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeExtension('GL_OES_standard_derivatives', 'enable');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual('');
+  expect(resultShaderityObj.code).toStrictEqual(``);
 });

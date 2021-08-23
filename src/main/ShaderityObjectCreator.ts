@@ -90,9 +90,20 @@ export default class ShaderityObjectCreator {
 
 	private __createShaderCode(): string {
 		// TODO: now implementing
-		const code = this.__createExtensionShaderCode();
+		const code
+			= this.__createDefineDirectiveShaderCode()
+			+ this.__createExtensionShaderCode();
 
 		return code;
+	}
+
+	private __createDefineDirectiveShaderCode(): string {
+		let shaderCode = '';
+		for (const defineDirectiveName of this.__defineDirectiveNames) {
+			shaderCode += `#define ${defineDirectiveName}\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);;
 	}
 
 	private __createExtensionShaderCode(): string {
