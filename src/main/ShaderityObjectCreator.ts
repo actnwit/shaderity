@@ -1,4 +1,5 @@
 import {
+	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
 	ShaderStageStr
@@ -23,6 +24,20 @@ export default class ShaderityObjectCreator {
 
 	constructor(shaderStage: ShaderStageStr) {
 		this.__shaderStage = shaderStage;
+	}
+
+	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
+		const matchedIndex =
+			this.__extensions.findIndex(extension => extension.extensionName === extensionName);
+		if (matchedIndex !== -1) {
+			console.warn('addExtension: this extension is already exist');
+			return;
+		}
+
+		this.__extensions.push({
+			extensionName,
+			behavior
+		});
 	}
 
 	public createShaderityObject(): ShaderityObject {

@@ -43,5 +43,5 @@ export type ShaderExtensionBehavior = 'enable' | 'require' | 'warn' | 'disable';
 
 export type ShaderExtensionObject = {
 	extensionName: string, // e.g. GL_OES_standard_derivatives
-	behavior?: ShaderExtensionBehavior,
+	behavior: ShaderExtensionBehavior,
 };
