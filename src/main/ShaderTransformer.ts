@@ -1,5 +1,8 @@
 import {ShaderVersion} from '../types/type';
 
+/**
+ * This class converts the code property of a shaderity object to the specified format.
+ */
 export default class ShaderTransformer {
 	/**
 	 * @private

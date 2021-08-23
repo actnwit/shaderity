@@ -9,7 +9,7 @@ import {
 } from '../types/type';
 
 /**
- * This class gets the attribute, varying, and uniform information from a shader code of the shaderity.
+ * This class gets the attribute, varying, and uniform information from the code property of a shaderity object.
  * The methods of the Shaderity instance create an instance of this class.
  *
  * Before getting the information of the attribute, varying, and uniform, you need to call the reflect method of this instance.

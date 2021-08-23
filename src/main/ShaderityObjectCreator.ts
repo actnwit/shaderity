@@ -1,5 +1,8 @@
 import {ShaderityObject, ShaderStageStr} from '../types/type';
 
+/**
+ * This class creates a shaderity object.
+ */
 export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
 
@@ -18,7 +21,7 @@ export default class ShaderityObjectCreator {
 	}
 
 	private __createShaderCode(): string {
-		// TODO: implementation
+		// TODO: implement this function
 		return '';
 	}
 }

@@ -1,5 +1,8 @@
 import {TemplateObject} from '../types/type';
 
+/**
+ * This class edits the code property of a shaderity object.
+ */
 export default class ShaderEditor {
 	static _insertDefinition(splittedShaderCode: string[], definition: string) {
 		const defStr = definition.replace(/#define[\t ]+/, '');
