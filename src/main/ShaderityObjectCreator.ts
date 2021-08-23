@@ -1,4 +1,8 @@
-import {ShaderityObject, ShaderStageStr} from '../types/type';
+import {
+	ShaderExtensionObject,
+	ShaderityObject,
+	ShaderStageStr
+} from '../types/type';
 
 /**
  * This class creates a shaderity object.
@@ -7,7 +11,7 @@ export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
 
 	// define directive
-	// extension
+	private __extensions: ShaderExtensionObject[] = [];
 	// global precision
 	// global constant value
 	// attribute declaration (for vertex shader)
