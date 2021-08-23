@@ -2,6 +2,7 @@ import Reflection from './Reflection';
 import {ShaderityObject, ShaderVersion, TemplateObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
+import Utility from './Utility';
 
 export default class Shaderity {
 	// =========================================================================================================
@@ -12,11 +13,11 @@ export default class Shaderity {
 	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
 	 */
 	public static transformToGLSLES1(obj: ShaderityObject) {
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -31,11 +32,11 @@ export default class Shaderity {
 	 * Translate a GLSL ES1 shader code to a GLSL ES3 shader code
 	 */
 	public static transformToGLSLES3(obj: ShaderityObject) {
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformToGLSLES3(splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -50,11 +51,11 @@ export default class Shaderity {
 	 * Translate a GLSL shader code to a shader code of specified GLSL version
 	 */
 	public static transformTo(version: ShaderVersion, obj: ShaderityObject) {
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
 			= ShaderTransformer._transformTo(version, splittedShaderCode, obj.isFragmentShader);
-		const resultCode = this.__joinSplittedLine(transformedSplittedShaderCode);
+		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
 			code: resultCode,
@@ -96,10 +97,10 @@ export default class Shaderity {
 	 */
 	public static insertDefinition(obj: ShaderityObject, definition: string) {
 		const copy = this.__copyShaderityObject(obj);
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		ShaderEditor._insertDefinition(splittedShaderCode, definition);
-		copy.code = this.__joinSplittedLine(splittedShaderCode);
+		copy.code = Utility._joinSplittedLine(splittedShaderCode);
 
 		return copy;
 	}
@@ -113,7 +114,7 @@ export default class Shaderity {
 	 * To get these information, you need to call reflection.reflect method.
 	 */
 	public static createReflectionObject(obj: ShaderityObject): Reflection {
-		const splittedShaderCode = this.__splitByLineFeedCode(obj.code);
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const reflection = new Reflection(splittedShaderCode, obj.shaderStage);
 		return reflection;
@@ -131,13 +132,5 @@ export default class Shaderity {
 		}
 
 		return copiedObj;
-	}
-
-	private static __splitByLineFeedCode(source: string) {
-		return source.split(/\r\n|\n/);
-	}
-
-	private static __joinSplittedLine(splittedLine: string[]) {
-		return splittedLine.join('\n');
 	}
 }
