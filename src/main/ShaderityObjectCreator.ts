@@ -27,6 +27,16 @@ export default class ShaderityObjectCreator {
 		this.__shaderStage = shaderStage;
 	}
 
+	public addDefineDirective(defineDirectiveName: string) {
+		const matchedIndex = this.__defineDirectiveNames.indexOf(defineDirectiveName);
+		if (matchedIndex !== -1) {
+			console.warn('addDefineDirective: this define directive is already exist');
+			return;
+		}
+
+		this.__defineDirectiveNames.push(defineDirectiveName);
+	}
+
 	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
 		const matchedIndex =
 			this.__extensions.findIndex(extension => extension.extensionName === extensionName);
