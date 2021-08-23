@@ -38,6 +38,17 @@ export default class ShaderityObjectCreator {
 		this.__defineDirectiveNames.push(defineDirectiveName);
 	}
 
+	public removeDefineDirective(defineDirectiveName: string) {
+		const matchedIndex = this.__defineDirectiveNames.indexOf(defineDirectiveName);
+
+		if (matchedIndex === -1) {
+			console.warn('removedDefineDirective: this define directive is not exist');
+			return;
+		}
+
+		this.__defineDirectiveNames.splice(matchedIndex, 1);
+	}
+
 	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
 		const isDuplicate =
 			this.__extensions.some(extension => extension.extensionName === extensionName);
