@@ -12,7 +12,7 @@ import Utility from './Utility';
 export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
 
-	// define directive
+	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
 	// global precision
 	// global constant value
