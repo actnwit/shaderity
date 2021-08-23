@@ -27,6 +27,17 @@ export default class ShaderityObjectCreator {
 		this.__shaderStage = shaderStage;
 	}
 
+	public addDefineDirective(defineDirectiveName: string) {
+		const isDuplicate =
+			this.__defineDirectiveNames.some(name => name === defineDirectiveName);
+		if (isDuplicate) {
+			console.warn('addDefineDirective: this define directive is already set');
+			return;
+		}
+
+		this.__defineDirectiveNames.push(defineDirectiveName);
+	}
+
 	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
 		const isDuplicate =
 			this.__extensions.some(extension => extension.extensionName === extensionName);
