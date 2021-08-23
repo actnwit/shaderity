@@ -4,6 +4,7 @@ import {
 	ShaderityObject,
 	ShaderStageStr
 } from '../types/type';
+import Utility from './Utility';
 
 /**
  * This class creates a shaderity object.
@@ -66,7 +67,18 @@ export default class ShaderityObjectCreator {
 	// public importShaderCode(code: string) {}
 
 	private __createShaderCode(): string {
-		// TODO: implement this function
-		return '';
+		// TODO: now implementing
+		const code = this.__createExtensionShaderCode();
+
+		return code;
+	}
+
+	private __createExtensionShaderCode(): string {
+		let shaderCode = '';
+		for (const extension of this.__extensions) {
+			shaderCode += `#extension ${extension.extensionName}: ${extension.behavior}\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
 }
