@@ -45,3 +45,25 @@ export type ShaderExtensionObject = {
 	extensionName: string, // e.g. GL_OES_standard_derivatives
 	behavior: ShaderExtensionBehavior,
 };
+
+export type ShaderPrecisionType = 'highp' | 'mediump' | 'lowp';
+
+export type ShaderPrecisionObject = {
+	int?: ShaderPrecisionType,
+	float?: ShaderPrecisionType,
+	sampler2D?: ShaderPrecisionType,
+	samplerCube?: ShaderPrecisionType,
+	sampler3D?: ShaderPrecisionType, // for es3
+	sampler2DArray?: ShaderPrecisionType, // for es3
+	isampler2D?: ShaderPrecisionType, // for es3
+	isamplerCube?: ShaderPrecisionType, // for es3
+	isampler3D?: ShaderPrecisionType, // for es3
+	isampler2DArray?: ShaderPrecisionType, // for es3
+	usampler2D?: ShaderPrecisionType, // for es3
+	usamplerCube?: ShaderPrecisionType, // for es3
+	usampler3D?: ShaderPrecisionType, // for es3
+	usampler2DArray?: ShaderPrecisionType, // for es3
+	sampler2DShadow?: ShaderPrecisionType, // for es3
+	samplerCubeShadow?: ShaderPrecisionType, // for es3
+	sampler2DArrayShadow?: ShaderPrecisionType, // for es3
+};

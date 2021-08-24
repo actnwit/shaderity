@@ -2,6 +2,7 @@ import {
 	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
+	ShaderPrecisionObject,
 	ShaderStageStr
 } from '../types/type';
 import Utility from './Utility';
@@ -14,7 +15,25 @@ export default class ShaderityObjectCreator {
 
 	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
-	// global precision
+	private __globalPrecision: ShaderPrecisionObject = {
+		int: 'highp',
+		float: 'highp',
+		sampler2D: 'highp',
+		samplerCube: 'highp',
+		sampler3D: 'highp',
+		sampler2DArray: 'highp',
+		isampler2D: 'highp',
+		isamplerCube: 'highp',
+		isampler3D: 'highp',
+		isampler2DArray: 'highp',
+		usampler2D: 'highp',
+		usamplerCube: 'highp',
+		usampler3D: 'highp',
+		usampler2DArray: 'highp',
+		sampler2DShadow: 'highp',
+		samplerCubeShadow: 'highp',
+		sampler2DArrayShadow: 'highp',
+	};
 	// global constant value
 	// attribute declaration (for vertex shader)
 	// varying declaration
