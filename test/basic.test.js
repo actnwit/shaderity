@@ -374,3 +374,114 @@ precision highp sampler2DArrayShadow;
 
 `);
 });
+
+test('test addGlobalConstantValue method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addGlobalConstantValue('testInt', 'int', [-2.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testFloat', 'float', [0.3]);
+  shaderityObjectCreator.addGlobalConstantValue('testMat', 'mat2', [-10, -50.10, 3, 3.7]);
+  shaderityObjectCreator.addGlobalConstantValue('testVec', 'vec4', [20.0, 1.57, -3, -10.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testIVec', 'ivec3', [-7, 4.0, 5]);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+const int testInt = int(-2);
+const float testFloat = float(0.3);
+const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
+const vec4 testVec = vec4(20, 1.57, -3, -10);
+const ivec3 testIVec = ivec3(-7, 4, 5);
+
+`);
+});
+
+test('test updateGlobalConstantValue method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addGlobalConstantValue('testInt', 'int', [-2.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testFloat', 'float', [0.3]);
+  shaderityObjectCreator.addGlobalConstantValue('testMat', 'mat2', [-10, -50.10, 3, 3.7]);
+  shaderityObjectCreator.addGlobalConstantValue('testVec', 'vec4', [20.0, 1.57, -3, -10.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testIVec', 'ivec3', [-7, 4.0, 5]);
+
+  shaderityObjectCreator.updateGlobalConstantValue('testFloat', [-0.35]);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+const int testInt = int(-2);
+const float testFloat = float(-0.35);
+const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
+const vec4 testVec = vec4(20, 1.57, -3, -10);
+const ivec3 testIVec = ivec3(-7, 4, 5);
+
+`);
+});
+
+test('test removeGlobalConstantValue method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addGlobalConstantValue('testInt', 'int', [-2.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testFloat', 'float', [0.3]);
+  shaderityObjectCreator.addGlobalConstantValue('testMat', 'mat2', [-10, -50.10, 3, 3.7]);
+  shaderityObjectCreator.addGlobalConstantValue('testVec', 'vec4', [20.0, 1.57, -3, -10.0]);
+  shaderityObjectCreator.addGlobalConstantValue('testIVec', 'ivec3', [-7, 4.0, 5]);
+
+  shaderityObjectCreator.removeGlobalConstantValue('testFloat');
+  shaderityObjectCreator.removeGlobalConstantValue('testVec');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+const int testInt = int(-2);
+const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
+const ivec3 testIVec = ivec3(-7, 4, 5);
+
+`);
+});
