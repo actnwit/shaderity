@@ -1,4 +1,5 @@
 import {
+	ShaderConstantValueObject,
 	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
@@ -35,7 +36,7 @@ export default class ShaderityObjectCreator {
 		samplerCubeShadow: 'highp',
 		sampler2DArrayShadow: 'highp',
 	};
-	// global constant value
+	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	// attribute declaration (for vertex shader)
 	// varying declaration
 	// uniform declaration

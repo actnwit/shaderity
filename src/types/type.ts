@@ -86,3 +86,25 @@ export type ShaderPrecisionObject = {
 	samplerCubeShadow?: ShaderPrecisionType, // for es3
 	sampler2DArrayShadow?: ShaderPrecisionType, // for es3
 };
+
+export type ShaderConstantValueVarTypeES1 =
+	'float' | 'vec2' | 'vec3' | 'vec4' |
+	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
+	'bool' | 'bvec2' | 'bvec3' | 'bvec4' |
+	'mat2' | 'mat3' | 'mat4';
+
+export type ShaderConstantValueVarTypeES3 =
+	'float' | 'vec2' | 'vec3' | 'vec4' |
+	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
+	'bool' | 'bvec2' | 'bvec3' | 'bvec4' |
+	'uint' | 'uvec2' | 'uvec3' | 'uvec4' |
+	'mat2' | 'mat3' | 'mat4' |
+	'mat2x2' | 'mat2x3' | 'mat2x4' |
+	'mat3x2' | 'mat3x3' | 'mat3x4' |
+	'mat4x2' | 'mat4x3' | 'mat4x4';
+
+export type ShaderConstantValueObject = {
+	variableName: string,
+	type: ShaderConstantValueVarTypeES3,
+	values: number[],
+};
