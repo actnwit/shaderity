@@ -3,6 +3,7 @@ import {
 	ShaderExtensionObject,
 	ShaderityObject,
 	ShaderPrecisionObject,
+	ShaderPrecisionObjectKey,
 	ShaderStageStr
 } from '../types/type';
 import Utility from './Utility';
@@ -114,7 +115,8 @@ export default class ShaderityObjectCreator {
 		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
-			+ this.__createExtensionShaderCode();
+			+ this.__createExtensionShaderCode()
+			+ this.__createGlobalPrecisionShaderCode();
 
 		return code;
 	}
@@ -136,4 +138,18 @@ export default class ShaderityObjectCreator {
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
+
+	//TODO: remove needless precisions
+	private __createGlobalPrecisionShaderCode(): string {
+		let shaderCode = '';
+		for (const type in this.__globalPrecision) {
+			const precisionType = type as ShaderPrecisionObjectKey;
+			const precisionQualifier = this.__globalPrecision[precisionType];
+
+			shaderCode += `precision ${precisionQualifier} ${precisionType};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
 }
+
