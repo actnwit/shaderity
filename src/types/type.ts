@@ -48,6 +48,25 @@ export type ShaderExtensionObject = {
 
 export type ShaderPrecisionType = 'highp' | 'mediump' | 'lowp';
 
+export type ShaderPrecisionObjectKey =
+	'int' |
+	'float' |
+	'sampler2D' |
+	'samplerCube' |
+	'sampler3D' |
+	'sampler2DArray' |
+	'isampler2D' |
+	'isamplerCube' |
+	'isampler3D' |
+	'isampler2DArray' |
+	'usampler2D' |
+	'usamplerCube' |
+	'usampler3D' |
+	'usampler2DArray' |
+	'sampler2DShadow' |
+	'samplerCubeShadow' |
+	'sampler2DArrayShadow';
+
 export type ShaderPrecisionObject = {
 	int?: ShaderPrecisionType,
 	float?: ShaderPrecisionType,
