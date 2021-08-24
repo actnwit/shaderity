@@ -157,6 +157,17 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantValues[matchedIndex].values = values;
 	}
 
+	public removeGlobalConstantValue(variableName: string) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantValues.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
