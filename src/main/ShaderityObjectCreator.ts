@@ -94,6 +94,10 @@ export default class ShaderityObjectCreator {
 		this.__extensions.splice(matchedIndex, 1);
 	}
 
+	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
+		Object.assign(this.__globalPrecision, precision);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
