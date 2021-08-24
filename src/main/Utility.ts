@@ -52,4 +52,12 @@ export default class Utility {
 			return false;
 		}
 	}
+
+	static _isValidComponentCount(type: ShaderConstantValueVarTypeES3, values: number[]) {
+		const validComponentCount = Utility._componentNumber(type);
+		if (validComponentCount === values.length) {
+			return true;
+		}
+		return false;
+	}
 }
