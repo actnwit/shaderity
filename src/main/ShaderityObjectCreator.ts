@@ -108,19 +108,17 @@ export default class ShaderityObjectCreator {
 			return;
 		}
 
-		const validComponentCount = Utility._componentNumber(type);
-		if (validComponentCount !== values.length) {
+		const isValidComponentNumber = ShaderityObjectCreator.__isValidComponentCount(type, values);
+		if (!isValidComponentNumber) {
 			console.error('addGlobalConstantValue: the component count is invalid');
 			return;
 		}
 
 		const isIntType = Utility._isIntType(type);
 		if (isIntType) {
-			for (const value of values) {
-				if (!Number.isInteger(value)) {
-					console.warn(`addGlobalConstantValue: the ${variableName} has a non-integer value.`);
-					break;
-				}
+			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
+			if (existNonIntegerValue) {
+				console.warn(`addGlobalConstantValue: the ${variableName} has a non-integer value.`);
 			}
 		}
 
@@ -131,6 +129,33 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public updateGlobalConstantValue(variableName: string, values: number[]) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`updateGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		const type = this.__globalConstantValues[matchedIndex].type;
+
+		const isValidComponentNumber = ShaderityObjectCreator.__isValidComponentCount(type, values);
+		if (!isValidComponentNumber) {
+			console.error('updateGlobalConstantValue: the component count is invalid');
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
+			if (existNonIntegerValue) {
+				console.warn(`updateGlobalConstantValue: the ${variableName} has a non-integer value.`);
+			}
+		}
+
+		this.__globalConstantValues[matchedIndex].values = values;
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -139,6 +164,23 @@ export default class ShaderityObjectCreator {
 		};
 
 		return shaderityObj;
+	}
+
+	private static __isValidComponentCount(type: ShaderConstantValueVarTypeES3, values: number[]) {
+		const validComponentCount = Utility._componentNumber(type);
+		if (validComponentCount === values.length) {
+			return true;
+		}
+		return false;
+	}
+
+	private static __existNonIntegerValue(values: number[]) {
+		for (const value of values) {
+			if (!Number.isInteger(value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// TODO: implement shader code import feature (low priority)
