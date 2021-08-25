@@ -1,4 +1,4 @@
-import {ShaderConstantValueVarTypeES1, ShaderConstantValueVarTypeES3} from '../types/type';
+import {ShaderAttributeVarType, ShaderConstantValueVarTypeES1, ShaderConstantValueVarTypeES3} from '../types/type';
 
 export default class Utility {
 	static _splitByLineFeedCode(source: string) {
@@ -13,7 +13,9 @@ export default class Utility {
 		return source === '' ? source : source + '\n';
 	}
 
-	static _componentNumber(type: ShaderConstantValueVarTypeES3 | ShaderConstantValueVarTypeES1) {
+	static _componentNumber(
+		type: ShaderConstantValueVarTypeES3 | ShaderConstantValueVarTypeES1 | ShaderAttributeVarType
+	) {
 		let componentNumber;
 		if (type === 'float' || type === 'int' || type === 'bool' || type === 'uint') {
 			componentNumber = 1;
@@ -43,7 +45,9 @@ export default class Utility {
 		return componentNumber;
 	}
 
-	static _isIntType(type: ShaderConstantValueVarTypeES3 | ShaderConstantValueVarTypeES1) {
+	static _isIntType(
+		type: ShaderConstantValueVarTypeES3 | ShaderConstantValueVarTypeES1 | ShaderAttributeVarType
+	) {
 		if (
 			type === 'int' || type === 'ivec2' || type === 'ivec3' || type === 'ivec4' ||
 			type === 'uint' || type === 'uvec2' || type === 'uvec3' || type === 'uvec4'

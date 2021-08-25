@@ -108,3 +108,15 @@ export type ShaderConstantValueObject = {
 	type: ShaderConstantValueVarTypeES3,
 	values: number[],
 };
+
+export type ShaderAttributeVarType =
+	'float' | 'vec2' | 'vec3' | 'vec4' |
+	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
+	'mat2' | 'mat3' | 'mat4';
+
+export type ShaderAttributeObject = {
+	variableName: string,
+	type: ShaderAttributeVarType,
+	precision?: ShaderPrecisionType,
+	location?: number, // for es3
+};
