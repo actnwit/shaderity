@@ -558,3 +558,112 @@ layout (location = 0) in ivec4 a_testD;
 
 `);
 });
+
+test('test addVarying method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addVaryingDeclaration('v_testA', 'float');
+  shaderityObjectCreator.addVaryingDeclaration('v_testB', 'vec3', {});
+  shaderityObjectCreator.addVaryingDeclaration('v_testC', 'mat4', { precision: 'mediump' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testD', 'ivec4', { interpolationType: 'flat' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testE', 'mat2', { interpolationType: 'smooth', precision: 'lowp' });
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+out float v_testA;
+out vec3 v_testB;
+out mediump mat4 v_testC;
+flat out ivec4 v_testD;
+smooth out lowp mat2 v_testE;
+
+`);
+});
+
+test('test removeVarying method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addVaryingDeclaration('v_testA', 'float');
+  shaderityObjectCreator.addVaryingDeclaration('v_testB', 'vec3', {});
+  shaderityObjectCreator.addVaryingDeclaration('v_testC', 'mat4', { precision: 'mediump' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testD', 'ivec4', { interpolationType: 'flat' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testE', 'mat2', { interpolationType: 'smooth', precision: 'lowp' });
+
+  shaderityObjectCreator.removeVaryingDeclaration('v_testB');
+  shaderityObjectCreator.removeVaryingDeclaration('v_testD');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+out float v_testA;
+out mediump mat4 v_testC;
+smooth out lowp mat2 v_testE;
+
+`);
+});
+
+test('test addVarying method for fragment shader in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('fragment');
+  shaderityObjectCreator.addVaryingDeclaration('v_testA', 'float');
+  shaderityObjectCreator.addVaryingDeclaration('v_testB', 'vec3', {});
+  shaderityObjectCreator.addVaryingDeclaration('v_testC', 'mat4', { precision: 'mediump' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testD', 'ivec4', { interpolationType: 'flat' });
+  shaderityObjectCreator.addVaryingDeclaration('v_testE', 'mat2', { interpolationType: 'smooth', precision: 'lowp' });
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+in float v_testA;
+in vec3 v_testB;
+in mediump mat4 v_testC;
+flat in ivec4 v_testD;
+smooth in lowp mat2 v_testE;
+
+`);
+});
