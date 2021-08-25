@@ -239,7 +239,8 @@ export default class ShaderityObjectCreator {
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
-			+ this.__createGlobalConstantValueShaderCode();
+			+ this.__createGlobalConstantValueShaderCode()
+			+ this.__createAttributeDeclarationShaderCode();
 
 		return code;
 	}
@@ -288,6 +289,25 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode = shaderCode.replace(/,\s$/, ');\n');
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createAttributeDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const attribute of this.__attributes) {
+			if (attribute.location != null) {
+				shaderCode += `layout (location = ${attribute.location}) `;
+			}
+
+			shaderCode += `in `;
+
+			if (attribute.precision != null) {
+				shaderCode += `${attribute.precision} `;
+			}
+
+			shaderCode += `${attribute.type} ${attribute.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
