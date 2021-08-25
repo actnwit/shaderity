@@ -10,6 +10,7 @@ import {
 	ShaderAttributeObject,
 	ShaderPrecisionType,
 	ShaderAttributeVarType,
+	ShaderVaryingObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -42,8 +43,8 @@ export default class ShaderityObjectCreator {
 	};
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
+	private __varyings: ShaderVaryingObject[] = [];
 
-	// varying declaration
 	// uniform declaration
 	// uniform structure declaration
 	// functions
