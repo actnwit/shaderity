@@ -11,6 +11,8 @@ import {
 	ShaderPrecisionType,
 	ShaderAttributeVarType,
 	ShaderVaryingObject,
+	ShaderVaryingInterpolationType,
+	ShaderVaryingVarType,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -209,6 +211,44 @@ export default class ShaderityObjectCreator {
 		}
 
 		this.__attributes.splice(matchedIndex, 1);
+	}
+
+	public addVaryingDeclaration(
+		variableName: string,
+		type: ShaderVaryingVarType,
+		options?: {
+			precision?: ShaderPrecisionType,
+			interpolationType?: ShaderVaryingInterpolationType,
+		}
+	) {
+		const matchedIndex =
+			this.__varyings.findIndex(varying => varying.variableName === variableName);
+		if (matchedIndex !== -1) {
+			console.error(`addVarying: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		let interpolationType = options?.interpolationType;
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			if (interpolationType !== 'flat') {
+				if (interpolationType != null) {
+					console.error(`addVarying: the interpolationType must be flat for integer types`);
+					return;
+				} else {
+					console.warn(`addVarying: set the interpolationType of integer types to flat to avoid compilation error`);
+					interpolationType = 'flat';
+				}
+			}
+		}
+
+		this.__varyings.push({
+			variableName,
+			type,
+			precision: options?.precision,
+			interpolationType,
+		});
 	}
 
 	public createShaderityObject(): ShaderityObject {
