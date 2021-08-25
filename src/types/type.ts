@@ -120,3 +120,15 @@ export type ShaderAttributeObject = {
 	precision?: ShaderPrecisionType,
 	location?: number, // for es3
 };
+
+export type ShaderVaryingInterpolationType =
+	'flat' | 'smooth';
+
+export type ShaderVaryingVarType = ShaderAttributeVarType;
+
+export type ShaderVaryingObject = {
+	variableName: string,
+	type: ShaderVaryingVarType,
+	precision?: ShaderPrecisionType,
+	interpolationType?: ShaderVaryingInterpolationType // for es3
+};
