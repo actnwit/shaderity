@@ -249,6 +249,17 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public removeVaryingDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__varyings.findIndex(varying => varying.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeVarying: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__varyings.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
