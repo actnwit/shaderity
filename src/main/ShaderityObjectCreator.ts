@@ -8,6 +8,8 @@ import {
 	ShaderPrecisionObjectKey,
 	ShaderStageStr,
 	ShaderAttributeObject,
+	ShaderPrecisionType,
+	ShaderAttributeVarType,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -167,6 +169,34 @@ export default class ShaderityObjectCreator {
 		}
 
 		this.__globalConstantValues.splice(matchedIndex, 1);
+	}
+
+	public addAttributeDeclaration(
+		variableName: string,
+		type: ShaderAttributeVarType,
+		options?: {
+			precision?: ShaderPrecisionType,
+			location?: number,
+		}
+	) {
+		if (this.__shaderStage !== 'vertex') {
+			console.error('addAttribute: this method is for vertex shader only');
+			return;
+		}
+
+		const matchedIndex =
+			this.__attributes.findIndex(attribute => attribute.variableName === variableName);
+		if (matchedIndex !== -1) {
+			console.error(`addAttribute: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__attributes.push({
+			variableName,
+			type,
+			precision: options?.precision,
+			location: options?.location,
+		});
 	}
 
 	public createShaderityObject(): ShaderityObject {
