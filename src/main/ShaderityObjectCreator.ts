@@ -299,7 +299,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
-			+ this.__createAttributeDeclarationShaderCode();
+			+ this.__createAttributeDeclarationShaderCode()
+			+ this.__createVaryingDeclarationShaderCode();
 
 		return code;
 	}
@@ -367,6 +368,25 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `${attribute.type} ${attribute.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createVaryingDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const varying of this.__varyings) {
+			if (varying.interpolationType != null) {
+				shaderCode += `${varying.interpolationType} `;
+			}
+
+			shaderCode += this.__shaderStage == 'vertex' ? `out ` : `in `;
+
+			if (varying.precision != null) {
+				shaderCode += `${varying.precision} `;
+			}
+
+			shaderCode += `${varying.type} ${varying.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
