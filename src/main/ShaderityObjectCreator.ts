@@ -6,7 +6,8 @@ import {
 	ShaderConstantValueVarTypeES3,
 	ShaderPrecisionObject,
 	ShaderPrecisionObjectKey,
-	ShaderStageStr
+	ShaderStageStr,
+	ShaderAttributeObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -38,7 +39,8 @@ export default class ShaderityObjectCreator {
 		sampler2DArrayShadow: 'highp',
 	};
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
-	// attribute declaration (for vertex shader)
+	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
+
 	// varying declaration
 	// uniform declaration
 	// uniform structure declaration
