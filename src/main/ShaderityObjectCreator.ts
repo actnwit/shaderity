@@ -13,6 +13,7 @@ import {
 	ShaderVaryingObject,
 	ShaderVaryingInterpolationType,
 	ShaderVaryingVarType,
+	ShaderUniformObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -46,8 +47,8 @@ export default class ShaderityObjectCreator {
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
+	private __uniforms: ShaderUniformObject[] = [];
 
-	// uniform declaration
 	// uniform structure declaration
 	// functions
 	// main function

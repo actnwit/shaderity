@@ -132,3 +132,30 @@ export type ShaderVaryingObject = {
 	precision?: ShaderPrecisionType,
 	interpolationType?: ShaderVaryingInterpolationType // for es3
 };
+
+export type ShaderUniformVarTypeES1 =
+	'float' | 'vec2' | 'vec3' | 'vec4' |
+	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
+	'bool' | 'bvec2' | 'bvec3' | 'bvec4' |
+	'mat2' | 'mat3' | 'mat4' |
+	'sampler2D' | 'samplerCube';
+
+export type ShaderUniformVarTypeES3 =
+	'float' | 'vec2' | 'vec3' | 'vec4' |
+	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
+	'bool' | 'bvec2' | 'bvec3' | 'bvec4' |
+	'uint' | 'uvec2' | 'uvec3' | 'uvec4' |
+	'mat2' | 'mat3' | 'mat4' |
+	'mat2x2' | 'mat2x3' | 'mat2x4' |
+	'mat3x2' | 'mat3x3' | 'mat3x4' |
+	'mat4x2' | 'mat4x3' | 'mat4x4' |
+	'sampler2D' | 'samplerCube' | 'sampler3D' | 'sampler2DArray' |
+	'isampler2D' | 'isamplerCube' | 'isampler3D' | 'isampler2DArray' |
+	'usampler2D' | 'usamplerCube' | 'usampler3D' | 'usampler2DArray' |
+	'sampler2DShadow' | 'samplerCubeShadow' | 'sampler2DArrayShadow';
+
+export type ShaderUniformObject = {
+	variableName: string,
+	type: ShaderUniformVarTypeES3,
+	precision?: ShaderPrecisionType,
+};
