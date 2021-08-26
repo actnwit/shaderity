@@ -367,6 +367,7 @@ export default class ShaderityObjectCreator {
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
+			+ this.__createStructDefinitionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
@@ -401,6 +402,28 @@ export default class ShaderityObjectCreator {
 			const precisionQualifier = this.__globalPrecision[precisionType];
 
 			shaderCode += `precision ${precisionQualifier} ${precisionType};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createStructDefinitionShaderCode(): string {
+		let shaderCode = '';
+		for (const structDefinition of this.__structDefinitions) {
+			shaderCode += `struct ${structDefinition.structName} {\n`;
+
+			for (let i = 0; i < structDefinition.memberObjects.length; i++) {
+				const variable = structDefinition.memberObjects[i];
+
+				shaderCode += `  `;
+				if (variable.precision != null) {
+					shaderCode += `${variable.precision} `;
+				}
+
+				shaderCode += `${variable.type} ${variable.memberName};\n`;
+			}
+
+			shaderCode += `};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
