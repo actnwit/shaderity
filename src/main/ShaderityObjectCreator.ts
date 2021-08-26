@@ -16,6 +16,7 @@ import {
 	ShaderUniformObject,
 	ShaderUniformVarTypeES3,
 	ShaderStructDefinitionObject,
+	ShaderStructMemberObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -110,6 +111,21 @@ export default class ShaderityObjectCreator {
 
 	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
 		Object.assign(this.__globalPrecision, precision);
+	}
+
+	// only define types
+	public addStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
+		const isDuplicate =
+			this.__structDefinitions.some(structDefinition => structDefinition.structName === structName);
+		if (isDuplicate) {
+			console.error(`addStructDefinition: duplicate struct type name ${structName}`);
+			return;
+		}
+
+		this.__structDefinitions.push({
+			structName,
+			memberObjects,
+		});
 	}
 
 	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
