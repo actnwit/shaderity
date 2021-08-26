@@ -3,6 +3,7 @@ import {
 	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
+	ShaderConstantValueVarTypeES3,
 	ShaderPrecisionObject,
 	ShaderPrecisionObjectKey,
 	ShaderStageStr
@@ -97,6 +98,37 @@ export default class ShaderityObjectCreator {
 
 	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
 		Object.assign(this.__globalPrecision, precision);
+	}
+
+	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex !== -1) {
+			console.error(`addGlobalConstantValue: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		const validComponentCount = Utility._componentNumber(type);
+		if (validComponentCount !== values.length) {
+			console.error('addGlobalConstantValue: the component count is invalid');
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			for (const value of values) {
+				if (!Number.isInteger(value)) {
+					console.warn(`addGlobalConstantValue: the ${variableName} has a non-integer value.`);
+					break;
+				}
+			}
+		}
+
+		this.__globalConstantValues.push({
+			variableName,
+			type,
+			values,
+		});
 	}
 
 	public createShaderityObject(): ShaderityObject {
