@@ -667,3 +667,72 @@ smooth in lowp mat2 v_testE;
 
 `);
 });
+
+test('test addUniform method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addUniformDeclaration('u_testA', 'mat4x2');
+  shaderityObjectCreator.addUniformDeclaration('u_testB', 'uvec3', {});
+  shaderityObjectCreator.addUniformDeclaration('u_testC', 'sampler2D', { precision: 'lowp' });
+  shaderityObjectCreator.addUniformDeclaration('u_testD', 'sampler2DArray', {});
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+uniform mat4x2 u_testA;
+uniform uvec3 u_testB;
+uniform lowp sampler2D u_testC;
+uniform sampler2DArray u_testD;
+
+`);
+});
+
+test('test removeUniform method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addUniformDeclaration('u_testA', 'mat4x2');
+  shaderityObjectCreator.addUniformDeclaration('u_testB', 'uvec3', {});
+  shaderityObjectCreator.addUniformDeclaration('u_testC', 'sampler2D', { precision: 'lowp' });
+  shaderityObjectCreator.addUniformDeclaration('u_testD', 'sampler2DArray', {});
+
+  shaderityObjectCreator.removeUniformDeclaration('u_testA');
+  shaderityObjectCreator.removeUniformDeclaration('u_testC');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+uniform uvec3 u_testB;
+uniform sampler2DArray u_testD;
+
+`);
+});
