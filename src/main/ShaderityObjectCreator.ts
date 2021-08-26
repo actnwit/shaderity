@@ -128,6 +128,17 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public updateStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`updateStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions[matchedIndex].memberObjects = memberObjects;
+	}
+
 	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
 		const isDuplicate =
 			this.__globalConstantValues.some(globalConstantValue => globalConstantValue.variableName === variableName);
