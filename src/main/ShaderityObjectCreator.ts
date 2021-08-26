@@ -14,6 +14,7 @@ import {
 	ShaderVaryingInterpolationType,
 	ShaderVaryingVarType,
 	ShaderUniformObject,
+	ShaderUniformVarTypeES3,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -259,6 +260,32 @@ export default class ShaderityObjectCreator {
 		}
 
 		this.__varyings.splice(matchedIndex, 1);
+	}
+
+	public addUniformDeclaration(
+		variableName: string,
+		type: ShaderUniformVarTypeES3,
+		options?: {
+			precision?: ShaderPrecisionType,
+		}
+	) {
+		const isDuplicate =
+			this.__uniforms.some(uniform => uniform.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addUniform: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		if (type === 'bool' && options?.precision != null) {
+			console.warn(`addUniform: remove the specification of precision for bool type to avoid compilation error`);
+			options.precision = undefined;
+		}
+
+		this.__uniforms.push({
+			variableName,
+			type,
+			precision: options?.precision,
+		});
 	}
 
 	public createShaderityObject(): ShaderityObject {
