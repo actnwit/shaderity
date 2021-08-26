@@ -288,6 +288,17 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public removeUniformDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__uniforms.findIndex(uniform => uniform.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniform: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__uniforms.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
