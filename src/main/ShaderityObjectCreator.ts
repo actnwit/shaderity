@@ -15,6 +15,7 @@ import {
 	ShaderVaryingVarType,
 	ShaderUniformObject,
 	ShaderUniformVarTypeES3,
+	ShaderStructDefinitionObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -45,6 +46,7 @@ export default class ShaderityObjectCreator {
 		samplerCubeShadow: 'highp',
 		sampler2DArrayShadow: 'highp',
 	};
+	private __structDefinitions: ShaderStructDefinitionObject[] = [];
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
@@ -437,4 +439,3 @@ export default class ShaderityObjectCreator {
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
 }
-
