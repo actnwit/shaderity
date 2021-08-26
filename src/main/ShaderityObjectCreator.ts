@@ -139,6 +139,17 @@ export default class ShaderityObjectCreator {
 		this.__structDefinitions[matchedIndex].memberObjects = memberObjects;
 	}
 
+	public removeStructDefinition(structName: string) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`removeStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions.splice(matchedIndex, 1);
+	}
+
 	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
 		const isDuplicate =
 			this.__globalConstantValues.some(globalConstantValue => globalConstantValue.variableName === variableName);
