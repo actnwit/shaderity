@@ -87,6 +87,17 @@ export type ShaderPrecisionObject = {
 	sampler2DArrayShadow?: ShaderPrecisionType, // for es3
 };
 
+export type ShaderStructMemberObject = {
+	memberName: string,
+	type: ShaderUniformVarTypeES3,
+	precision?: ShaderPrecisionType,
+}
+
+export type ShaderStructDefinitionObject = {
+	structName: string,
+	memberObjects: ShaderStructMemberObject[],
+}
+
 export type ShaderConstantValueVarTypeES1 =
 	'float' | 'vec2' | 'vec3' | 'vec4' |
 	'int' | 'ivec2' | 'ivec3' | 'ivec4' |
