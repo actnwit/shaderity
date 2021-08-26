@@ -1,4 +1,4 @@
-import {ShaderAttributeVarType, ShaderConstantValueVarTypeES3, ShaderVaryingVarType} from '../types/type';
+import {ShaderAttributeVarType, ShaderConstantValueVarTypeES3, ShaderUniformVarTypeES3, ShaderVaryingVarType} from '../types/type';
 
 export default class Utility {
 	static _splitByLineFeedCode(source: string) {
@@ -14,10 +14,16 @@ export default class Utility {
 	}
 
 	static _componentNumber(
-		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType
+		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType | ShaderUniformVarTypeES3
 	) {
 		let componentNumber;
-		if (type === 'float' || type === 'int' || type === 'bool' || type === 'uint') {
+		if (
+			type === 'float' || type === 'int' || type === 'bool' || type === 'uint' ||
+			type === 'sampler2D' || type === 'samplerCube' || type === 'sampler3D' || type === 'sampler2DArray' ||
+			type === 'isampler2D' || type === 'isamplerCube' || type === 'isampler3D' || type === 'isampler2DArray' ||
+			type === 'usampler2D' || type === 'usamplerCube' || type === 'usampler3D' || type === 'usampler2DArray' ||
+			type === 'sampler2DShadow' || type === 'samplerCubeShadow' || type === 'sampler2DArrayShadow'
+		) {
 			componentNumber = 1;
 		} else if (type === 'vec2' || type === 'ivec2' || type === 'bvec2' || type === 'uvec2') {
 			componentNumber = 2;
@@ -45,7 +51,7 @@ export default class Utility {
 	}
 
 	static _isIntType(
-		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType
+		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType | ShaderUniformVarTypeES3
 	) {
 		if (
 			type === 'int' || type === 'ivec2' || type === 'ivec3' || type === 'ivec4' ||
