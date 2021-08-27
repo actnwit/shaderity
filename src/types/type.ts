@@ -38,3 +38,10 @@ export type TemplateObject = {
 };
 
 export type ShaderVersion = 'webgl1' | 'webgl2' | 'es1' | 'es3' | 'glsl es1' | 'glsl es3';
+
+export type ShaderExtensionBehavior = 'enable' | 'require' | 'warn' | 'disable';
+
+export type ShaderExtensionObject = {
+	extensionName: string, // e.g. GL_OES_standard_derivatives
+	behavior: ShaderExtensionBehavior,
+};
