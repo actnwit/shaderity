@@ -219,6 +219,23 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantValues.splice(matchedIndex, 1);
 	}
 
+	// need to define struct by the addStructDefinition method
+	// validate that the corresponding structure is defined by the __createGlobalConstantStructValueShaderCode method
+	public addGlobalConstantStructValue(structName: string, variableName: string, values: {[keyVariableName: string]: number[]}) {
+		const isDuplicate =
+			this.__globalConstantStructValues.some(structValue => structValue.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addGlobalConstantStructValue: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__globalConstantStructValues.push({
+			variableName,
+			structName,
+			values,
+		});
+	}
+
 	public addAttributeDeclaration(
 		variableName: string,
 		type: ShaderAttributeVarType,
