@@ -443,7 +443,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalConstantStructValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
-			+ this.__createUniformDeclarationShaderCode();
+			+ this.__createUniformDeclarationShaderCode()
+			+ this.__createUniformStructDeclarationShaderCode();
 
 		return code;
 	}
@@ -621,6 +622,24 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `${uniform.type} ${uniform.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createUniformStructDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const uniformStruct of this.__uniformStructs) {
+			const structName = uniformStruct.structName;
+
+			const existStructDefinition =
+				this.__structDefinitions.some(definition => definition.structName === structName);
+			if (!existStructDefinition) {
+				console.error(`__createUniformStructDeclarationShaderCode: the struct type ${structName} is not defined`);
+				continue;
+			}
+
+			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
