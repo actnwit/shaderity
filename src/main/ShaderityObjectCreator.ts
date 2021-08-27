@@ -18,6 +18,7 @@ import {
 	ShaderStructDefinitionObject,
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
+	ShaderUniformStructObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -54,8 +55,8 @@ export default class ShaderityObjectCreator {
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
+	private __uniformStructs: ShaderUniformStructObject[] = [];
 
-	// uniform structure declaration
 	// functions
 	// main function
 

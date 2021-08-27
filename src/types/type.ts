@@ -176,3 +176,8 @@ export type ShaderUniformObject = {
 	type: ShaderUniformVarTypeES3,
 	precision?: ShaderPrecisionType,
 };
+
+export type ShaderUniformStructObject = {
+	structName: string,
+	variableName: string,
+};
