@@ -20,6 +20,7 @@ import {
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
 	ShaderUniformBufferObject,
+	ShaderUBOVariableObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -414,6 +415,50 @@ export default class ShaderityObjectCreator {
 		}
 
 		this.__uniformStructs.splice(matchedIndex, 1);
+	}
+
+	// for es3
+	public addUniformBufferObjectDeclaration(
+		blockName: string,
+		variableObjects: ShaderUBOVariableObject[],
+		options?: {
+			instanceName?: ShaderPrecisionType
+		}
+	) {
+		const isDuplicateBlockName =
+			this.__uniformBufferObjects.some(ubo => ubo.blockName === blockName);
+		if (isDuplicateBlockName) {
+			console.error(`addUniformBufferObjectDeclaration: duplicate block name ${blockName}`);
+			return;
+		}
+
+		for (const ubo of this.__uniformBufferObjects) {
+			for (const uboVariableObject of ubo.variableObjects) {
+				for (const variableObject of variableObjects) {
+					if (uboVariableObject.variableName === variableObject.variableName) {
+						console.error(`addUniformBufferObjectDeclaration: duplicate variable name ${variableObject.variableName}`);
+						return;
+					}
+				}
+			}
+		}
+
+		this.__uniformBufferObjects.push({
+			blockName,
+			variableObjects,
+			instanceName: options?.instanceName,
+		});
+	}
+
+	public removeUniformBufferObjectDeclaration(blockName: string) {
+		const matchedIndex =
+			this.__uniformBufferObjects.findIndex(ubo => ubo.blockName === blockName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniformStructDeclaration: the variable name ${blockName} is not exist`);
+			return;
+		}
+
+		this.__uniformBufferObjects.splice(matchedIndex, 1);
 	}
 
 	// =========================================================================================================
