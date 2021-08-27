@@ -1205,27 +1205,27 @@ uniform sampler2DArray u_testD;
 
 test('test addUniformStructDeclaration method in ShaderityObjectCreator', async() => {
   const shaderStructVariableObjectsA = [{
-      variableName: 'varA',
+      memberName: 'varA',
       type: 'float',
       precision: 'lowp',
     },
     {
-      variableName: 'varB',
+      memberName: 'varB',
       type: 'mat2',
     },
   ];
 
   const shaderStructVariableObjectsB = [{
-      variableName: 'varA',
+      memberName: 'varA',
       type: 'float',
     },
     {
-      variableName: 'varB',
+      memberName: 'varB',
       type: 'isampler2D',
       precision: 'highp',
     },
     {
-      variableName: 'varC',
+      memberName: 'varC',
       type: 'sampler3D',
       precision: 'mediump',
     },
@@ -1277,27 +1277,27 @@ uniform testStructB testStructUniformB;
 
 test('test removeUniformStructDeclaration method in ShaderityObjectCreator', async() => {
   const shaderStructVariableObjectsA = [{
-      variableName: 'varA',
+      memberName: 'varA',
       type: 'float',
       precision: 'lowp',
     },
     {
-      variableName: 'varB',
+      memberName: 'varB',
       type: 'mat2',
     },
   ];
 
   const shaderStructVariableObjectsB = [{
-      variableName: 'varA',
+      memberName: 'varA',
       type: 'float',
     },
     {
-      variableName: 'varB',
+      memberName: 'varB',
       type: 'isampler2D',
       precision: 'highp',
     },
     {
-      variableName: 'varC',
+      memberName: 'varC',
       type: 'sampler3D',
       precision: 'mediump',
     },

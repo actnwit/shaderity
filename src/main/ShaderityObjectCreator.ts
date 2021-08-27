@@ -64,6 +64,10 @@ export default class ShaderityObjectCreator {
 		this.__shaderStage = shaderStage;
 	}
 
+	// =========================================================================================================
+	// edit parameters part
+	// =========================================================================================================
+
 	public addDefineDirective(defineDirectiveName: string) {
 		const isDuplicate =
 			this.__defineDirectiveNames.some(name => name === defineDirectiveName);
@@ -410,6 +414,10 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.splice(matchedIndex, 1);
 	}
 
+	// =========================================================================================================
+	// create shaderity object part
+	// =========================================================================================================
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -419,6 +427,10 @@ export default class ShaderityObjectCreator {
 
 		return shaderityObj;
 	}
+
+	// =========================================================================================================
+	// private methods
+	// =========================================================================================================
 
 	private static __existNonIntegerValue(values: number[]) {
 		for (const value of values) {
