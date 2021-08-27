@@ -182,6 +182,19 @@ export type ShaderUniformStructObject = {
 	variableName: string,
 };
 
+export type ShaderUBOVarType = ShaderConstantValueVarTypeES3;
+
+export type ShaderUBOVariableObject = {
+	type: ShaderUBOVarType,
+	variableName: string,
+}
+
+export type ShaderUniformBufferObject = {
+	blockName: string,
+	variableObjects: ShaderUBOVariableObject[],
+	instanceName?: string,
+};
+
 export type ShaderFunctionObject = {
 	functionId: number,
 	functionCode: string,

@@ -19,6 +19,7 @@ import {
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
+	ShaderUniformBufferObject,
 	ShaderFunctionObject,
 } from '../types/type';
 import Utility from './Utility';
@@ -58,6 +59,7 @@ export default class ShaderityObjectCreator {
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
+	private __uniformBufferObjects: ShaderUniformBufferObject[] = [];
 	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
 	private __mainFunctionCode: string = 'void main() {}';
 	private __outputColorVariableName: string = 'renderTarget0'; // for fragment shader only
