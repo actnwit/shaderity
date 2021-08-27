@@ -19,6 +19,7 @@ import {
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
+	ShaderUniformBufferObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -56,6 +57,7 @@ export default class ShaderityObjectCreator {
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
+	private __uniformBufferObjects: ShaderUniformBufferObject[] = [];
 
 	// functions
 	// main function
