@@ -381,6 +381,24 @@ export default class ShaderityObjectCreator {
 		this.__uniforms.splice(matchedIndex, 1);
 	}
 
+	// need to define struct by the addStructDefinition method
+	public addUniformStructDeclaration(
+		structName: string,
+		variableName: string
+	) {
+		const isDuplicate =
+			this.__uniformStructs.some(uniformStruct => uniformStruct.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addUniformStructDeclaration: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__uniformStructs.push({
+			variableName,
+			structName,
+		});
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
