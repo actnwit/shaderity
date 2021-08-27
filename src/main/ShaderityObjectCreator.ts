@@ -236,6 +236,17 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	public updateGlobalConstantStructValue(variableName: string, values: {[keyVariableName: string]: number[]}) {
+		const matchedIndex =
+			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantStructValues[matchedIndex].values = values;
+	}
+
 	public addAttributeDeclaration(
 		variableName: string,
 		type: ShaderAttributeVarType,
