@@ -503,7 +503,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
-			+ this.__createUniformStructDeclarationShaderCode();
+			+ this.__createUniformStructDeclarationShaderCode()
+			+ this.__createUniformBufferObjectShaderCode();
 
 		return code;
 	}
@@ -699,6 +700,26 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createUniformBufferObjectShaderCode(): string {
+		let shaderCode = '';
+		for (const ubo of this.__uniformBufferObjects) {
+			shaderCode += `layout (std140) uniform ${ubo.blockName} {\n`;
+
+			for (let i = 0; i < ubo.variableObjects.length; i++) {
+				const variableObj = ubo.variableObjects[i];
+				shaderCode += `  ${variableObj.type} ${variableObj.variableName};\n`;
+			}
+
+			if (ubo.instanceName != null) {
+				shaderCode += `} ${ubo.instanceName};\n`;
+			} else {
+				shaderCode += `};\n`;
+			}
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
