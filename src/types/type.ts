@@ -120,6 +120,12 @@ export type ShaderConstantValueObject = {
 	values: number[],
 };
 
+export type ShaderConstantStructValueObject = {
+	structName: string,
+	variableName: string,
+	values: {[memberName: string]: number[]},
+}
+
 export type ShaderAttributeVarType =
 	'float' | 'vec2' | 'vec3' | 'vec4' |
 	'int' | 'ivec2' | 'ivec3' | 'ivec4' |

@@ -17,6 +17,7 @@ import {
 	ShaderUniformVarTypeES3,
 	ShaderStructDefinitionObject,
 	ShaderStructMemberObject,
+	ShaderConstantStructValueObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -49,6 +50,7 @@ export default class ShaderityObjectCreator {
 	};
 	private __structDefinitions: ShaderStructDefinitionObject[] = [];
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
+	private __globalConstantStructValues: ShaderConstantStructValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
