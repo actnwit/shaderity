@@ -444,6 +444,26 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.splice(matchedIndex, 1);
 	}
 
+	public removeFunctionDefinition(functionId: number) {
+		this.__fillEmptyFunctions();
+
+		// id is too small or too big
+		if (functionId < 0 || functionId >= this.__functionIdCount) {
+			console.warn('removeFunctionDefinition: invalid function id')
+		}
+
+		for (const functionObjects of this.__functions) {
+			const matchedIndex =
+				functionObjects.findIndex(functionObject => functionObject.functionId === functionId);
+			if (matchedIndex !== -1) {
+				functionObjects.splice(matchedIndex, 1);
+				return;
+			}
+		}
+
+		console.warn(`removeFunctionDefinition: not found the function of functionId ${functionId}`);
+	}
+
 	// =========================================================================================================
 	// create shaderity object function
 	// =========================================================================================================
@@ -489,6 +509,12 @@ export default class ShaderityObjectCreator {
 			+ this.__createUniformStructDeclarationShaderCode();
 
 		return code;
+	}
+
+	private __fillEmptyFunctions() {
+		for (let i = 0; i < this.__functions.length; i++) {
+			this.__functions[i] = this.__functions[i] ?? [];
+		}
 	}
 
 	private __createDefineDirectiveShaderCode(): string {
