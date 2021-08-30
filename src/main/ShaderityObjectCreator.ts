@@ -20,6 +20,7 @@ import {
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
 	ShaderUniformBufferObject,
+	ShaderUBOVariableObject,
 	ShaderFunctionObject,
 } from '../types/type';
 import Utility from './Utility';
@@ -262,6 +263,39 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.push({
 			variableName,
 			structName,
+		});
+	}
+
+	// for es3
+	public addUniformBufferObjectDeclaration(
+		blockName: string,
+		variableObjects: ShaderUBOVariableObject[],
+		options?: {
+			instanceName?: ShaderPrecisionType
+		}
+	) {
+		const isDuplicateBlockName =
+			this.__uniformBufferObjects.some(ubo => ubo.blockName === blockName);
+		if (isDuplicateBlockName) {
+			console.error(`addUniformBufferObjectDeclaration: duplicate block name ${blockName}`);
+			return;
+		}
+
+		for (const ubo of this.__uniformBufferObjects) {
+			for (const uboVariableObject of ubo.variableObjects) {
+				for (const variableObject of variableObjects) {
+					if (uboVariableObject.variableName === variableObject.variableName) {
+						console.error(`addUniformBufferObjectDeclaration: duplicate variable name ${variableObject.variableName}`);
+						return;
+					}
+				}
+			}
+		}
+
+		this.__uniformBufferObjects.push({
+			blockName,
+			variableObjects,
+			instanceName: options?.instanceName,
 		});
 	}
 
