@@ -500,6 +500,17 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.splice(matchedIndex, 1);
 	}
 
+	public removeUniformBufferObjectDeclaration(blockName: string) {
+		const matchedIndex =
+			this.__uniformBufferObjects.findIndex(ubo => ubo.blockName === blockName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniformStructDeclaration: the variable name ${blockName} is not exist`);
+			return;
+		}
+
+		this.__uniformBufferObjects.splice(matchedIndex, 1);
+	}
+
 	public removeFunctionDefinition(functionId: number) {
 		this.__fillEmptyFunctions();
 
