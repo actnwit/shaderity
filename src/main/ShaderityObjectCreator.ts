@@ -28,6 +28,7 @@ import Utility from './Utility';
  */
 export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
+	private __functionIdCount = 0;
 
 	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
@@ -260,6 +261,26 @@ export default class ShaderityObjectCreator {
 			variableName,
 			structName,
 		});
+	}
+
+	// the return value Id is a value to delete the function
+	// the main function is defined (updated) by the updateMainFunction method
+	public addFunctionDefinition(
+		functionCode: string,
+		options?: {
+			dependencyLevel?: number
+		}
+	) {
+		const functionId = this.__functionIdCount++;
+
+		const dependencyLevel = options?.dependencyLevel ?? 0;
+		this.__functions[dependencyLevel] = this.__functions[dependencyLevel] ?? [];
+		this.__functions[dependencyLevel].push({
+			functionCode,
+			functionId
+		});
+
+		return functionId;
 	}
 
 	// =========================================================================================================
