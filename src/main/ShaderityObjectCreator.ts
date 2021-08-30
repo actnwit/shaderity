@@ -512,7 +512,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createVaryingDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
 			+ this.__createUniformStructDeclarationShaderCode()
-			+ this.__createFunctionDefinitionShaderCode();
+			+ this.__createFunctionDefinitionShaderCode()
+			+ this.__createMainFunctionDefinitionShaderCode();
 
 		return code;
 	}
@@ -729,5 +730,9 @@ export default class ShaderityObjectCreator {
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createMainFunctionDefinitionShaderCode(): string {
+		return this.__mainFunctionCode + `\n`;
 	}
 }
