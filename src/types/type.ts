@@ -181,3 +181,8 @@ export type ShaderUniformStructObject = {
 	structName: string,
 	variableName: string,
 };
+
+export type ShaderFunctionObject = {
+	functionId: number,
+	functionCode: string,
+};

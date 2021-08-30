@@ -19,6 +19,7 @@ import {
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
+	ShaderFunctionObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -56,8 +57,8 @@ export default class ShaderityObjectCreator {
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
+	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
 
-	// functions
 	// main function
 
 	constructor(shaderStage: ShaderStageStr) {
