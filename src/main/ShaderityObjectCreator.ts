@@ -339,6 +339,10 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantStructValues[matchedIndex].values = values;
 	}
 
+	public updateMainFunction(mainFunctionCodeInner: string) {
+		this.__mainFunctionCode = mainFunctionCodeInner;
+	}
+
 	// =========================================================================================================
 	// remove parameters functions
 	// =========================================================================================================
