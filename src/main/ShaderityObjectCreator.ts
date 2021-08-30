@@ -59,8 +59,7 @@ export default class ShaderityObjectCreator {
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
 	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
-
-	// main function
+	private __mainFunctionCode: string = 'void main() {}';
 
 	constructor(shaderStage: ShaderStageStr) {
 		this.__shaderStage = shaderStage;
