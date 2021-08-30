@@ -514,6 +514,7 @@ export default class ShaderityObjectCreator {
 	// TODO: implement shader code import feature (low priority)
 	// public importShaderCode(code: string) {}
 
+	// need to apply Shaderity.transformToGLSLES1, transformToGLSLES3 or transformTo method
 	private __createShaderCode(): string {
 		this.__fillEmptyFunctions();
 
