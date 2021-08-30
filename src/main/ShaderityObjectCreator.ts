@@ -495,6 +495,8 @@ export default class ShaderityObjectCreator {
 	// public importShaderCode(code: string) {}
 
 	private __createShaderCode(): string {
+		this.__fillEmptyFunctions();
+
 		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
@@ -506,7 +508,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
-			+ this.__createUniformStructDeclarationShaderCode();
+			+ this.__createUniformStructDeclarationShaderCode()
+			+ this.__createFunctionDefinitionShaderCode();
 
 		return code;
 	}
@@ -708,6 +711,18 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createFunctionDefinitionShaderCode(): string {
+		let shaderCode = '';
+		for (let i = 0; i < this.__functions.length; i++) {
+			const functionObjects = this.__functions[i];
+			for (let j = 0; j < functionObjects.length; j++) {
+				shaderCode += functionObjects[j].functionCode + `\n`;
+			}
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
