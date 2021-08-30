@@ -1149,6 +1149,8 @@ in mediump mat4 v_testC;
 flat in ivec4 v_testD;
 smooth in lowp mat2 v_testE;
 
+layout(location = 0) out vec4 renderTarget0;
+
 void main() {}
 `);
 });

@@ -517,7 +517,6 @@ export default class ShaderityObjectCreator {
 	private __createShaderCode(): string {
 		this.__fillEmptyFunctions();
 
-		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
@@ -527,6 +526,7 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalConstantStructValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
+			+ this.__createOutputColorDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
 			+ this.__createUniformStructDeclarationShaderCode()
 			+ this.__createFunctionDefinitionShaderCode()
@@ -702,6 +702,15 @@ export default class ShaderityObjectCreator {
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	//TODO: translate when glsl es1
+	private __createOutputColorDeclarationShaderCode(): string {
+		if (this.__shaderStage !== 'fragment') {
+			return '';
+		}
+
+		return `layout(location = 0) out vec4 ${this.__outputColorVariableName};\n\n`;
 	}
 
 	private __createUniformDeclarationShaderCode(): string {
