@@ -344,6 +344,22 @@ export default class ShaderityObjectCreator {
 		this.__mainFunctionCode = mainFunctionCodeInner;
 	}
 
+	// specify the name of the output color variable from the main function in the fragment shader.
+	// users have to assign the result of fragment shader calculation to this variable.
+	public updateOutputColorVariableName(outputColorVariableName: string) {
+		if (this.__shaderStage !== 'fragment') {
+			console.error('updateOutputColorVariableName: this method is for fragment shader only');
+			return;
+		}
+
+		if (outputColorVariableName.length === 0) {
+			console.error('updateOutputColorVariableName: invalid outColorVariableName');
+			return;
+		}
+
+		this.__outputColorVariableName = outputColorVariableName;
+	}
+
 	// =========================================================================================================
 	// remove parameters functions
 	// =========================================================================================================
