@@ -94,7 +94,7 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
-		const inReg = /^(?![\/])[\t ]*in[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
+		const inReg = /^(?![\/])[\t ]*in[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 
 		// inAsES1 is used as the second argument to the String.prototype.replace method.
 		let inAsES1;
@@ -117,7 +117,7 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertOut(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*out[\t ]+(\w+[\t ]*\w+[\t ]*;)/;
+		const inReg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 		const inAsES1 = function (match: string, p1: string) {
 			return 'varying ' + p1;
 		}
