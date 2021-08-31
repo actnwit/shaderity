@@ -10,9 +10,9 @@ export default class ShaderTransformer {
 	 */
 	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
+		this.__removeLayout(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode);
-		this.__removeLayout(splittedShaderCode);
 		this.__removePrecisionForES3(splittedShaderCode);
 		this.__convertTextureFunctionToES1(splittedShaderCode);
 		const transformedSplittedShaderCode = splittedShaderCode;
