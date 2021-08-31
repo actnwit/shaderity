@@ -1,8 +1,9 @@
 import Reflection from './Reflection';
-import {ShaderityObject, ShaderVersion, TemplateObject} from '../types/type';
+import {ShaderityObject, ShaderStageStr, ShaderVersion, TemplateObject} from '../types/type';
 import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 import Utility from './Utility';
+import ShaderityObjectCreator from './ShaderityObjectCreator';
 
 export default class Shaderity {
 	// =========================================================================================================
@@ -64,6 +65,17 @@ export default class Shaderity {
 		};
 
 		return resultObj;
+	}
+
+	// =========================================================================================================
+	// shaderity object creation functions
+	// =========================================================================================================
+
+	/**
+	 * Create an instance to create shaderity object.
+	 */
+	public static createShaderityObjectCreator(shaderStage: ShaderStageStr): ShaderityObjectCreator {
+		return new ShaderityObjectCreator(shaderStage);
 	}
 
 	// =========================================================================================================
