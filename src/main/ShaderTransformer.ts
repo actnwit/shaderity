@@ -13,6 +13,7 @@ export default class ShaderTransformer {
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode);
 		this.__removeLayout(splittedShaderCode);
+		this.__removePrecisionForES3(splittedShaderCode);
 		this.__convertTextureFunctionToES1(splittedShaderCode);
 		const transformedSplittedShaderCode = splittedShaderCode;
 
@@ -132,6 +133,32 @@ export default class ShaderTransformer {
 	private static __removeLayout(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
 		this.__replaceLine(splittedShaderCode, inReg, '');
+	}
+
+	/**
+	 * @private
+	 * Find the "precision" modifier in the shader code and remove it if the "precision" modifier is valid for only GLSL ES3
+	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
+	private static __removePrecisionForES3(splittedShaderCode: string[]) {
+		const inReg = /^(?![\/])[\t ]*precision[\t ]+(highp|mediump|lowp)[\t ]+(\w+)[\t ]*;/;
+
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			const match = splittedShaderCode[i].match(inReg);
+			if (match != null) {
+				if (
+					match[2] === 'int' ||
+					match[2] === 'float' ||
+					match[2] === 'sampler2D' ||
+					match[2] === 'samplerCube'
+				) {
+					// these precisions are supported in es1
+					continue;
+				} else {
+					splittedShaderCode.splice(i--, 1);
+				}
+			}
+		}
 	}
 
 	/**
