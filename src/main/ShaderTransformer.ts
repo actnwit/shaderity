@@ -12,7 +12,7 @@ export default class ShaderTransformer {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
 		this.__removeLayout(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
-		this.__convertOut(splittedShaderCode);
+		this.__convertOut(splittedShaderCode, isFragmentShader);
 		this.__removePrecisionForES3(splittedShaderCode);
 		this.__convertTextureFunctionToES1(splittedShaderCode);
 		const transformedSplittedShaderCode = splittedShaderCode;
@@ -76,7 +76,7 @@ export default class ShaderTransformer {
 	 * In both cases, '#define GLSL_ES3' will be inserted in the second line.
 	 * Use the '#define GLSL_ES3' directive if you want to write a shader code that will only run in the case of webgl2.
 	 *
-   * Note: If the first line is commented out and the version information is written in the second or later line,
+	 * Note: If the first line is commented out and the version information is written in the second or later line,
 	 * the appropriate version information will be added to the first line and the user-defined version information
 	 * in the second or later line will be removed.
 	 */
@@ -113,16 +113,62 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "out" modifier in the shader code and replace it with the GLSL ES1 modifier('varying')
+	 * Find the "out" modifier in the shader code and modify the shader code.
+	 * If the shader stage is vertex, the "out" modifiers will be replaced by "varying" modifier.
+	 * If the shader stage is fragment and the shader has "out" modifiers, the "out" modifiers will
+	 * be deleted and the variable is used to assign a value to gl_FragColor.
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertOut(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
-		const inAsES1 = function (match: string, p1: string) {
-			return 'varying ' + p1;
+	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean) {
+
+		let inAsES1;
+		if (isFragmentShader) {
+			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode);
+		} else {
+			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
+			inAsES1 = function (match: string, p1: string) {
+				return 'varying ' + p1;
+			}
+			this.__replaceLine(splittedShaderCode, reg, inAsES1);
+		}
+	}
+
+	/**
+	 * @private
+	 * This method is a part of __convertOut method.
+	 * This method deletes the "out" modifiers and adds the line for assigning to gl_FragColor.
+	 * If the shader does not have the "out" modifiers, this method does nothing.
+	 */
+
+	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
+		const outReg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
+
+		let variableName: string | undefined;
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			const match = splittedShaderCode[i].match(outReg);
+			if (match) {
+				splittedShaderCode[i] = match[1];
+				variableName = match[3];
+				break;
+			}
 		}
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES1);
+		if (variableName == null) {
+			return;
+		}
+
+		const closeBracketReg = /(.*)}/g;
+
+		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
+			const line = splittedShaderCode[i];
+			if (line.match(closeBracketReg)) {
+				const fragColorCode = `  gl_FragColor = ${variableName};`;
+				splittedShaderCode[i] = line.replace(closeBracketReg, `$1\n${fragColorCode}\n}\n`);
+				return;
+			}
+		}
+
+		console.error('__removeOutKeywordAndAddGLFragColor: invalid main function code');
 	}
 
 	/**
