@@ -13,6 +13,8 @@ import {
 	ShaderVaryingObject,
 	ShaderVaryingInterpolationType,
 	ShaderVaryingVarType,
+	ShaderUniformObject,
+	ShaderUniformVarTypeES3,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -46,8 +48,8 @@ export default class ShaderityObjectCreator {
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
+	private __uniforms: ShaderUniformObject[] = [];
 
-	// uniform declaration
 	// uniform structure declaration
 	// functions
 	// main function
@@ -260,6 +262,43 @@ export default class ShaderityObjectCreator {
 		this.__varyings.splice(matchedIndex, 1);
 	}
 
+	public addUniformDeclaration(
+		variableName: string,
+		type: ShaderUniformVarTypeES3,
+		options?: {
+			precision?: ShaderPrecisionType,
+		}
+	) {
+		const isDuplicate =
+			this.__uniforms.some(uniform => uniform.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addUniform: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		if (type === 'bool' && options?.precision != null) {
+			console.warn(`addUniform: remove the specification of precision for bool type to avoid compilation error`);
+			options.precision = undefined;
+		}
+
+		this.__uniforms.push({
+			variableName,
+			type,
+			precision: options?.precision,
+		});
+	}
+
+	public removeUniformDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__uniforms.findIndex(uniform => uniform.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniform: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__uniforms.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -290,7 +329,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalPrecisionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
-			+ this.__createVaryingDeclarationShaderCode();
+			+ this.__createVaryingDeclarationShaderCode()
+			+ this.__createUniformDeclarationShaderCode();
 
 		return code;
 	}
@@ -377,6 +417,21 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `${varying.type} ${varying.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createUniformDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const uniform of this.__uniforms) {
+			shaderCode += `uniform `;
+
+			if (uniform.precision != null) {
+				shaderCode += `${uniform.precision} `;
+			}
+
+			shaderCode += `${uniform.type} ${uniform.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
