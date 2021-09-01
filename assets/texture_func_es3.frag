@@ -21,7 +21,7 @@ void fetch2(
   gl_FragColor = textureProj(texture1, v_texcoord);
 }
 
-void main (void) {
+void main () {
   fetch(texture2, texture1);
   fetch2(texture2, texture1);
 }
