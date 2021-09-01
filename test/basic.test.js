@@ -9,6 +9,7 @@ const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVer
 const reflectionVertexES1 = require('../dist/index_test').reflectionVertexES1;
 const reflectionVertexES3 = require('../dist/index_test').reflectionVertexES3;
 const layoutUniformFragmentES3 = require('../dist/index_test').layoutUniformFragmentES3;
+const precisionES3 = require('../dist/index_test').precisionES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -225,6 +226,19 @@ void main (void) {
     type: 'samplerCube',
     semantic: 'UNKNOWN'
   });
+});
+
+test('test precision translation from ES3 shader to ES1 shader', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(precisionES3);
+  expect(shaderityObject.code).toBe(`#version 100
+
+precision mediump int;
+precision lowp float;
+precision highp sampler2D;
+precision highp samplerCube;
+
+void main() {}
+`);
 });
 
 test('test addDefineDirective method in ShaderityObjectCreator', async() => {
