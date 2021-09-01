@@ -9,6 +9,7 @@ import reflectionVertexES1Shader from '../assets/reflection_es1.vert';
 import reflectionVertexES3Shader from '../assets/reflection_es3.vert';
 import layoutUniformFragmentES3Shader from '../assets/layout_uniform_es3.frag';
 import precisionES3Shader from '../assets/precision_es3.vert';
+import attributeAndVaryingPrecisionES3Shader from '../assets/attribute_and_varying_precision_es3.vert';
 
 exports.simpleFragment = simpleFragmentShader;
 exports.simpleVertex = simpleVertexShader;
@@ -21,3 +22,4 @@ exports.reflectionVertexES1 = reflectionVertexES1Shader;
 exports.reflectionVertexES3 = reflectionVertexES3Shader;
 exports.layoutUniformFragmentES3 = layoutUniformFragmentES3Shader;
 exports.precisionES3 = precisionES3Shader;
+exports.attributeAndVaryingPrecisionES3 = attributeAndVaryingPrecisionES3Shader;
