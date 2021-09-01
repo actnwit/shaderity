@@ -11,6 +11,7 @@ const reflectionVertexES3 = require('../dist/index_test').reflectionVertexES3;
 const layoutUniformFragmentES3 = require('../dist/index_test').layoutUniformFragmentES3;
 const precisionES3 = require('../dist/index_test').precisionES3;
 const attributeAndVaryingPrecisionES3 = require('../dist/index_test').attributeAndVaryingPrecisionES3;
+const layoutAttributeES3 = require('../dist/index_test').layoutAttributeES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -267,6 +268,20 @@ varying lowp float v_testB;
 
 void main() {}
 `);
+});
+
+test('test layout precision translation from ES3 shader to ES1 shader', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(layoutAttributeES3);
+  expect(shaderityObject.code).toBe(
+    `#version 100
+attribute float a_testA;
+attribute lowp vec2 a_testB;
+attribute float a_testC;
+attribute lowp vec2 a_testD;
+
+void main () {}
+`
+  );
 });
 
 test('test addDefineDirective method in ShaderityObjectCreator', async() => {
