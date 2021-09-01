@@ -12,7 +12,7 @@ import Utility from './Utility';
 export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
 
-	// define directive
+	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
 	// global precision
 	// global constant value
@@ -25,6 +25,28 @@ export default class ShaderityObjectCreator {
 
 	constructor(shaderStage: ShaderStageStr) {
 		this.__shaderStage = shaderStage;
+	}
+
+	public addDefineDirective(defineDirectiveName: string) {
+		const isDuplicate =
+			this.__defineDirectiveNames.some(name => name === defineDirectiveName);
+		if (isDuplicate) {
+			console.warn('addDefineDirective: this define directive is already set');
+			return;
+		}
+
+		this.__defineDirectiveNames.push(defineDirectiveName);
+	}
+
+	public removeDefineDirective(defineDirectiveName: string) {
+		const matchedIndex = this.__defineDirectiveNames.indexOf(defineDirectiveName);
+
+		if (matchedIndex === -1) {
+			console.warn('removedDefineDirective: this define directive is not exist');
+			return;
+		}
+
+		this.__defineDirectiveNames.splice(matchedIndex, 1);
 	}
 
 	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
@@ -68,9 +90,20 @@ export default class ShaderityObjectCreator {
 
 	private __createShaderCode(): string {
 		// TODO: now implementing
-		const code = this.__createExtensionShaderCode();
+		const code
+			= this.__createDefineDirectiveShaderCode()
+			+ this.__createExtensionShaderCode();
 
 		return code;
+	}
+
+	private __createDefineDirectiveShaderCode(): string {
+		let shaderCode = '';
+		for (const defineDirectiveName of this.__defineDirectiveNames) {
+			shaderCode += `#define ${defineDirectiveName}\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);;
 	}
 
 	private __createExtensionShaderCode(): string {

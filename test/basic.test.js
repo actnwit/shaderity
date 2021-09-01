@@ -227,6 +227,34 @@ void main (void) {
   });
 });
 
+test('test addDefineDirective method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addDefineDirective('testA');
+  shaderityObjectCreator.addDefineDirective('testB B');
+  shaderityObjectCreator.addDefineDirective('testC_c C');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`#define testA
+#define testB B
+#define testC_c C
+
+`);
+});
+
+test('test removeDefineDirective method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addDefineDirective('testA');
+  shaderityObjectCreator.addDefineDirective('testB B');
+  shaderityObjectCreator.addDefineDirective('testC_c C');
+  shaderityObjectCreator.removeDefineDirective('testB B');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`#define testA
+#define testC_c C
+
+`);
+});
+
 test('test addExtension method in ShaderityObjectCreator', async() => {
   const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
   shaderityObjectCreator.addExtension('GL_OES_standard_derivatives', 'enable');
@@ -243,5 +271,5 @@ test('test removeExtension method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeExtension('GL_OES_standard_derivatives', 'enable');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual('');
+  expect(resultShaderityObj.code).toStrictEqual(``);
 });
