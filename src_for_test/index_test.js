@@ -11,6 +11,7 @@ import layoutUniformFragmentES3Shader from '../assets/layout_uniform_es3.frag';
 import precisionES3Shader from '../assets/precision_es3.vert';
 import attributeAndVaryingPrecisionES3Shader from '../assets/attribute_and_varying_precision_es3.vert';
 import layoutAttributeES3Shader from '../assets/layout_attribute_es3.vert';
+import outToGlFragColorES3Shader from '../assets/out_to_gl_frag_color.frag';
 
 exports.simpleFragment = simpleFragmentShader;
 exports.simpleVertex = simpleVertexShader;
@@ -25,3 +26,4 @@ exports.layoutUniformFragmentES3 = layoutUniformFragmentES3Shader;
 exports.precisionES3 = precisionES3Shader;
 exports.attributeAndVaryingPrecisionES3 = attributeAndVaryingPrecisionES3Shader;
 exports.layoutAttributeES3 = layoutAttributeES3Shader;
+exports.outToGlFragColorES3 = outToGlFragColorES3Shader;
