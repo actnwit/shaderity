@@ -1,7 +1,9 @@
 import {
+	ShaderConstantValueObject,
 	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
+	ShaderConstantValueVarTypeES3,
 	ShaderPrecisionObject,
 	ShaderPrecisionObjectKey,
 	ShaderStageStr
@@ -35,7 +37,7 @@ export default class ShaderityObjectCreator {
 		samplerCubeShadow: 'highp',
 		sampler2DArrayShadow: 'highp',
 	};
-	// global constant value
+	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	// attribute declaration (for vertex shader)
 	// varying declaration
 	// uniform declaration
@@ -99,6 +101,73 @@ export default class ShaderityObjectCreator {
 		Object.assign(this.__globalPrecision, precision);
 	}
 
+	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
+		const isDuplicate =
+			this.__globalConstantValues.some(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addGlobalConstantValue: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		const isValidComponentNumber = Utility._isValidComponentCount(type, values);
+		if (!isValidComponentNumber) {
+			console.error(`addGlobalConstantValue: the component count of ${variableName} is invalid`);
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
+			if (existNonIntegerValue) {
+				console.warn(`addGlobalConstantValue: non-integer value is set to ${variableName}`);
+			}
+		}
+
+		this.__globalConstantValues.push({
+			variableName,
+			type,
+			values,
+		});
+	}
+
+	public updateGlobalConstantValue(variableName: string, values: number[]) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`updateGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		const type = this.__globalConstantValues[matchedIndex].type;
+
+		const isValidComponentNumber = Utility._isValidComponentCount(type, values);
+		if (!isValidComponentNumber) {
+			console.error('updateGlobalConstantValue: the component count is invalid');
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
+			if (existNonIntegerValue) {
+				console.warn(`updateGlobalConstantValue: the ${variableName} has a non-integer value.`);
+			}
+		}
+
+		this.__globalConstantValues[matchedIndex].values = values;
+	}
+
+	public removeGlobalConstantValue(variableName: string) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantValues.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -109,6 +178,15 @@ export default class ShaderityObjectCreator {
 		return shaderityObj;
 	}
 
+	private static __existNonIntegerValue(values: number[]) {
+		for (const value of values) {
+			if (!Number.isInteger(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// TODO: implement shader code import feature (low priority)
 	// public importShaderCode(code: string) {}
 
@@ -117,7 +195,8 @@ export default class ShaderityObjectCreator {
 		const code
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
-			+ this.__createGlobalPrecisionShaderCode();
+			+ this.__createGlobalPrecisionShaderCode()
+			+ this.__createGlobalConstantValueShaderCode();
 
 		return code;
 	}
@@ -148,6 +227,24 @@ export default class ShaderityObjectCreator {
 			const precisionQualifier = this.__globalPrecision[precisionType];
 
 			shaderCode += `precision ${precisionQualifier} ${precisionType};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createGlobalConstantValueShaderCode(): string {
+		let shaderCode = '';
+		for (const globalConstantValue of this.__globalConstantValues) {
+			const type = globalConstantValue.type;
+			const variableName = globalConstantValue.variableName;
+			const value = globalConstantValue.values;
+
+			shaderCode += `const ${type} ${variableName} = ${type}(`;
+			for (let i = 0; i < value.length; i++) {
+				shaderCode += value[i] + ', ';
+			}
+
+			shaderCode = shaderCode.replace(/,\s$/, ');\n');
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
