@@ -6,4 +6,8 @@ export default class Utility {
 	static _joinSplittedLine(splittedLine: string[]) {
 		return splittedLine.join('\n');
 	}
+
+	static _addLineFeedCodeIfNotNullString(source: string) {
+		return source === '' ? source : source + '\n';
+	}
 }
