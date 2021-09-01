@@ -6,7 +6,10 @@ import {
 	ShaderConstantValueVarTypeES3,
 	ShaderPrecisionObject,
 	ShaderPrecisionObjectKey,
-	ShaderStageStr
+	ShaderStageStr,
+	ShaderAttributeObject,
+	ShaderPrecisionType,
+	ShaderAttributeVarType,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -38,7 +41,8 @@ export default class ShaderityObjectCreator {
 		sampler2DArrayShadow: 'highp',
 	};
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
-	// attribute declaration (for vertex shader)
+	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
+
 	// varying declaration
 	// uniform declaration
 	// uniform structure declaration
@@ -168,6 +172,45 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantValues.splice(matchedIndex, 1);
 	}
 
+	public addAttributeDeclaration(
+		variableName: string,
+		type: ShaderAttributeVarType,
+		options?: {
+			precision?: ShaderPrecisionType,
+			location?: number,
+		}
+	) {
+		if (this.__shaderStage !== 'vertex') {
+			console.error('addAttribute: this method is for vertex shader only');
+			return;
+		}
+
+		const isDuplicate =
+			this.__attributes.some(attribute => attribute.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addAttribute: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__attributes.push({
+			variableName,
+			type,
+			precision: options?.precision,
+			location: options?.location,
+		});
+	}
+
+	public removeAttributeDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__attributes.findIndex(attribute => attribute.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeAttribute: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__attributes.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -196,7 +239,8 @@ export default class ShaderityObjectCreator {
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
-			+ this.__createGlobalConstantValueShaderCode();
+			+ this.__createGlobalConstantValueShaderCode()
+			+ this.__createAttributeDeclarationShaderCode();
 
 		return code;
 	}
@@ -245,6 +289,25 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode = shaderCode.replace(/,\s$/, ');\n');
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createAttributeDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const attribute of this.__attributes) {
+			if (attribute.location != null) {
+				shaderCode += `layout (location = ${attribute.location}) `;
+			}
+
+			shaderCode += `in `;
+
+			if (attribute.precision != null) {
+				shaderCode += `${attribute.precision} `;
+			}
+
+			shaderCode += `${attribute.type} ${attribute.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);

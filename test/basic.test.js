@@ -485,3 +485,76 @@ const ivec3 testIVec = ivec3(-7, 4, 5);
 
 `);
 });
+
+test('test addAttribute method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addAttributeDeclaration('a_testA', 'float');
+  shaderityObjectCreator.addAttributeDeclaration('a_testB', 'vec3', {});
+  shaderityObjectCreator.addAttributeDeclaration('a_testC', 'mat4', { precision: 'mediump' });
+  shaderityObjectCreator.addAttributeDeclaration('a_testD', 'ivec4', { location: 0 });
+  shaderityObjectCreator.addAttributeDeclaration('a_testE', 'int', { location: 1, precision: 'lowp' });
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+in float a_testA;
+in vec3 a_testB;
+in mediump mat4 a_testC;
+layout (location = 0) in ivec4 a_testD;
+layout (location = 1) in lowp int a_testE;
+
+`);
+});
+
+test('test removeAttribute method in ShaderityObjectCreator', async() => {
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addAttributeDeclaration('a_testA', 'float');
+  shaderityObjectCreator.addAttributeDeclaration('a_testB', 'vec3', {});
+  shaderityObjectCreator.addAttributeDeclaration('a_testC', 'mat4', { precision: 'mediump' });
+  shaderityObjectCreator.addAttributeDeclaration('a_testD', 'ivec4', { location: 0 });
+  shaderityObjectCreator.addAttributeDeclaration('a_testE', 'int', { location: 1, precision: 'lowp' });
+
+  shaderityObjectCreator.removeAttributeDeclaration('a_testC');
+  shaderityObjectCreator.removeAttributeDeclaration('a_testE');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+in float a_testA;
+in vec3 a_testB;
+layout (location = 0) in ivec4 a_testD;
+
+`);
+});
