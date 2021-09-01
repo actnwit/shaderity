@@ -2,6 +2,8 @@ import {
 	ShaderExtensionBehavior,
 	ShaderExtensionObject,
 	ShaderityObject,
+	ShaderPrecisionObject,
+	ShaderPrecisionObjectKey,
 	ShaderStageStr
 } from '../types/type';
 import Utility from './Utility';
@@ -14,7 +16,25 @@ export default class ShaderityObjectCreator {
 
 	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
-	// global precision
+	private __globalPrecision: ShaderPrecisionObject = {
+		int: 'highp',
+		float: 'highp',
+		sampler2D: 'highp',
+		samplerCube: 'highp',
+		sampler3D: 'highp',
+		sampler2DArray: 'highp',
+		isampler2D: 'highp',
+		isamplerCube: 'highp',
+		isampler3D: 'highp',
+		isampler2DArray: 'highp',
+		usampler2D: 'highp',
+		usamplerCube: 'highp',
+		usampler3D: 'highp',
+		usampler2DArray: 'highp',
+		sampler2DShadow: 'highp',
+		samplerCubeShadow: 'highp',
+		sampler2DArrayShadow: 'highp',
+	};
 	// global constant value
 	// attribute declaration (for vertex shader)
 	// varying declaration
@@ -75,6 +95,10 @@ export default class ShaderityObjectCreator {
 		this.__extensions.splice(matchedIndex, 1);
 	}
 
+	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
+		Object.assign(this.__globalPrecision, precision);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -92,7 +116,8 @@ export default class ShaderityObjectCreator {
 		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
-			+ this.__createExtensionShaderCode();
+			+ this.__createExtensionShaderCode()
+			+ this.__createGlobalPrecisionShaderCode();
 
 		return code;
 	}
@@ -114,4 +139,18 @@ export default class ShaderityObjectCreator {
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
+
+	//TODO: remove needless precisions
+	private __createGlobalPrecisionShaderCode(): string {
+		let shaderCode = '';
+		for (const type in this.__globalPrecision) {
+			const precisionType = type as ShaderPrecisionObjectKey;
+			const precisionQualifier = this.__globalPrecision[precisionType];
+
+			shaderCode += `precision ${precisionQualifier} ${precisionType};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
 }
+
