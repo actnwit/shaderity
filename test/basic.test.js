@@ -255,6 +255,20 @@ void main() {}
 `);
 });
 
+test('test attribute and varying precision translation from ES3 shader to ES1 shader', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(attributeAndVaryingPrecisionES3);
+  expect(shaderityObject.code).toBe(
+    `#version 100
+attribute float a_testA;
+attribute lowp float a_testB;
+
+varying float v_testA;
+varying lowp float v_testB;
+
+void main() {}
+`);
+});
+
 test('test addDefineDirective method in ShaderityObjectCreator', async() => {
   const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
   shaderityObjectCreator.addDefineDirective('testA');
