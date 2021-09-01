@@ -10,6 +10,9 @@ import {
 	ShaderAttributeObject,
 	ShaderPrecisionType,
 	ShaderAttributeVarType,
+	ShaderVaryingObject,
+	ShaderVaryingInterpolationType,
+	ShaderVaryingVarType,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -42,8 +45,8 @@ export default class ShaderityObjectCreator {
 	};
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
+	private __varyings: ShaderVaryingObject[] = [];
 
-	// varying declaration
 	// uniform declaration
 	// uniform structure declaration
 	// functions
@@ -211,6 +214,52 @@ export default class ShaderityObjectCreator {
 		this.__attributes.splice(matchedIndex, 1);
 	}
 
+	public addVaryingDeclaration(
+		variableName: string,
+		type: ShaderVaryingVarType,
+		options?: {
+			precision?: ShaderPrecisionType,
+			interpolationType?: ShaderVaryingInterpolationType,
+		}
+	) {
+		const isDuplicate =
+			this.__varyings.some(varying => varying.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addVarying: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		let interpolationType = options?.interpolationType;
+		if (isIntType && interpolationType !== 'flat') {
+			if (interpolationType != null) {
+				console.error(`addVarying: the interpolationType must be flat for integer types`);
+				return;
+			} else {
+				console.warn(`addVarying: set the interpolationType of integer types to flat to avoid compilation error`);
+				interpolationType = 'flat';
+			}
+		}
+
+		this.__varyings.push({
+			variableName,
+			type,
+			precision: options?.precision,
+			interpolationType,
+		});
+	}
+
+	public removeVaryingDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__varyings.findIndex(varying => varying.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeVarying: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__varyings.splice(matchedIndex, 1);
+	}
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -240,7 +289,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
-			+ this.__createAttributeDeclarationShaderCode();
+			+ this.__createAttributeDeclarationShaderCode()
+			+ this.__createVaryingDeclarationShaderCode();
 
 		return code;
 	}
@@ -308,6 +358,25 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `${attribute.type} ${attribute.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createVaryingDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const varying of this.__varyings) {
+			if (varying.interpolationType != null) {
+				shaderCode += `${varying.interpolationType} `;
+			}
+
+			shaderCode += this.__shaderStage == 'vertex' ? `out ` : `in `;
+
+			if (varying.precision != null) {
+				shaderCode += `${varying.precision} `;
+			}
+
+			shaderCode += `${varying.type} ${varying.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
