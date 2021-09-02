@@ -18,6 +18,7 @@ import {
 	ShaderStructDefinitionObject,
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
+	ShaderUniformStructObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -54,14 +55,18 @@ export default class ShaderityObjectCreator {
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
+	private __uniformStructs: ShaderUniformStructObject[] = [];
 
-	// uniform structure declaration
 	// functions
 	// main function
 
 	constructor(shaderStage: ShaderStageStr) {
 		this.__shaderStage = shaderStage;
 	}
+
+	// =========================================================================================================
+	// add parameters functions
+	// =========================================================================================================
 
 	public addDefineDirective(defineDirectiveName: string) {
 		const isDuplicate =
@@ -72,17 +77,6 @@ export default class ShaderityObjectCreator {
 		}
 
 		this.__defineDirectiveNames.push(defineDirectiveName);
-	}
-
-	public removeDefineDirective(defineDirectiveName: string) {
-		const matchedIndex = this.__defineDirectiveNames.indexOf(defineDirectiveName);
-
-		if (matchedIndex === -1) {
-			console.warn('removedDefineDirective: this define directive is not exist');
-			return;
-		}
-
-		this.__defineDirectiveNames.splice(matchedIndex, 1);
 	}
 
 	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
@@ -99,22 +93,6 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
-	public removeExtension(extensionName: string) {
-		const matchedIndex =
-			this.__extensions.findIndex(extension => extension.extensionName === extensionName);
-
-		if (matchedIndex === -1) {
-			console.warn('removeExtension: this extension is not exist');
-			return;
-		}
-
-		this.__extensions.splice(matchedIndex, 1);
-	}
-
-	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
-		Object.assign(this.__globalPrecision, precision);
-	}
-
 	// only define types
 	public addStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
 		const isDuplicate =
@@ -128,28 +106,6 @@ export default class ShaderityObjectCreator {
 			structName,
 			memberObjects,
 		});
-	}
-
-	public updateStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
-		const matchedIndex =
-			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
-		if (matchedIndex === -1) {
-			console.error(`updateStructDefinition: the struct type name ${structName} is not exist`);
-			return;
-		}
-
-		this.__structDefinitions[matchedIndex].memberObjects = memberObjects;
-	}
-
-	public removeStructDefinition(structName: string) {
-		const matchedIndex =
-			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
-		if (matchedIndex === -1) {
-			console.error(`removeStructDefinition: the struct type name ${structName} is not exist`);
-			return;
-		}
-
-		this.__structDefinitions.splice(matchedIndex, 1);
 	}
 
 	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
@@ -181,44 +137,6 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
-	public updateGlobalConstantValue(variableName: string, values: number[]) {
-		const matchedIndex =
-			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.warn(`updateGlobalConstantValue: the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		const type = this.__globalConstantValues[matchedIndex].type;
-
-		const isValidComponentNumber = Utility._isValidComponentCount(type, values);
-		if (!isValidComponentNumber) {
-			console.error('updateGlobalConstantValue: the component count is invalid');
-			return;
-		}
-
-		const isIntType = Utility._isIntType(type);
-		if (isIntType) {
-			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
-			if (existNonIntegerValue) {
-				console.warn(`updateGlobalConstantValue: the ${variableName} has a non-integer value.`);
-			}
-		}
-
-		this.__globalConstantValues[matchedIndex].values = values;
-	}
-
-	public removeGlobalConstantValue(variableName: string) {
-		const matchedIndex =
-			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.warn(`removeGlobalConstantValue: the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		this.__globalConstantValues.splice(matchedIndex, 1);
-	}
-
 	// need to define struct by the addStructDefinition method
 	// validate that the corresponding structure is defined by the __createGlobalConstantStructValueShaderCode method
 	public addGlobalConstantStructValue(structName: string, variableName: string, values: {[keyVariableName: string]: number[]}) {
@@ -234,28 +152,6 @@ export default class ShaderityObjectCreator {
 			structName,
 			values,
 		});
-	}
-
-	public updateGlobalConstantStructValue(variableName: string, values: {[keyVariableName: string]: number[]}) {
-		const matchedIndex =
-			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		this.__globalConstantStructValues[matchedIndex].values = values;
-	}
-
-	public removeGlobalConstantStructValue(variableName: string) {
-		const matchedIndex =
-			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		this.__globalConstantStructValues.splice(matchedIndex, 1);
 	}
 
 	public addAttributeDeclaration(
@@ -284,17 +180,6 @@ export default class ShaderityObjectCreator {
 			precision: options?.precision,
 			location: options?.location,
 		});
-	}
-
-	public removeAttributeDeclaration(variableName: string) {
-		const matchedIndex =
-			this.__attributes.findIndex(attribute => attribute.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.warn(`removeAttribute: the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		this.__attributes.splice(matchedIndex, 1);
 	}
 
 	public addVaryingDeclaration(
@@ -332,17 +217,6 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
-	public removeVaryingDeclaration(variableName: string) {
-		const matchedIndex =
-			this.__varyings.findIndex(varying => varying.variableName === variableName);
-		if (matchedIndex === -1) {
-			console.warn(`removeVarying: the variable name ${variableName} is not exist`);
-			return;
-		}
-
-		this.__varyings.splice(matchedIndex, 1);
-	}
-
 	public addUniformDeclaration(
 		variableName: string,
 		type: ShaderUniformVarTypeES3,
@@ -369,6 +243,163 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	// need to define struct by the addStructDefinition method
+	public addUniformStructDeclaration(
+		structName: string,
+		variableName: string
+	) {
+		const isDuplicate =
+			this.__uniformStructs.some(uniformStruct => uniformStruct.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addUniformStructDeclaration: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__uniformStructs.push({
+			variableName,
+			structName,
+		});
+	}
+
+	// =========================================================================================================
+	// update parameters functions
+	// =========================================================================================================
+
+	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
+		Object.assign(this.__globalPrecision, precision);
+	}
+
+	public updateStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`updateStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions[matchedIndex].memberObjects = memberObjects;
+	}
+
+	public updateGlobalConstantValue(variableName: string, values: number[]) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`updateGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		const type = this.__globalConstantValues[matchedIndex].type;
+
+		const isValidComponentNumber = Utility._isValidComponentCount(type, values);
+		if (!isValidComponentNumber) {
+			console.error('updateGlobalConstantValue: the component count is invalid');
+			return;
+		}
+
+		const isIntType = Utility._isIntType(type);
+		if (isIntType) {
+			const existNonIntegerValue = ShaderityObjectCreator.__existNonIntegerValue(values);
+			if (existNonIntegerValue) {
+				console.warn(`updateGlobalConstantValue: the ${variableName} has a non-integer value.`);
+			}
+		}
+
+		this.__globalConstantValues[matchedIndex].values = values;
+	}
+
+	public updateGlobalConstantStructValue(variableName: string, values: {[keyVariableName: string]: number[]}) {
+		const matchedIndex =
+			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantStructValues[matchedIndex].values = values;
+	}
+
+	// =========================================================================================================
+	// remove parameters functions
+	// =========================================================================================================
+
+	public removeDefineDirective(defineDirectiveName: string) {
+		const matchedIndex = this.__defineDirectiveNames.indexOf(defineDirectiveName);
+
+		if (matchedIndex === -1) {
+			console.warn('removedDefineDirective: this define directive is not exist');
+			return;
+		}
+
+		this.__defineDirectiveNames.splice(matchedIndex, 1);
+	}
+
+	public removeExtension(extensionName: string) {
+		const matchedIndex =
+			this.__extensions.findIndex(extension => extension.extensionName === extensionName);
+
+		if (matchedIndex === -1) {
+			console.warn('removeExtension: this extension is not exist');
+			return;
+		}
+
+		this.__extensions.splice(matchedIndex, 1);
+	}
+
+	public removeStructDefinition(structName: string) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`removeStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions.splice(matchedIndex, 1);
+	}
+
+	public removeGlobalConstantValue(variableName: string) {
+		const matchedIndex =
+			this.__globalConstantValues.findIndex(globalConstantValue => globalConstantValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeGlobalConstantValue: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantValues.splice(matchedIndex, 1);
+	}
+
+	public removeGlobalConstantStructValue(variableName: string) {
+		const matchedIndex =
+			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantStructValues.splice(matchedIndex, 1);
+	}
+
+	public removeAttributeDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__attributes.findIndex(attribute => attribute.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeAttribute: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__attributes.splice(matchedIndex, 1);
+	}
+
+	public removeVaryingDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__varyings.findIndex(varying => varying.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeVarying: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__varyings.splice(matchedIndex, 1);
+	}
+
 	public removeUniformDeclaration(variableName: string) {
 		const matchedIndex =
 			this.__uniforms.findIndex(uniform => uniform.variableName === variableName);
@@ -380,6 +411,21 @@ export default class ShaderityObjectCreator {
 		this.__uniforms.splice(matchedIndex, 1);
 	}
 
+	public removeUniformStructDeclaration(variableName: string) {
+		const matchedIndex =
+			this.__uniformStructs.findIndex(uniformStruct => uniformStruct.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniformStructDeclaration: the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__uniformStructs.splice(matchedIndex, 1);
+	}
+
+	// =========================================================================================================
+	// create shaderity object function
+	// =========================================================================================================
+
 	public createShaderityObject(): ShaderityObject {
 		const shaderityObj = {
 			code: this.__createShaderCode(),
@@ -389,6 +435,10 @@ export default class ShaderityObjectCreator {
 
 		return shaderityObj;
 	}
+
+	// =========================================================================================================
+	// private methods
+	// =========================================================================================================
 
 	private static __existNonIntegerValue(values: number[]) {
 		for (const value of values) {
@@ -413,7 +463,8 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalConstantStructValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
-			+ this.__createUniformDeclarationShaderCode();
+			+ this.__createUniformDeclarationShaderCode()
+			+ this.__createUniformStructDeclarationShaderCode();
 
 		return code;
 	}
@@ -591,6 +642,24 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `${uniform.type} ${uniform.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createUniformStructDeclarationShaderCode(): string {
+		let shaderCode = '';
+		for (const uniformStruct of this.__uniformStructs) {
+			const structName = uniformStruct.structName;
+
+			const existStructDefinition =
+				this.__structDefinitions.some(definition => definition.structName === structName);
+			if (!existStructDefinition) {
+				console.error(`__createUniformStructDeclarationShaderCode: the struct type ${structName} is not defined`);
+				continue;
+			}
+
+			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);

@@ -1202,3 +1202,148 @@ uniform sampler2DArray u_testD;
 
 `);
 });
+
+test('test addUniformStructDeclaration method in ShaderityObjectCreator', async() => {
+  const shaderStructVariableObjectsA = [{
+      memberName: 'varA',
+      type: 'float',
+      precision: 'lowp',
+    },
+    {
+      memberName: 'varB',
+      type: 'mat2',
+    },
+  ];
+
+  const shaderStructVariableObjectsB = [{
+      memberName: 'varA',
+      type: 'float',
+    },
+    {
+      memberName: 'varB',
+      type: 'isampler2D',
+      precision: 'highp',
+    },
+    {
+      memberName: 'varC',
+      type: 'sampler3D',
+      precision: 'mediump',
+    },
+  ];
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addStructDefinition('testStructA', shaderStructVariableObjectsA);
+  shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
+
+  shaderityObjectCreator.addUniformStructDeclaration('testStructA', 'testStructUniformA0');
+  shaderityObjectCreator.addUniformStructDeclaration('testStructA', 'testStructUniformA1');
+  shaderityObjectCreator.addUniformStructDeclaration('testStructB', 'testStructUniformB');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+struct testStructA {
+  lowp float varA;
+  mat2 varB;
+};
+struct testStructB {
+  float varA;
+  highp isampler2D varB;
+  mediump sampler3D varC;
+};
+
+uniform testStructA testStructUniformA0;
+uniform testStructA testStructUniformA1;
+uniform testStructB testStructUniformB;
+
+`);
+});
+
+test('test removeUniformStructDeclaration method in ShaderityObjectCreator', async() => {
+  const shaderStructVariableObjectsA = [{
+      memberName: 'varA',
+      type: 'float',
+      precision: 'lowp',
+    },
+    {
+      memberName: 'varB',
+      type: 'mat2',
+    },
+  ];
+
+  const shaderStructVariableObjectsB = [{
+      memberName: 'varA',
+      type: 'float',
+    },
+    {
+      memberName: 'varB',
+      type: 'isampler2D',
+      precision: 'highp',
+    },
+    {
+      memberName: 'varC',
+      type: 'sampler3D',
+      precision: 'mediump',
+    },
+  ];
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addStructDefinition('testStructA', shaderStructVariableObjectsA);
+  shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
+
+  shaderityObjectCreator.addUniformStructDeclaration('testStructA', 'testStructUniformA0');
+  shaderityObjectCreator.addUniformStructDeclaration('testStructA', 'testStructUniformA1');
+  shaderityObjectCreator.addUniformStructDeclaration('testStructB', 'testStructUniformB');
+
+  shaderityObjectCreator.removeUniformStructDeclaration('testStructUniformA1');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+struct testStructA {
+  lowp float varA;
+  mat2 varB;
+};
+struct testStructB {
+  float varA;
+  highp isampler2D varB;
+  mediump sampler3D varC;
+};
+
+uniform testStructA testStructUniformA0;
+uniform testStructB testStructUniformB;
+
+`);
+});
