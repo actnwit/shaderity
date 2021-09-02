@@ -12,6 +12,7 @@ const layoutUniformFragmentES3 = require('../dist/index_test').layoutUniformFrag
 const precisionES3 = require('../dist/index_test').precisionES3;
 const attributeAndVaryingPrecisionES3 = require('../dist/index_test').attributeAndVaryingPrecisionES3;
 const layoutAttributeES3 = require('../dist/index_test').layoutAttributeES3;
+const outToGlFragColorES3 = require('../dist/index_test').outToGlFragColorES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -282,6 +283,18 @@ attribute lowp vec2 a_testD;
 void main () {}
 `
   );
+});
+
+test('test create gl_FragColor from out qualifier', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(outToGlFragColorES3);
+  expect(shaderityObject.code).toBe(`#version 100
+
+vec4 renderTarget0;
+
+void main() {
+  gl_FragColor = renderTarget0;
+}
+`);
 });
 
 test('test addDefineDirective method in ShaderityObjectCreator', async() => {
