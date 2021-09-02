@@ -689,6 +689,269 @@ const ivec3 testIVec = ivec3(-7, 4, 5);
 `);
 });
 
+test('test addGlobalConstantStructValue method in ShaderityObjectCreator', async() => {
+  const shaderStructVariableObjectsA = [{
+      memberName: 'varA',
+      type: 'float',
+      precision: 'lowp',
+    },
+    {
+      memberName: 'varB',
+      type: 'mat2',
+    },
+  ];
+
+  const shaderStructVariableObjectsB = [{
+      memberName: 'varA',
+      type: 'float',
+    },
+    {
+      memberName: 'varB',
+      type: 'isampler2D',
+      precision: 'highp',
+    },
+    {
+      memberName: 'varC',
+      type: 'sampler3D',
+      precision: 'mediump',
+    },
+  ];
+
+  const structValueA = {
+    varA: [1.0],
+    varB: [1.3, 2, -5.1, -10.0],
+  };
+
+  const structValueB = {
+    varA: [-10.0],
+    varB: [13.1, -22.1, 1.4, 5],
+  };
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addStructDefinition('testStructA', shaderStructVariableObjectsA);
+  shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
+
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarA', structValueA);
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarB', structValueB);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+struct testStructA {
+  lowp float varA;
+  mat2 varB;
+};
+struct testStructB {
+  float varA;
+  highp isampler2D varB;
+  mediump sampler3D varC;
+};
+
+const testStructA structVarA = testStructA (
+  float(1),
+  mat2(1.3, 2, -5.1, -10)
+);
+const testStructA structVarB = testStructA (
+  float(-10),
+  mat2(13.1, -22.1, 1.4, 5)
+);
+
+`);
+});
+
+test('test updateGlobalConstantStructValue method in ShaderityObjectCreator', async() => {
+  const shaderStructVariableObjectsA = [{
+      memberName: 'varA',
+      type: 'float',
+      precision: 'lowp',
+    },
+    {
+      memberName: 'varB',
+      type: 'mat2',
+    },
+  ];
+
+  const shaderStructVariableObjectsB = [{
+      memberName: 'varA',
+      type: 'float',
+    },
+    {
+      memberName: 'varB',
+      type: 'isampler2D',
+      precision: 'highp',
+    },
+    {
+      memberName: 'varC',
+      type: 'sampler3D',
+      precision: 'mediump',
+    },
+  ];
+
+  const structValueA = {
+    varA: [1.0],
+    varB: [1.3, 2, -5.1, -10.0],
+  };
+
+  const structValueB = {
+    varA: [-10.0],
+    varB: [13.1, -22.1, 1.4, 5],
+  };
+
+  const structValueC = {
+    varA: [10.0],
+    varB: [13.1, -22.1, 1.4, 5],
+  };
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addStructDefinition('testStructA', shaderStructVariableObjectsA);
+  shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
+
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarA', structValueA);
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarB', structValueB);
+
+  shaderityObjectCreator.updateGlobalConstantStructValue('structVarB', structValueC);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+struct testStructA {
+  lowp float varA;
+  mat2 varB;
+};
+struct testStructB {
+  float varA;
+  highp isampler2D varB;
+  mediump sampler3D varC;
+};
+
+const testStructA structVarA = testStructA (
+  float(1),
+  mat2(1.3, 2, -5.1, -10)
+);
+const testStructA structVarB = testStructA (
+  float(10),
+  mat2(13.1, -22.1, 1.4, 5)
+);
+
+`);
+});
+
+test('test removeGlobalConstantStructValue method in ShaderityObjectCreator', async() => {
+  const shaderStructVariableObjectsA = [{
+      memberName: 'varA',
+      type: 'float',
+      precision: 'lowp',
+    },
+    {
+      memberName: 'varB',
+      type: 'mat2',
+    },
+  ];
+
+  const shaderStructVariableObjectsB = [{
+      memberName: 'varA',
+      type: 'float',
+    },
+    {
+      memberName: 'varB',
+      type: 'isampler2D',
+      precision: 'highp',
+    },
+    {
+      memberName: 'varC',
+      type: 'sampler3D',
+      precision: 'mediump',
+    },
+  ];
+
+  const structValueA = {
+    varA: [1.0],
+    varB: [1.3, 2, -5.1, -10.0],
+  };
+
+  const structValueB = {
+    varA: [-10.0],
+    varB: [13.1, -22.1, 1.4, 5],
+  };
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addStructDefinition('testStructA', shaderStructVariableObjectsA);
+  shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
+
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarA', structValueA);
+  shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarB', structValueB);
+
+  shaderityObjectCreator.removeGlobalConstantStructValue('structVarA');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+struct testStructA {
+  lowp float varA;
+  mat2 varB;
+};
+struct testStructB {
+  float varA;
+  highp isampler2D varB;
+  mediump sampler3D varC;
+};
+
+const testStructA structVarB = testStructA (
+  float(-10),
+  mat2(13.1, -22.1, 1.4, 5)
+);
+
+`);
+});
+
 test('test addAttribute method in ShaderityObjectCreator', async() => {
   const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
   shaderityObjectCreator.addAttributeDeclaration('a_testA', 'float');

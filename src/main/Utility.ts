@@ -63,11 +63,29 @@ export default class Utility {
 		}
 	}
 
-	static _isValidComponentCount(type: ShaderConstantValueVarTypeES3, values: number[]) {
+	static _isValidComponentCount(
+		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType | ShaderUniformVarTypeES3,
+		values: number[]
+	) {
 		const validComponentCount = Utility._componentNumber(type);
 		if (validComponentCount === values.length) {
 			return true;
 		}
 		return false;
+	}
+
+	static _isSamplerType(
+		type: ShaderConstantValueVarTypeES3 | ShaderAttributeVarType | ShaderVaryingVarType | ShaderUniformVarTypeES3
+	) {
+		if (
+			type === 'sampler2D' || type === 'samplerCube' || type === 'sampler3D' || type === 'sampler2DArray' ||
+			type === 'isampler2D' || type === 'isamplerCube' || type === 'isampler3D' || type === 'isampler2DArray' ||
+			type === 'usampler2D' || type === 'usamplerCube' || type === 'usampler3D' || type === 'usampler2DArray' ||
+			type === 'sampler2DShadow' || type === 'samplerCubeShadow' || type === 'sampler2DArrayShadow'
+		) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

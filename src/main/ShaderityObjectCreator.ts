@@ -17,6 +17,7 @@ import {
 	ShaderUniformVarTypeES3,
 	ShaderStructDefinitionObject,
 	ShaderStructMemberObject,
+	ShaderConstantStructValueObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -49,6 +50,7 @@ export default class ShaderityObjectCreator {
 	};
 	private __structDefinitions: ShaderStructDefinitionObject[] = [];
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
+	private __globalConstantStructValues: ShaderConstantStructValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
@@ -217,6 +219,45 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantValues.splice(matchedIndex, 1);
 	}
 
+	// need to define struct by the addStructDefinition method
+	// validate that the corresponding structure is defined by the __createGlobalConstantStructValueShaderCode method
+	public addGlobalConstantStructValue(structName: string, variableName: string, values: {[keyVariableName: string]: number[]}) {
+		const isDuplicate =
+			this.__globalConstantStructValues.some(structValue => structValue.variableName === variableName);
+		if (isDuplicate) {
+			console.error(`addGlobalConstantStructValue: duplicate variable name ${variableName}`);
+			return;
+		}
+
+		this.__globalConstantStructValues.push({
+			variableName,
+			structName,
+			values,
+		});
+	}
+
+	public updateGlobalConstantStructValue(variableName: string, values: {[keyVariableName: string]: number[]}) {
+		const matchedIndex =
+			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantStructValues[matchedIndex].values = values;
+	}
+
+	public removeGlobalConstantStructValue(variableName: string) {
+		const matchedIndex =
+			this.__globalConstantStructValues.findIndex(structValue => structValue.variableName === variableName);
+		if (matchedIndex === -1) {
+			console.error(`updateGlobalConstantStructValue:  the variable name ${variableName} is not exist`);
+			return;
+		}
+
+		this.__globalConstantStructValues.splice(matchedIndex, 1);
+	}
+
 	public addAttributeDeclaration(
 		variableName: string,
 		type: ShaderAttributeVarType,
@@ -369,6 +410,7 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalPrecisionShaderCode()
 			+ this.__createStructDefinitionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
+			+ this.__createGlobalConstantStructValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode();
@@ -442,6 +484,60 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode = shaderCode.replace(/,\s$/, ');\n');
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createGlobalConstantStructValueShaderCode(): string {
+		let shaderCode = '';
+		for (const structValue of this.__globalConstantStructValues) {
+			const matchedIndex =
+				this.__structDefinitions.findIndex(definition => definition.structName === structValue.structName);
+			if (matchedIndex === -1) {
+				console.error(`__createGlobalConstantStructValueShaderCode: the struct type ${structValue.structName} is not defined`);
+				continue;
+			}
+
+			shaderCode += `const ${structValue.structName} ${structValue.variableName} = ${structValue.structName} (\n`;
+
+			const structDefinition = this.__structDefinitions[matchedIndex];
+			if (structDefinition.memberObjects.length !== Object.keys(structValue.values).length) {
+				console.error(`__createGlobalConstantStructValueShaderCode: Invalid number of variables that ${structValue.variableName} has`);
+				continue;
+			}
+
+			const hasSamplerType =
+				structDefinition.memberObjects.some(memberObject => Utility._isSamplerType(memberObject.type));
+			if (hasSamplerType) {
+				console.error(`__createGlobalConstantStructValueShaderCode: ConstantStructValue (${structValue.variableName}) cannot have sampler type parameter`);
+				continue;
+			}
+
+			for (let i = 0; i < structDefinition.memberObjects.length; i++) {
+				const variableName = structDefinition.memberObjects[i].memberName;
+				const value = structValue.values[variableName]
+				if (value == null) {
+					console.error(`__createGlobalConstantStructValueShaderCode: ${structValue.variableName} does not have the value of ${variableName}`);
+					continue;
+				}
+
+				const type = structDefinition.memberObjects[i].type;
+				const isValidComponentNumber = Utility._isValidComponentCount(type, value);
+				if (!isValidComponentNumber) {
+					console.error(`__createGlobalConstantStructValueShaderCode: the component count of ${variableName} in ${structValue.variableName} is invalid`);
+					continue;
+				}
+
+				shaderCode += `  ${type}(`;
+				for (let i = 0; i < value.length; i++) {
+					shaderCode += value[i] + ', ';
+				}
+
+				shaderCode = shaderCode.replace(/,\s$/, '),\n');
+			}
+
+			shaderCode = shaderCode.replace(/,\n$/, '\n);\n');
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
