@@ -9,6 +9,7 @@ const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVer
 const reflectionVertexES1 = require('../dist/index_test').reflectionVertexES1;
 const reflectionVertexES3 = require('../dist/index_test').reflectionVertexES3;
 const layoutUniformFragmentES3 = require('../dist/index_test').layoutUniformFragmentES3;
+const precisionES3 = require('../dist/index_test').precisionES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -36,7 +37,7 @@ attribute vec4 color;
 uniform mat4 matrix;
 varying vec4 vColor;
 
-void main (void) {
+void main () {
   vColor = color;
   gl_Position = matrix * position;
 }
@@ -54,7 +55,7 @@ uniform sampler2D u_texture;
 uniform sampler3D u_texture_3D;
 uniform samplerCube u_textureCube;
 
-void main (void) {
+void main () {
   gl_FragColor = texture(u_texture, v_texcoord);
   gl_FragColor = texture(u_textureCube, v_texcoord3);
   gl_FragColor = textureProj(u_texture, v_texcoord);
@@ -73,7 +74,7 @@ uniform sampler2D u_texture;
 uniform sampler3D u_texture_3D;
 uniform samplerCube u_textureCube;
 
-void main (void) {
+void main () {
   gl_FragColor = texture2D(u_texture, v_texcoord);
   gl_FragColor = textureCube(u_textureCube, v_texcoord3);
   gl_FragColor = texture2DProj(u_texture, v_texcoord);
@@ -108,7 +109,7 @@ void fetch2(
   gl_FragColor = texture2DProj(texture1, v_texcoord);
 }
 
-void main (void) {
+void main () {
   fetch(texture2, texture1);
   fetch2(texture2, texture1);
 }
@@ -140,7 +141,7 @@ test('test insert definition', async() => {
   expect(Shaderity.insertDefinition(insertDefinitionVertex, 'GLSL_ES3').code).toBe(`#define GLSL_ES3
 in vec3 position;
 
-void main (void) {
+void main () {
   gl_Position = vec4(position, 1.0);
 }
 `);
@@ -211,7 +212,7 @@ uniform sampler2D u_texture;
 uniform samplerCube u_textureCube;
 
 
-void main (void) {
+void main () {
   gl_FragColor = texture2D(u_texture, v_texcoord);
   gl_FragColor = textureCube(u_textureCube, v_texcoord3);
   gl_FragColor = texture2DProj(u_texture, v_texcoord);
@@ -225,6 +226,19 @@ void main (void) {
     type: 'samplerCube',
     semantic: 'UNKNOWN'
   });
+});
+
+test('test precision translation from ES3 shader to ES1 shader', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(precisionES3);
+  expect(shaderityObject.code).toBe(`#version 100
+
+precision mediump int;
+precision lowp float;
+precision highp sampler2D;
+precision highp samplerCube;
+
+void main() {}
+`);
 });
 
 test('test addDefineDirective method in ShaderityObjectCreator', async() => {
