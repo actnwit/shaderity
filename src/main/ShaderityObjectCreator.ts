@@ -15,6 +15,8 @@ import {
 	ShaderVaryingVarType,
 	ShaderUniformObject,
 	ShaderUniformVarTypeES3,
+	ShaderStructDefinitionObject,
+	ShaderStructMemberObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -45,6 +47,7 @@ export default class ShaderityObjectCreator {
 		samplerCubeShadow: 'highp',
 		sampler2DArrayShadow: 'highp',
 	};
+	private __structDefinitions: ShaderStructDefinitionObject[] = [];
 	private __globalConstantValues: ShaderConstantValueObject[] = [];
 	private __attributes: ShaderAttributeObject[] = []; // for vertex shader only
 	private __varyings: ShaderVaryingObject[] = [];
@@ -108,6 +111,43 @@ export default class ShaderityObjectCreator {
 
 	public updateGlobalPrecision(precision: ShaderPrecisionObject) {
 		Object.assign(this.__globalPrecision, precision);
+	}
+
+	// only define types
+	public addStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
+		const isDuplicate =
+			this.__structDefinitions.some(structDefinition => structDefinition.structName === structName);
+		if (isDuplicate) {
+			console.error(`addStructDefinition: duplicate struct type name ${structName}`);
+			return;
+		}
+
+		this.__structDefinitions.push({
+			structName,
+			memberObjects,
+		});
+	}
+
+	public updateStructDefinition(structName: string, memberObjects: ShaderStructMemberObject[]) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`updateStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions[matchedIndex].memberObjects = memberObjects;
+	}
+
+	public removeStructDefinition(structName: string) {
+		const matchedIndex =
+			this.__structDefinitions.findIndex(structDefinition => structDefinition.structName === structName);
+		if (matchedIndex === -1) {
+			console.error(`removeStructDefinition: the struct type name ${structName} is not exist`);
+			return;
+		}
+
+		this.__structDefinitions.splice(matchedIndex, 1);
 	}
 
 	public addGlobalConstantValue(variableName: string, type: ShaderConstantValueVarTypeES3, values: number[]) {
@@ -327,6 +367,7 @@ export default class ShaderityObjectCreator {
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
+			+ this.__createStructDefinitionShaderCode()
 			+ this.__createGlobalConstantValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
@@ -361,6 +402,28 @@ export default class ShaderityObjectCreator {
 			const precisionQualifier = this.__globalPrecision[precisionType];
 
 			shaderCode += `precision ${precisionQualifier} ${precisionType};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createStructDefinitionShaderCode(): string {
+		let shaderCode = '';
+		for (const structDefinition of this.__structDefinitions) {
+			shaderCode += `struct ${structDefinition.structName} {\n`;
+
+			for (let i = 0; i < structDefinition.memberObjects.length; i++) {
+				const variable = structDefinition.memberObjects[i];
+
+				shaderCode += `  `;
+				if (variable.precision != null) {
+					shaderCode += `${variable.precision} `;
+				}
+
+				shaderCode += `${variable.type} ${variable.memberName};\n`;
+			}
+
+			shaderCode += `};\n`;
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
@@ -437,4 +500,3 @@ export default class ShaderityObjectCreator {
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
 }
-
