@@ -59,8 +59,8 @@ export default class ShaderityObjectCreator {
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
 	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
-
-	// main function
+	private __mainFunctionCode: string = 'void main() {}';
+	private __outputColorVariableName: string = 'renderTarget0'; // for fragment shader only
 
 	constructor(shaderStage: ShaderStageStr) {
 		this.__shaderStage = shaderStage;
@@ -340,6 +340,26 @@ export default class ShaderityObjectCreator {
 		this.__globalConstantStructValues[matchedIndex].values = values;
 	}
 
+	public updateMainFunction(mainFunctionCodeInner: string) {
+		this.__mainFunctionCode = mainFunctionCodeInner;
+	}
+
+	// specify the name of the output color variable from the main function in the fragment shader.
+	// users have to assign the result of fragment shader calculation to this variable.
+	public updateOutputColorVariableName(outputColorVariableName: string) {
+		if (this.__shaderStage !== 'fragment') {
+			console.error('updateOutputColorVariableName: this method is for fragment shader only');
+			return;
+		}
+
+		if (outputColorVariableName.length === 0) {
+			console.error('updateOutputColorVariableName: invalid outColorVariableName');
+			return;
+		}
+
+		this.__outputColorVariableName = outputColorVariableName;
+	}
+
 	// =========================================================================================================
 	// remove parameters functions
 	// =========================================================================================================
@@ -494,10 +514,10 @@ export default class ShaderityObjectCreator {
 	// TODO: implement shader code import feature (low priority)
 	// public importShaderCode(code: string) {}
 
+	// need to apply Shaderity.transformToGLSLES1, transformToGLSLES3 or transformTo method
 	private __createShaderCode(): string {
 		this.__fillEmptyFunctions();
 
-		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
@@ -507,9 +527,11 @@ export default class ShaderityObjectCreator {
 			+ this.__createGlobalConstantStructValueShaderCode()
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
+			+ this.__createOutputColorDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
 			+ this.__createUniformStructDeclarationShaderCode()
-			+ this.__createFunctionDefinitionShaderCode();
+			+ this.__createFunctionDefinitionShaderCode()
+			+ this.__createMainFunctionDefinitionShaderCode();
 
 		return code;
 	}
@@ -683,6 +705,15 @@ export default class ShaderityObjectCreator {
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
 	}
 
+	//TODO: translate when glsl es1
+	private __createOutputColorDeclarationShaderCode(): string {
+		if (this.__shaderStage !== 'fragment') {
+			return '';
+		}
+
+		return `layout(location = 0) out vec4 ${this.__outputColorVariableName};\n\n`;
+	}
+
 	private __createUniformDeclarationShaderCode(): string {
 		let shaderCode = '';
 		for (const uniform of this.__uniforms) {
@@ -726,5 +757,9 @@ export default class ShaderityObjectCreator {
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createMainFunctionDefinitionShaderCode(): string {
+		return this.__mainFunctionCode + `\n`;
 	}
 }

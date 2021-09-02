@@ -256,6 +256,7 @@ precision highp sampler2DShadow;
 precision highp samplerCubeShadow;
 precision highp sampler2DArrayShadow;
 
+void main() {}
 `);
 });
 
@@ -288,6 +289,7 @@ precision highp sampler2DShadow;
 precision highp samplerCubeShadow;
 precision highp sampler2DArrayShadow;
 
+void main() {}
 `);
 });
 
@@ -316,6 +318,7 @@ precision highp sampler2DShadow;
 precision highp samplerCubeShadow;
 precision highp sampler2DArrayShadow;
 
+void main() {}
 `);
 });
 
@@ -343,6 +346,7 @@ precision highp sampler2DShadow;
 precision highp samplerCubeShadow;
 precision highp sampler2DArrayShadow;
 
+void main() {}
 `);
 });
 
@@ -372,6 +376,7 @@ precision highp sampler2DShadow;
 precision highp samplerCubeShadow;
 precision highp sampler2DArrayShadow;
 
+void main() {}
 `);
 });
 
@@ -437,6 +442,7 @@ struct testStructB {
   mediump sampler3D varC;
 };
 
+void main() {}
 `);
 });
 
@@ -512,6 +518,7 @@ struct testStructB {
   int varB;
 };
 
+void main() {}
 `);
 });
 
@@ -575,6 +582,7 @@ struct testStructB {
   mediump sampler3D varC;
 };
 
+void main() {}
 `);
 });
 
@@ -611,6 +619,7 @@ const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
 const vec4 testVec = vec4(20, 1.57, -3, -10);
 const ivec3 testIVec = ivec3(-7, 4, 5);
 
+void main() {}
 `);
 });
 
@@ -649,6 +658,7 @@ const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
 const vec4 testVec = vec4(20, 1.57, -3, -10);
 const ivec3 testIVec = ivec3(-7, 4, 5);
 
+void main() {}
 `);
 });
 
@@ -686,6 +696,7 @@ const int testInt = int(-2);
 const mat2 testMat = mat2(-10, -50.1, 3, 3.7);
 const ivec3 testIVec = ivec3(-7, 4, 5);
 
+void main() {}
 `);
 });
 
@@ -772,6 +783,7 @@ const testStructA structVarB = testStructA (
   mat2(13.1, -22.1, 1.4, 5)
 );
 
+void main() {}
 `);
 });
 
@@ -865,6 +877,7 @@ const testStructA structVarB = testStructA (
   mat2(13.1, -22.1, 1.4, 5)
 );
 
+void main() {}
 `);
 });
 
@@ -949,6 +962,7 @@ const testStructA structVarB = testStructA (
   mat2(13.1, -22.1, 1.4, 5)
 );
 
+void main() {}
 `);
 });
 
@@ -985,6 +999,7 @@ in mediump mat4 a_testC;
 layout (location = 0) in ivec4 a_testD;
 layout (location = 1) in lowp int a_testE;
 
+void main() {}
 `);
 });
 
@@ -1022,6 +1037,7 @@ in float a_testA;
 in vec3 a_testB;
 layout (location = 0) in ivec4 a_testD;
 
+void main() {}
 `);
 });
 
@@ -1058,6 +1074,7 @@ out mediump mat4 v_testC;
 flat out ivec4 v_testD;
 smooth out lowp mat2 v_testE;
 
+void main() {}
 `);
 });
 
@@ -1095,6 +1112,7 @@ out float v_testA;
 out mediump mat4 v_testC;
 smooth out lowp mat2 v_testE;
 
+void main() {}
 `);
 });
 
@@ -1131,6 +1149,9 @@ in mediump mat4 v_testC;
 flat in ivec4 v_testD;
 smooth in lowp mat2 v_testE;
 
+layout(location = 0) out vec4 renderTarget0;
+
+void main() {}
 `);
 });
 
@@ -1165,6 +1186,7 @@ uniform uvec3 u_testB;
 uniform lowp sampler2D u_testC;
 uniform sampler2DArray u_testD;
 
+void main() {}
 `);
 });
 
@@ -1200,6 +1222,7 @@ precision highp sampler2DArrayShadow;
 uniform uvec3 u_testB;
 uniform sampler2DArray u_testD;
 
+void main() {}
 `);
 });
 
@@ -1272,6 +1295,7 @@ uniform testStructA testStructUniformA0;
 uniform testStructA testStructUniformA1;
 uniform testStructB testStructUniformB;
 
+void main() {}
 `);
 });
 
@@ -1345,6 +1369,7 @@ struct testStructB {
 uniform testStructA testStructUniformA0;
 uniform testStructB testStructUniformB;
 
+void main() {}
 `);
 });
 
@@ -1414,6 +1439,7 @@ vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
   return add(coefficientA * vecA, coefficientB * vecB);
 }
 
+void main() {}
 `);
 });
 
@@ -1477,5 +1503,77 @@ vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
   return add(coefficientA * vecA, coefficientB * vecB);
 }
 
+void main() {}
+`);
+});
+
+test('test updateMainFunction method in ShaderityObjectCreator', async() => {
+  const mainFunction = `void main() {
+  renderTarget0 = vec4(0.5, 0.5, 0.5, 1.0);
+}`;
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('fragment');
+  shaderityObjectCreator.updateMainFunction(mainFunction);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+layout(location = 0) out vec4 renderTarget0;
+
+void main() {
+  renderTarget0 = vec4(0.5, 0.5, 0.5, 1.0);
+}
+`);
+});
+
+test('test updateOutputColorVariableName method in ShaderityObjectCreator', async() => {
+  const mainFunction = `void main() {
+  rt0 = vec4(0.5, 0.5, 0.5, 1.0);
+}`;
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('fragment');
+  shaderityObjectCreator.updateMainFunction(mainFunction);
+  shaderityObjectCreator.updateOutputColorVariableName('rt0');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+layout(location = 0) out vec4 rt0;
+
+void main() {
+  rt0 = vec4(0.5, 0.5, 0.5, 1.0);
+}
 `);
 });
