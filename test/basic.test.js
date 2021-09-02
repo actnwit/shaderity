@@ -234,7 +234,9 @@ test('test addDefineDirective method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addDefineDirective('testC_c C');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`#define testA
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+#define testA
 #define testB B
 #define testC_c C
 
@@ -268,7 +270,9 @@ test('test removeDefineDirective method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeDefineDirective('testB B');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`#define testA
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+#define testA
 #define testC_c C
 
 precision highp int;
@@ -298,7 +302,9 @@ test('test addExtension method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addExtension('GL_OES_standard_derivatives', 'enable');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`#extension GL_OES_standard_derivatives: enable
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+#extension GL_OES_standard_derivatives: enable
 
 precision highp int;
 precision highp float;
@@ -328,7 +334,9 @@ test('test removeExtension method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeExtension('GL_OES_standard_derivatives', 'enable');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -358,7 +366,9 @@ test('test updateGlobalPrecision method in ShaderityObjectCreator', async() => {
   });
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision mediump int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision mediump int;
 precision lowp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -414,7 +424,9 @@ test('test addStructDefinition method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addStructDefinition('testStructB', shaderStructVariableObjectsB);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -491,7 +503,9 @@ test('test addStructDefinition method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.updateStructDefinition('testStructB', shaderStructVariableObjectsC);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -558,7 +572,9 @@ test('test removeStructDefinition method in ShaderityObjectCreator', async() => 
   shaderityObjectCreator.removeStructDefinition('testStructA');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -595,7 +611,9 @@ test('test addGlobalConstantValue method in ShaderityObjectCreator', async() => 
   shaderityObjectCreator.addGlobalConstantValue('testIVec', 'ivec3', [-7, 4.0, 5]);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -634,7 +652,9 @@ test('test updateGlobalConstantValue method in ShaderityObjectCreator', async() 
   shaderityObjectCreator.updateGlobalConstantValue('testFloat', [-0.35]);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -674,7 +694,9 @@ test('test removeGlobalConstantValue method in ShaderityObjectCreator', async() 
   shaderityObjectCreator.removeGlobalConstantValue('testVec');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -746,7 +768,9 @@ test('test addGlobalConstantStructValue method in ShaderityObjectCreator', async
   shaderityObjectCreator.addGlobalConstantStructValue('testStructA', 'structVarB', structValueB);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -840,7 +864,9 @@ test('test updateGlobalConstantStructValue method in ShaderityObjectCreator', as
   shaderityObjectCreator.updateGlobalConstantStructValue('structVarB', structValueC);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -929,7 +955,9 @@ test('test removeGlobalConstantStructValue method in ShaderityObjectCreator', as
   shaderityObjectCreator.removeGlobalConstantStructValue('structVarA');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -975,7 +1003,9 @@ test('test addAttribute method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addAttributeDeclaration('a_testE', 'int', { location: 1, precision: 'lowp' });
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1015,7 +1045,9 @@ test('test removeAttribute method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeAttributeDeclaration('a_testE');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1050,7 +1082,9 @@ test('test addVarying method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addVaryingDeclaration('v_testE', 'mat2', { interpolationType: 'smooth', precision: 'lowp' });
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1090,7 +1124,9 @@ test('test removeVarying method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeVaryingDeclaration('v_testD');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1125,7 +1161,9 @@ test('test addVarying method for fragment shader in ShaderityObjectCreator', asy
   shaderityObjectCreator.addVaryingDeclaration('v_testE', 'mat2', { interpolationType: 'smooth', precision: 'lowp' });
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1163,7 +1201,9 @@ test('test addUniform method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.addUniformDeclaration('u_testD', 'sampler2DArray', {});
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1201,7 +1241,9 @@ test('test removeUniform method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.removeUniformDeclaration('u_testC');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1263,7 +1305,9 @@ test('test addUniformStructDeclaration method in ShaderityObjectCreator', async(
   shaderityObjectCreator.addUniformStructDeclaration('testStructB', 'testStructUniformB');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1338,7 +1382,9 @@ test('test removeUniformStructDeclaration method in ShaderityObjectCreator', asy
   shaderityObjectCreator.removeUniformStructDeclaration('testStructUniformA1');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1405,7 +1451,9 @@ test('test addFunctionDefinition method in ShaderityObjectCreator', async() => {
   // shaderityObjectCreator.removeFunctionDefinition(funcIdD);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1475,7 +1523,9 @@ test('test removeFunctionDefinition method in ShaderityObjectCreator', async() =
   shaderityObjectCreator.removeFunctionDefinition(functionIdD);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1516,7 +1566,9 @@ test('test updateMainFunction method in ShaderityObjectCreator', async() => {
   shaderityObjectCreator.updateMainFunction(mainFunction);
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;
@@ -1552,7 +1604,9 @@ test('test updateOutputColorVariableName method in ShaderityObjectCreator', asyn
   shaderityObjectCreator.updateOutputColorVariableName('rt0');
 
   const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
-  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
 precision highp float;
 precision highp sampler2D;
 precision highp samplerCube;

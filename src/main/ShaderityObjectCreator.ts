@@ -519,7 +519,8 @@ export default class ShaderityObjectCreator {
 		this.__fillEmptyFunctions();
 
 		const code
-			= this.__createDefineDirectiveShaderCode()
+			= `#version 300 es\n\n`
+			+ this.__createDefineDirectiveShaderCode()
 			+ this.__createExtensionShaderCode()
 			+ this.__createGlobalPrecisionShaderCode()
 			+ this.__createStructDefinitionShaderCode()
