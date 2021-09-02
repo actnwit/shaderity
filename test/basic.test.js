@@ -1347,3 +1347,135 @@ uniform testStructB testStructUniformB;
 
 `);
 });
+
+test('test addFunctionDefinition method in ShaderityObjectCreator', async() => {
+  const funcA = `vec3 add(vec3 vecA, vec3 vecB) {
+  return vecA + vecB;
+}`;
+
+  const funcB = `vec2 add(vec2 vecA, vec2 vecB) {
+  return vecA + vecB;
+}`;
+
+  const funcC = `vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}`;
+
+  const funcD = `vec2 linear(vec2 vecA, vec2 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}`;
+
+  const funcE = `vec3 subtract(vec3 vecA, vec3 vecB) {
+  return vecA - vecB;
+}`;
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  const functionIdA = shaderityObjectCreator.addFunctionDefinition(funcA, { dependencyLevel: 1 });
+  const functionIdB = shaderityObjectCreator.addFunctionDefinition(funcB);
+  const functionIdC = shaderityObjectCreator.addFunctionDefinition(funcC, { dependencyLevel: 4 });
+  const functionIdD = shaderityObjectCreator.addFunctionDefinition(funcD, { dependencyLevel: 3 });
+  const functionIdE = shaderityObjectCreator.addFunctionDefinition(funcE, { dependencyLevel: 1 });
+
+  // shaderityObjectCreator.removeFunctionDefinition(funcIdE);
+  // shaderityObjectCreator.removeFunctionDefinition(funcIdD);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+vec2 add(vec2 vecA, vec2 vecB) {
+  return vecA + vecB;
+}
+vec3 add(vec3 vecA, vec3 vecB) {
+  return vecA + vecB;
+}
+vec3 subtract(vec3 vecA, vec3 vecB) {
+  return vecA - vecB;
+}
+vec2 linear(vec2 vecA, vec2 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}
+vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}
+
+`);
+});
+
+test('test removeFunctionDefinition method in ShaderityObjectCreator', async() => {
+  const funcA = `vec3 add(vec3 vecA, vec3 vecB) {
+  return vecA + vecB;
+}`;
+
+  const funcB = `vec2 add(vec2 vecA, vec2 vecB) {
+  return vecA + vecB;
+}`;
+
+  const funcC = `vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}`;
+
+  const funcD = `vec2 linear(vec2 vecA, vec2 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}`;
+
+  const funcE = `vec3 subtract(vec3 vecA, vec3 vecB) {
+  return vecA - vecB;
+}`;
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  const functionIdA = shaderityObjectCreator.addFunctionDefinition(funcA, { dependencyLevel: 1 });
+  const functionIdB = shaderityObjectCreator.addFunctionDefinition(funcB);
+  const functionIdC = shaderityObjectCreator.addFunctionDefinition(funcC, { dependencyLevel: 4 });
+  const functionIdD = shaderityObjectCreator.addFunctionDefinition(funcD, { dependencyLevel: 3 });
+  const functionIdE = shaderityObjectCreator.addFunctionDefinition(funcE, { dependencyLevel: 1 });
+
+  shaderityObjectCreator.removeFunctionDefinition(functionIdE);
+  shaderityObjectCreator.removeFunctionDefinition(functionIdD);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toStrictEqual(`precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+vec2 add(vec2 vecA, vec2 vecB) {
+  return vecA + vecB;
+}
+vec3 add(vec3 vecA, vec3 vecB) {
+  return vecA + vecB;
+}
+vec3 linear(vec3 vecA, vec3 vecB, float coefficientA, float coefficientB) {
+  return add(coefficientA * vecA, coefficientB * vecB);
+}
+
+`);
+});

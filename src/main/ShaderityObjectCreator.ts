@@ -19,6 +19,7 @@ import {
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
+	ShaderFunctionObject,
 } from '../types/type';
 import Utility from './Utility';
 
@@ -27,6 +28,7 @@ import Utility from './Utility';
  */
 export default class ShaderityObjectCreator {
 	private __shaderStage: ShaderStageStr;
+	private __functionIdCount = 0;
 
 	private __defineDirectiveNames: string[] = [];
 	private __extensions: ShaderExtensionObject[] = [];
@@ -56,8 +58,8 @@ export default class ShaderityObjectCreator {
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
+	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
 
-	// functions
 	// main function
 
 	constructor(shaderStage: ShaderStageStr) {
@@ -261,6 +263,26 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	// the return value Id is a value to delete the function
+	// the main function is defined (updated) by the updateMainFunction method
+	public addFunctionDefinition(
+		functionCode: string,
+		options?: {
+			dependencyLevel?: number
+		}
+	) {
+		const functionId = this.__functionIdCount++;
+
+		const dependencyLevel = options?.dependencyLevel ?? 0;
+		this.__functions[dependencyLevel] = this.__functions[dependencyLevel] ?? [];
+		this.__functions[dependencyLevel].push({
+			functionCode,
+			functionId
+		});
+
+		return functionId;
+	}
+
 	// =========================================================================================================
 	// update parameters functions
 	// =========================================================================================================
@@ -422,6 +444,26 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.splice(matchedIndex, 1);
 	}
 
+	public removeFunctionDefinition(functionId: number) {
+		this.__fillEmptyFunctions();
+
+		// id is too small or too big
+		if (functionId < 0 || functionId >= this.__functionIdCount) {
+			console.warn('removeFunctionDefinition: invalid function id')
+		}
+
+		for (const functionObjects of this.__functions) {
+			const matchedIndex =
+				functionObjects.findIndex(functionObject => functionObject.functionId === functionId);
+			if (matchedIndex !== -1) {
+				functionObjects.splice(matchedIndex, 1);
+				return;
+			}
+		}
+
+		console.warn(`removeFunctionDefinition: not found the function of functionId ${functionId}`);
+	}
+
 	// =========================================================================================================
 	// create shaderity object function
 	// =========================================================================================================
@@ -453,6 +495,8 @@ export default class ShaderityObjectCreator {
 	// public importShaderCode(code: string) {}
 
 	private __createShaderCode(): string {
+		this.__fillEmptyFunctions();
+
 		// TODO: now implementing
 		const code
 			= this.__createDefineDirectiveShaderCode()
@@ -464,9 +508,16 @@ export default class ShaderityObjectCreator {
 			+ this.__createAttributeDeclarationShaderCode()
 			+ this.__createVaryingDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
-			+ this.__createUniformStructDeclarationShaderCode();
+			+ this.__createUniformStructDeclarationShaderCode()
+			+ this.__createFunctionDefinitionShaderCode();
 
 		return code;
+	}
+
+	private __fillEmptyFunctions() {
+		for (let i = 0; i < this.__functions.length; i++) {
+			this.__functions[i] = this.__functions[i] ?? [];
+		}
 	}
 
 	private __createDefineDirectiveShaderCode(): string {
@@ -660,6 +711,18 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createFunctionDefinitionShaderCode(): string {
+		let shaderCode = '';
+		for (let i = 0; i < this.__functions.length; i++) {
+			const functionObjects = this.__functions[i];
+			for (let j = 0; j < functionObjects.length; j++) {
+				shaderCode += functionObjects[j].functionCode + `\n`;
+			}
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
