@@ -234,9 +234,6 @@ export default class ShaderTransformer {
 						case 'sampler2D':
 							textureFunc = 'texture2DProj';
 							break;
-						case 'sampler3D':
-							textureFunc = 'texture3DProj';
-							break;
 						default:
 							textureFunc = '';
 							console.log('not found');
@@ -257,9 +254,6 @@ export default class ShaderTransformer {
 					switch (samplerType) {
 						case 'sampler2D':
 							textureFunc = 'texture2D';
-							break;
-						case 'sampler3D':
-							textureFunc = 'texture3D';
 							break;
 						case 'samplerCube':
 							textureFunc = 'textureCube';
