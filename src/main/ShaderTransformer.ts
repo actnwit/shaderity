@@ -217,19 +217,19 @@ export default class ShaderTransformer {
 	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
-		const regTextureProj = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
-		const regTexture = new RegExp(`(${sbl}+)(texture)(${sbl}+)`, 'g');
+		const regTextureProj = new RegExp(`(${sbl}+)textureProj(Lod|)(${sbl}+)`, 'g');
+		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
 
 		let argumentSamplerMap: Map<string, string> | undefined;
 		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
 
-			const matchTextureProj = line.match(/textureProj[\t ]*\([\t ]*(\w+),/);
+			const matchTextureProj = line.match(/textureProj(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTextureProj) {
 				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
 
-				const variableName = matchTextureProj[1];
+				const variableName = matchTextureProj[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -241,18 +241,18 @@ export default class ShaderTransformer {
 					}
 
 					if (textureFunc !== '') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$3');
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$2$3');
 					}
 				}
 				continue;
 			}
 
 
-			const matchTexture = line.match(/texture[\t ]*\([\t ]*(\w+),/);
+			const matchTexture = line.match(/texture(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTexture) {
 				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
 
-				const variableName = matchTexture[1];
+				const variableName = matchTexture[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -266,7 +266,7 @@ export default class ShaderTransformer {
 					}
 
 					if (textureFunc !== '') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, '$1' + textureFunc + '$3');
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, '$1' + textureFunc + '$2$3');
 					}
 				}
 				continue;
