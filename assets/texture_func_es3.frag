@@ -16,7 +16,7 @@ void fetch(
 
 void fetch2(
   samplerCube texture2,
-  sampler2D texture1
+  // sampler2D texture1
 ) {
   gl_FragColor = texture(texture1, v_texcoord);
   gl_FragColor = texture(texture2, v_texcoord3);
