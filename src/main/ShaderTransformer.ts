@@ -300,6 +300,70 @@ export default class ShaderTransformer {
 		return uniformSamplerMap;
 	}
 
+	private static __createArgumentSamplerMap(splittedShaderCode: string[], lineIndex: number) {
+		const argumentSamplerMap: Map<string, string> = new Map();
+
+		for (let i = lineIndex; i >= 0; i--) {
+			const line = splittedShaderCode[i];
+
+			const isBlockStartLine = !!line.match(/\{/);
+			if (!isBlockStartLine) {
+				continue;
+			}
+
+			const bracketSectionCode = this.__getBracketSection(splittedShaderCode, i);
+
+			const innerBracketSectionCode = bracketSectionCode.match(/.*\((.*)\)/)?.[1];
+			if (innerBracketSectionCode == null) {
+				return;
+			}
+
+			const variableCandidates = innerBracketSectionCode.split(',');
+			const samplerTypeDefinitionReg = /[\n\t ]*(highp|mediump|lowp|)[\n\t ]*(sampler\w+)[\n\t ]*(\w+)[\n\t ]*/;
+
+			const isFunctionBracket = !!(variableCandidates[0].match(samplerTypeDefinitionReg) ?? variableCandidates[0].match(/^[\n\t ]*$/));
+			if (!isFunctionBracket) {
+				continue;
+			}
+
+			for (const variableCandidate of variableCandidates) {
+				const samplerVariableMatch = variableCandidate.match(samplerTypeDefinitionReg);
+				if (samplerVariableMatch == null) {
+					continue;
+				}
+				const samplerType = samplerVariableMatch[2];
+				const name = samplerVariableMatch[3];
+				if (argumentSamplerMap.get(name)) {
+					console.error('__createArgumentSamplerMap: duplicate variable name');
+				}
+				argumentSamplerMap.set(name, samplerType);
+			}
+
+			break;
+		}
+
+		return argumentSamplerMap;
+	}
+
+	private static __getBracketSection(splittedShaderCode: string[], bracketEndIndex: number) {
+		let bracketStartIndex = 0;
+		for (let j = bracketEndIndex; j >= 0; j--) {
+			const line = splittedShaderCode[j];
+			const isBracketStartMatch = !!line.match(/\(/);
+			if (isBracketStartMatch) {
+				bracketStartIndex = j;
+				break;
+			}
+		}
+
+		let containBracketCode = '';
+		for (let j = bracketStartIndex; j <= bracketEndIndex; j++) {
+			containBracketCode += splittedShaderCode[j];
+		}
+
+		return containBracketCode;
+	}
+
 	/**
 	 * @private
 	 * Find the 'attribute' modifier in the vertex shader code and replace it with the GLSL ES3 modifier('in')
