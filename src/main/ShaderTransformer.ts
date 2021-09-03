@@ -217,74 +217,70 @@ export default class ShaderTransformer {
 	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
-		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
+		const regTextureProj = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
+		const regTexture = new RegExp(`(${sbl}+)(texture)(${sbl}+)`, 'g');
 
+		let argumentSamplerMap: Map<string, string> | undefined;
+		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
 
-			let reg = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
-			let match = line.match(/textureProj[\t ]*\([\t ]*(\w+),/);
-			if (match) {
-				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMapOld(splittedShaderCode, i);
-				const samplerType = uniformSamplerMap.get(name);
+			const matchTextureProj = line.match(/textureProj[\t ]*\([\t ]*(\w+),/);
+			if (matchTextureProj) {
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+
+				const variableName = matchTextureProj[1];
+				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
-					switch (samplerType) {
-						case 'sampler2D':
-							textureFunc = 'texture2DProj';
-							break;
-						default:
-							textureFunc = '';
-							console.log('not found');
+					if (samplerType === 'sampler2D') {
+						textureFunc = 'texture2DProj';
+					} else {
+						textureFunc = '';
+						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
 					}
-					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
+
+					if (textureFunc !== '') {
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$3');
+					}
 				}
 				continue;
 			}
 
-			reg = new RegExp(`(${sbl}+)(texture)(${sbl}+)`, 'g');
-			match = line.match(/texture[\t ]*\([\t ]*(\w+),/);
-			if (match) {
-				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMapOld(splittedShaderCode, i);
-				const samplerType = uniformSamplerMap.get(name);
+
+			const matchTexture = line.match(/texture[\t ]*\([\t ]*(\w+),/);
+			if (matchTexture) {
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+
+				const variableName = matchTexture[1];
+				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
-					switch (samplerType) {
-						case 'sampler2D':
-							textureFunc = 'texture2D';
-							break;
-						case 'samplerCube':
-							textureFunc = 'textureCube';
-							break;
-						default:
-							textureFunc = '';
-							console.log('not found');
+					if (samplerType === 'sampler2D') {
+						textureFunc = 'texture2D';
+					} else if (samplerType === 'samplerCube') {
+						textureFunc = 'textureCube';
+					} else {
+						textureFunc = '';
+						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
 					}
-					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
+
+					if (textureFunc !== '') {
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, '$1' + textureFunc + '$3');
+					}
 				}
+				continue;
+			}
+
+			const isBlockEnd = !!line.match(/\}/);
+			if (isBlockEnd) {
+				argumentSamplerMap = undefined;
 			}
 		}
-	}
-
-	private static __createUniformSamplerMapOld(splittedShaderCode: string[], line_i: number) {
-		const uniformSamplerMap = new Map();
-
-		for (let i = 0; i < line_i; i++) {
-			const line = splittedShaderCode[i];
-			const match = line.match(/^(?![\/])[\t ]*\w*[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
-			if (match) {
-				const samplerType = match[1];
-				const name = match[2];
-				uniformSamplerMap.set(name, samplerType);
-			}
-		}
-		return uniformSamplerMap;
 	}
 
 	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
-		const uniformSamplerMap = new Map();
+		const uniformSamplerMap: Map<string, string> = new Map();
 
 		for (const line of splittedShaderCode) {
 			const match = line.match(/^(?![\/])[\t ]*uniform*[\t ]*(highp|mediump|lowp|)[\t ]*(sampler\w+)[\t ]+(\w+)/);
