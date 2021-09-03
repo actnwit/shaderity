@@ -217,6 +217,7 @@ export default class ShaderTransformer {
 	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
+		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
 
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
@@ -225,7 +226,7 @@ export default class ShaderTransformer {
 			let match = line.match(/textureProj[\t ]*\([\t ]*(\w+),/);
 			if (match) {
 				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
+				const uniformSamplerMap = this.__createUniformSamplerMapOld(splittedShaderCode, i);
 				const samplerType = uniformSamplerMap.get(name);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -249,7 +250,7 @@ export default class ShaderTransformer {
 			match = line.match(/texture[\t ]*\([\t ]*(\w+),/);
 			if (match) {
 				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
+				const uniformSamplerMap = this.__createUniformSamplerMapOld(splittedShaderCode, i);
 				const samplerType = uniformSamplerMap.get(name);
 				if (samplerType != null) {
 					let textureFunc: string;
@@ -273,7 +274,7 @@ export default class ShaderTransformer {
 		}
 	}
 
-	private static __createUniformSamplerMap(splittedShaderCode: string[], line_i: number) {
+	private static __createUniformSamplerMapOld(splittedShaderCode: string[], line_i: number) {
 		const uniformSamplerMap = new Map();
 
 		for (let i = 0; i < line_i; i++) {
@@ -282,6 +283,23 @@ export default class ShaderTransformer {
 			if (match) {
 				const samplerType = match[1];
 				const name = match[2];
+				uniformSamplerMap.set(name, samplerType);
+			}
+		}
+		return uniformSamplerMap;
+	}
+
+	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
+		const uniformSamplerMap = new Map();
+
+		for (const line of splittedShaderCode) {
+			const match = line.match(/^(?![\/])[\t ]*uniform*[\t ]*(highp|mediump|lowp|)[\t ]*(sampler\w+)[\t ]+(\w+)/);
+			if (match) {
+				const samplerType = match[2];
+				const name = match[3];
+				if (uniformSamplerMap.get(name)) {
+					console.error('__createUniformSamplerMap: duplicate variable name');
+				}
 				uniformSamplerMap.set(name, samplerType);
 			}
 		}
