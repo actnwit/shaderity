@@ -278,7 +278,7 @@ export default class ShaderTransformer {
 
 		for (let i = 0; i < line_i; i++) {
 			const line = splittedShaderCode[i];
-			const match = line.match(/^(?![\/])[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
+			const match = line.match(/^(?![\/])[\t ]*\w*[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
 			if (match) {
 				const samplerType = match[1];
 				const name = match[2];

@@ -93,6 +93,7 @@ varying vec2 v_texcoord;
 varying vec3 v_texcoord3;
 uniform sampler2D texture1;
 uniform samplerCube texture2;
+uniform mediump samplerCube texture3;
 
 void fetch(
   samplerCube texture1,
@@ -100,6 +101,7 @@ void fetch(
 ) {
   gl_FragColor = texture2D(texture2, v_texcoord);
   gl_FragColor = textureCube(texture1, v_texcoord3);
+  gl_FragColor = textureCube(texture3, v_texcoord3);
   gl_FragColor = texture2DProj(texture2, v_texcoord);
 }
 
