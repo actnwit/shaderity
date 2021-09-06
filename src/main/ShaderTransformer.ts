@@ -10,7 +10,7 @@ export default class ShaderTransformer {
 	 */
 	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
-		this.__removeLayout(splittedShaderCode);
+		this.__removeES3Qualifier(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode, isFragmentShader);
 		this.__removePrecisionForES3(splittedShaderCode);
@@ -173,8 +173,16 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "layout" modifier in the shader code and remove it
+	 * Find the qualifier for es3 only in the shader code and remove it
 	 * This method directly replace the elements of the splittedShaderCode variable.
+	 */
+	private static __removeES3Qualifier(splittedShaderCode: string[]) {
+		this.__removeLayout(splittedShaderCode);
+	}
+
+	/**
+	 * @private
+	 * Find the "layout" modifier in the shader code and remove it
 	 */
 	private static __removeLayout(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
