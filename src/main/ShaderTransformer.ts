@@ -16,7 +16,7 @@ export default class ShaderTransformer {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
 		this.__removeES3Qualifier(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
-		this.__convertOut(splittedShaderCode, isFragmentShader);
+		this.__convertOut(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		this.__removePrecisionForES3(splittedShaderCode);
 		this.__convertTextureFunctionToES1(splittedShaderCode);
 		const transformedSplittedShaderCode = splittedShaderCode;
@@ -127,10 +127,9 @@ export default class ShaderTransformer {
 	 * be deleted and the variable is used to assign a value to gl_FragColor.
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean) {
-
+	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean, embedErrorsInOutput: boolean) {
 		if (isFragmentShader) {
-			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode);
+			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode, embedErrorsInOutput);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 			const replaceFunc = function (match: string, p1: string) {
@@ -147,7 +146,7 @@ export default class ShaderTransformer {
 	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
-	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
+	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
@@ -161,6 +160,7 @@ export default class ShaderTransformer {
 		}
 
 		if (variableName == null) {
+			// no out variable in the shader
 			return;
 		}
 
@@ -175,7 +175,8 @@ export default class ShaderTransformer {
 			}
 		}
 
-		console.error('__removeOutKeywordAndAddGLFragColor: invalid main function code');
+		const errorMessage = '__removeOutKeywordAndAddGLFragColor: Not found the closing brackets for the main function';
+		this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
 	}
 
 	/**
