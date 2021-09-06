@@ -506,4 +506,32 @@ export default class ShaderTransformer {
 			}
 		}
 	}
+
+	private static __outError(
+		splittedShaderCode: string[],
+		lineIndex: number,
+		errorMessage: string,
+		embedErrorsInOutput: boolean
+	) {
+		if (embedErrorsInOutput) {
+			const shaderOutputMessage = `// line ${lineIndex}: ${errorMessage}\n`;
+			const closeBracketReg = /(.*)\}[\n\t ]*$/;
+			for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
+				const line = splittedShaderCode[i];
+				if (line.match(closeBracketReg)) {
+					break;
+				}
+
+				if (splittedShaderCode[i] === shaderOutputMessage) {
+					// avoid duplicate error message
+					return;
+				}
+			}
+
+			console.error(errorMessage);
+			splittedShaderCode.push(shaderOutputMessage);
+		} else {
+			throw new Error(errorMessage);
+		}
+	}
 }
