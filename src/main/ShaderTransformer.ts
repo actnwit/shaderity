@@ -212,8 +212,6 @@ export default class ShaderTransformer {
 	 * Find the "texture" and "textureProj" method in the shader code and
 	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
 	 * This method directly replace the elements of the splittedShaderCode variable.
-	 *
-	 * TODO: fix algorithm of type inference
 	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
@@ -279,6 +277,11 @@ export default class ShaderTransformer {
 		}
 	}
 
+	/**
+	 * @private
+	 * This method finds uniform declarations of sampler types in the shader and
+	 * creates a map with variable names as keys and types as values.
+	 */
 	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
 		const uniformSamplerMap: Map<string, string> = new Map();
 
@@ -296,6 +299,11 @@ export default class ShaderTransformer {
 		return uniformSamplerMap;
 	}
 
+	/**
+	 * @private
+	 * This method finds sampler types from the function arguments and
+	 * creates a map with variable names as keys and types as values.
+	 */
 	private static __createArgumentSamplerMap(splittedShaderCode: string[], lineIndex: number) {
 		const argumentSamplerMap: Map<string, string> = new Map();
 
@@ -341,6 +349,11 @@ export default class ShaderTransformer {
 		return argumentSamplerMap;
 	}
 
+	/**
+	 * @private
+	 * This method returns the part enclosed in brackets(= '()').
+	 * For example, you can get lines that contain function arguments, conditional expressions for if statements, etc.
+	 */
 	private static __getBracketSection(splittedShaderCode: string[], bracketEndIndex: number) {
 		let bracketStartIndex = 0;
 		for (let j = bracketEndIndex; j >= 0; j--) {
