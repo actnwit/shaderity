@@ -18,7 +18,7 @@ export default class ShaderTransformer {
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		this.__removePrecisionForES3(splittedShaderCode);
-		this.__convertTextureFunctionToES1(splittedShaderCode);
+		this.__convertTextureFunctionToES1(splittedShaderCode, embedErrorsInOutput);
 		const transformedSplittedShaderCode = splittedShaderCode;
 
 		return transformedSplittedShaderCode;
@@ -249,7 +249,7 @@ export default class ShaderTransformer {
 	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
+	private static __convertTextureFunctionToES1(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const sbl = this.__regSymbols();
 		const regTextureProj = new RegExp(`(${sbl}+)textureProj(Lod|)(${sbl}+)`, 'g');
 		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
@@ -269,12 +269,12 @@ export default class ShaderTransformer {
 					if (samplerType === 'sampler2D') {
 						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1texture2DProj$2$3');
 					} else {
-						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + '$2 type');
+						const errorMessage = '__convertTextureFunctionToES1: do not support ' + samplerType + ' type';
+						this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 					}
 				}
 				continue;
 			}
-
 
 			const matchTexture = line.match(/texture(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTexture) {
@@ -290,7 +290,8 @@ export default class ShaderTransformer {
 						textureFunc = 'textureCube';
 					} else {
 						textureFunc = '';
-						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
+						const errorMessage = '__convertTextureFunctionToES1: do not support ' + samplerType + ' type';
+						this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 					}
 
 					if (textureFunc !== '') {
