@@ -10,7 +10,7 @@ export default class ShaderTransformer {
 	 */
 	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
-		this.__removeLayout(splittedShaderCode);
+		this.__removeES3Qualifier(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode, isFragmentShader);
 		this.__removePrecisionForES3(splittedShaderCode);
@@ -63,8 +63,8 @@ export default class ShaderTransformer {
 	 * in the second or later line will be removed.
 	 */
 	private static __convertOrInsertVersionGLSLES1(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
-		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+		const reg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, reg);
 
 		splittedShaderCode.unshift('#version 100');
 	}
@@ -81,8 +81,8 @@ export default class ShaderTransformer {
 	 * in the second or later line will be removed.
 	 */
 	private static __convertOrInsertVersionGLSLES3(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
-		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+		const reg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, reg);
 
 		splittedShaderCode.unshift('#define GLSL_ES3');
 		splittedShaderCode.unshift('#version 300 es');
@@ -90,62 +90,60 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the 'in' modifier in the shader code and replace it with the GLSL ES1 modifier('attribute' or 'varying')
+	 * Find the 'in' qualifier in the shader code and replace it with the GLSL ES1 qualifier('attribute' or 'varying')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
-		const inReg = /^(?![\/])[\t ]*in[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
+		const reg = /^(?![\/])[\t ]*in[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 
-		// inAsES1 is used as the second argument to the String.prototype.replace method.
-		let inAsES1;
+		let replaceFunc;
 		if (isFragmentShader) {
-			inAsES1 = function (match: string, p1: string) {
+			replaceFunc = function (match: string, p1: string) {
 				return 'varying ' + p1;
 			}
 		} else {
-			inAsES1 = function (match: string, p1: string) {
+			replaceFunc = function (match: string, p1: string) {
 				return 'attribute ' + p1;
 			}
 		}
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES1);
+		this.__replaceLine(splittedShaderCode, reg, replaceFunc);
 	}
 
 	/**
 	 * @private
-	 * Find the "out" modifier in the shader code and modify the shader code.
-	 * If the shader stage is vertex, the "out" modifiers will be replaced by "varying" modifier.
-	 * If the shader stage is fragment and the shader has "out" modifiers, the "out" modifiers will
+	 * Find the "out" qualifier in the shader code and modify the shader code.
+	 * If the shader stage is vertex, the "out" qualifiers will be replaced by "varying" qualifier.
+	 * If the shader stage is fragment and the shader has "out" qualifiers, the "out" qualifiers will
 	 * be deleted and the variable is used to assign a value to gl_FragColor.
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean) {
 
-		let inAsES1;
 		if (isFragmentShader) {
 			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
-			inAsES1 = function (match: string, p1: string) {
+			const replaceFunc = function (match: string, p1: string) {
 				return 'varying ' + p1;
 			}
-			this.__replaceLine(splittedShaderCode, reg, inAsES1);
+			this.__replaceLine(splittedShaderCode, reg, replaceFunc);
 		}
 	}
 
 	/**
 	 * @private
 	 * This method is a part of __convertOut method.
-	 * This method deletes the "out" modifiers and adds the line for assigning to gl_FragColor.
-	 * If the shader does not have the "out" modifiers, this method does nothing.
+	 * This method deletes the "out" qualifiers and adds the line for assigning to gl_FragColor.
+	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
 	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
-		const outReg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
+		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			const match = splittedShaderCode[i].match(outReg);
+			const match = splittedShaderCode[i].match(reg);
 			if (match) {
 				splittedShaderCode[i] = match[1];
 				variableName = match[3];
@@ -173,24 +171,48 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "layout" modifier in the shader code and remove it
+	 * Find the qualifier for es3 only in the shader code and remove it
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __removeLayout(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
-		this.__replaceLine(splittedShaderCode, inReg, '');
+	private static __removeES3Qualifier(splittedShaderCode: string[]) {
+		this.__removeVaryingQualifier(splittedShaderCode);
+		this.__removeLayout(splittedShaderCode);
 	}
 
 	/**
 	 * @private
-	 * Find the "precision" modifier in the shader code and remove it if the "precision" modifier is valid for only GLSL ES3
+	 * Find the "flat" and "smooth" qualifier in the shader code and remove it
+	 */
+	private static __removeVaryingQualifier(splittedShaderCode: string[]) {
+		const reg = /^(?![\/])[\t ]*(flat|smooth)[\t ]*((in|out)[\t ]+.*)/;
+		const asES1 = function (match: string, p1: string, p2: string) {
+			if (p1 === 'flat') {
+				console.error('__removeVaryingQualifier: glsl es1 does not support flat qualifier');
+			}
+			return p2;
+		}
+		this.__replaceLine(splittedShaderCode, reg, asES1);
+	}
+
+	/**
+	 * @private
+	 * Find the "layout" qualifier in the shader code and remove it
+	 */
+	private static __removeLayout(splittedShaderCode: string[]) {
+		const reg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
+		this.__replaceLine(splittedShaderCode, reg, '');
+	}
+
+	/**
+	 * @private
+	 * Find the "precision" qualifier in the shader code and remove it if the "precision" qualifier is valid for only GLSL ES3
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __removePrecisionForES3(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*precision[\t ]+(highp|mediump|lowp)[\t ]+(\w+)[\t ]*;/;
+		const reg = /^(?![\/])[\t ]*precision[\t ]+(highp|mediump|lowp)[\t ]+(\w+)[\t ]*;/;
 
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			const match = splittedShaderCode[i].match(inReg);
+			const match = splittedShaderCode[i].match(reg);
 			if (match != null) {
 				if (
 					match[2] === 'int' ||
@@ -375,7 +397,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the 'attribute' modifier in the vertex shader code and replace it with the GLSL ES3 modifier('in')
+	 * Find the 'attribute' qualifier in the vertex shader code and replace it with the GLSL ES3 qualifier('in')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertAttribute(splittedShaderCode: string[], isFragmentShader: boolean) {
@@ -383,22 +405,22 @@ export default class ShaderTransformer {
 			return;
 		}
 
-		const inReg = /^(?![\/])[\t ]*attribute[\t ]+/g;
-		const inAsES3 = 'in ';
+		const reg = /^(?![\/])[\t ]*attribute[\t ]+/g;
+		const replaceStr = 'in ';
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES3);
+		this.__replaceLine(splittedShaderCode, reg, replaceStr);
 	}
 
 	/**
 	 * @private
-	 * Find the 'varying' modifier in the shader code and replace it with the GLSL ES3 modifier('in' or 'out')
+	 * Find the 'varying' qualifier in the shader code and replace it with the GLSL ES3 qualifier('in' or 'out')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertVarying(splittedShaderCode: string[], isFragmentShader: boolean) {
-		const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
-		const inAsES3 = isFragmentShader ? 'in ' : 'out ';
+		const reg = /^(?![\/])[\t ]*varying[\t ]+/g;
+		const replaceStr = isFragmentShader ? 'in ' : 'out ';
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES3);
+		this.__replaceLine(splittedShaderCode, reg, replaceStr);
 	}
 
 	/**
@@ -409,9 +431,9 @@ export default class ShaderTransformer {
 	private static __convertTextureCube(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(textureCube)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -422,9 +444,9 @@ export default class ShaderTransformer {
 	private static __convertTexture2D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2D)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -435,9 +457,9 @@ export default class ShaderTransformer {
 	private static __convertTexture2DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
-		const inAsES3 = 'textureProj';
+		const replaceStr = 'textureProj';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -448,9 +470,9 @@ export default class ShaderTransformer {
 	private static __convertTexture3D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3D)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -461,24 +483,24 @@ export default class ShaderTransformer {
 	private static __convertTexture3DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3DProj)(${sbl}+)`, 'g');
-		const inAsES3 = 'textureProj';
+		const replaceStr = 'textureProj';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	private static __regSymbols() {
 		return `[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^` + '`{|}~\t\n ]';
 	}
 
-	private static __replaceLine(splittedShaderCode: string[], inReg: RegExp, inAsES1: any) {
+	private static __replaceLine(splittedShaderCode: string[], reg: RegExp, replacement: any) {
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			splittedShaderCode[i] = splittedShaderCode[i].replace(inReg, inAsES1);
+			splittedShaderCode[i] = splittedShaderCode[i].replace(reg, replacement);
 		}
 	}
 
-	private static __removeFirstMatchingLine(splittedShaderCode: string[], inReg: RegExp) {
+	private static __removeFirstMatchingLine(splittedShaderCode: string[], reg: RegExp) {
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			if (splittedShaderCode[i].match(inReg)) {
+			if (splittedShaderCode[i].match(reg)) {
 				splittedShaderCode.splice(i, 1);
 				break;
 			}
