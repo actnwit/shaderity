@@ -14,6 +14,7 @@ const precisionES3 = require('../dist/index_test').precisionES3;
 const attributeAndVaryingPrecisionES3 = require('../dist/index_test').attributeAndVaryingPrecisionES3;
 const layoutAttributeES3 = require('../dist/index_test').layoutAttributeES3;
 const outToGlFragColorES3 = require('../dist/index_test').outToGlFragColorES3;
+const smoothVaryingES3 = require('../dist/index_test').smoothVaryingES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -349,6 +350,22 @@ vec4 renderTarget0;
 void main() {
   gl_FragColor = renderTarget0;
 }
+`);
+});
+
+test('test remove smooth qualifier', async() => {
+  const shaderityObject = Shaderity.transformToGLSLES1(smoothVaryingES3);
+  expect(shaderityObject.code).toBe(`#version 100
+
+precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+
+varying float v_testA;
+varying lowp mat2 v_testB;
+
+void main() {}
 `);
 });
 
