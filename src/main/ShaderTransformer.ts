@@ -177,7 +177,23 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __removeES3Qualifier(splittedShaderCode: string[]) {
+		this.__removeVaryingQualifier(splittedShaderCode);
 		this.__removeLayout(splittedShaderCode);
+	}
+
+	/**
+	 * @private
+	 * Find the "flat" and "smooth" qualifier in the shader code and remove it
+	 */
+	private static __removeVaryingQualifier(splittedShaderCode: string[]) {
+		const reg = /^(?![\/])[\t ]*(flat|smooth)[\t ]*((in|out)[\t ]+.*)/;
+		const asES1 = function (match: string, p1: string, p2: string) {
+			if (p1 === 'flat') {
+				console.error('__removeVaryingQualifier: glsl es1 does not support flat qualifier');
+			}
+			return p2;
+		}
+		this.__replaceLine(splittedShaderCode, reg, asES1);
 	}
 
 	/**
