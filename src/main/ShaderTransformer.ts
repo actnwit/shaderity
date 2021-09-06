@@ -266,16 +266,10 @@ export default class ShaderTransformer {
 				const variableName = matchTextureProj[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
-					let textureFunc: string;
 					if (samplerType === 'sampler2D') {
-						textureFunc = 'texture2DProj';
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1texture2DProj$2$3');
 					} else {
-						textureFunc = '';
-						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
-					}
-
-					if (textureFunc !== '') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$2$3');
+						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + '$2 type');
 					}
 				}
 				continue;
