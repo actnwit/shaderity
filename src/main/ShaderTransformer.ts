@@ -8,7 +8,11 @@ export default class ShaderTransformer {
 	 * @private
 	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
 	 */
-	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
+	static _transformToGLSLES1(
+		splittedShaderCode: string[],
+		isFragmentShader: boolean,
+		embedErrorsInOutput: boolean
+	) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
 		this.__removeES3Qualifier(splittedShaderCode);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
@@ -42,11 +46,16 @@ export default class ShaderTransformer {
 	 * @private
 	 * Translate a GLSL shader code to a shader code of specified GLSL version
 	 */
-	static _transformTo(version: ShaderVersion, splittedShaderCode: string[], isFragmentShader: boolean) {
+	static _transformTo(
+		version: ShaderVersion,
+		splittedShaderCode: string[],
+		isFragmentShader: boolean,
+		embedErrorsInOutput: boolean
+	) {
 		if (version.match(/webgl2|es3/i)) {
 			return this._transformToGLSLES3(splittedShaderCode, isFragmentShader);
 		} else if (version.match(/webgl1|es1/i)) {
-			return this._transformToGLSLES1(splittedShaderCode, isFragmentShader);
+			return this._transformToGLSLES1(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		} else {
 			console.error('Invalid Version')
 			return splittedShaderCode;
