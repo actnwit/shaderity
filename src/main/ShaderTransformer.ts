@@ -212,80 +212,165 @@ export default class ShaderTransformer {
 	 * Find the "texture" and "textureProj" method in the shader code and
 	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
 	 * This method directly replace the elements of the splittedShaderCode variable.
-	 *
-	 * TODO: fix algorithm of type inference
 	 */
 	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
+		const regTextureProj = new RegExp(`(${sbl}+)textureProj(Lod|)(${sbl}+)`, 'g');
+		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
 
+		let argumentSamplerMap: Map<string, string> | undefined;
+		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
 
-			let reg = new RegExp(`(${sbl}+)(textureProj)(${sbl}+)`, 'g');
-			let match = line.match(/textureProj[\t ]*\([\t ]*(\w+),/);
-			if (match) {
-				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
-				const samplerType = uniformSamplerMap.get(name);
+			const matchTextureProj = line.match(/textureProj(Lod|)[\t ]*\([\t ]*(\w+),/);
+			if (matchTextureProj) {
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+
+				const variableName = matchTextureProj[2];
+				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
-					switch (samplerType) {
-						case 'sampler2D':
-							textureFunc = 'texture2DProj';
-							break;
-						case 'sampler3D':
-							textureFunc = 'texture3DProj';
-							break;
-						default:
-							textureFunc = '';
-							console.log('not found');
+					if (samplerType === 'sampler2D') {
+						textureFunc = 'texture2DProj';
+					} else {
+						textureFunc = '';
+						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
 					}
-					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
+
+					if (textureFunc !== '') {
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$2$3');
+					}
 				}
 				continue;
 			}
 
-			reg = new RegExp(`(${sbl}+)(texture)(${sbl}+)`, 'g');
-			match = line.match(/texture[\t ]*\([\t ]*(\w+),/);
-			if (match) {
-				const name = match[1];
-				const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, i);
-				const samplerType = uniformSamplerMap.get(name);
+
+			const matchTexture = line.match(/texture(Lod|)[\t ]*\([\t ]*(\w+),/);
+			if (matchTexture) {
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+
+				const variableName = matchTexture[2];
+				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					let textureFunc: string;
-					switch (samplerType) {
-						case 'sampler2D':
-							textureFunc = 'texture2D';
-							break;
-						case 'sampler3D':
-							textureFunc = 'texture3D';
-							break;
-						case 'samplerCube':
-							textureFunc = 'textureCube';
-							break;
-						default:
-							textureFunc = '';
-							console.log('not found');
+					if (samplerType === 'sampler2D') {
+						textureFunc = 'texture2D';
+					} else if (samplerType === 'samplerCube') {
+						textureFunc = 'textureCube';
+					} else {
+						textureFunc = '';
+						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
 					}
-					splittedShaderCode[i] = splittedShaderCode[i].replace(reg, '$1' + textureFunc + '$3');
+
+					if (textureFunc !== '') {
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, '$1' + textureFunc + '$2$3');
+					}
 				}
+				continue;
+			}
+
+			const isBlockEnd = !!line.match(/\}/);
+			if (isBlockEnd) {
+				argumentSamplerMap = undefined;
 			}
 		}
 	}
 
-	private static __createUniformSamplerMap(splittedShaderCode: string[], line_i: number) {
-		const uniformSamplerMap = new Map();
+	/**
+	 * @private
+	 * This method finds uniform declarations of sampler types in the shader and
+	 * creates a map with variable names as keys and types as values.
+	 */
+	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
+		const uniformSamplerMap: Map<string, string> = new Map();
 
-		for (let i = 0; i < line_i; i++) {
-			const line = splittedShaderCode[i];
-			const match = line.match(/^(?![\/])[\t ]*\w*[\t ]*(sampler\w+)[\t ]+(\w+)/);
+		for (const line of splittedShaderCode) {
+			const match = line.match(/^(?![\/])[\t ]*uniform*[\t ]*(highp|mediump|lowp|)[\t ]*(sampler\w+)[\t ]+(\w+)/);
 			if (match) {
-				const samplerType = match[1];
-				const name = match[2];
+				const samplerType = match[2];
+				const name = match[3];
+				if (uniformSamplerMap.get(name)) {
+					console.error('__createUniformSamplerMap: duplicate variable name');
+				}
 				uniformSamplerMap.set(name, samplerType);
 			}
 		}
 		return uniformSamplerMap;
+	}
+
+	/**
+	 * @private
+	 * This method finds sampler types from the function arguments and
+	 * creates a map with variable names as keys and types as values.
+	 */
+	private static __createArgumentSamplerMap(splittedShaderCode: string[], lineIndex: number) {
+		const argumentSamplerMap: Map<string, string> = new Map();
+
+		for (let i = lineIndex; i >= 0; i--) {
+			const line = splittedShaderCode[i];
+
+			const isBlockStartLine = !!line.match(/\{/);
+			if (!isBlockStartLine) {
+				continue;
+			}
+
+			const bracketSectionCode = this.__getBracketSection(splittedShaderCode, i);
+
+			const innerBracketSectionCode = bracketSectionCode.match(/.*\((.*)\)/)?.[1];
+			if (innerBracketSectionCode == null) {
+				return;
+			}
+
+			const variableCandidates = innerBracketSectionCode.split(',');
+			const samplerTypeDefinitionReg = /[\n\t ]*(highp|mediump|lowp|)[\n\t ]*(sampler\w+)[\n\t ]*(\w+)[\n\t ]*/;
+
+			const isFunctionBracket = !!(variableCandidates[0].match(samplerTypeDefinitionReg) ?? variableCandidates[0].match(/^[\n\t ]*$/));
+			if (!isFunctionBracket) {
+				continue;
+			}
+
+			for (const variableCandidate of variableCandidates) {
+				const samplerVariableMatch = variableCandidate.match(samplerTypeDefinitionReg);
+				if (samplerVariableMatch == null) {
+					continue;
+				}
+				const samplerType = samplerVariableMatch[2];
+				const name = samplerVariableMatch[3];
+				if (argumentSamplerMap.get(name)) {
+					console.error('__createArgumentSamplerMap: duplicate variable name');
+				}
+				argumentSamplerMap.set(name, samplerType);
+			}
+
+			break;
+		}
+
+		return argumentSamplerMap;
+	}
+
+	/**
+	 * @private
+	 * This method returns the part enclosed in brackets(= '()').
+	 * For example, you can get lines that contain function arguments, conditional expressions for if statements, etc.
+	 */
+	private static __getBracketSection(splittedShaderCode: string[], bracketEndIndex: number) {
+		let bracketStartIndex = 0;
+		for (let j = bracketEndIndex; j >= 0; j--) {
+			const line = splittedShaderCode[j];
+			const isBracketStartMatch = !!line.match(/\(/);
+			if (isBracketStartMatch) {
+				bracketStartIndex = j;
+				break;
+			}
+		}
+
+		let containBracketCode = '';
+		for (let j = bracketStartIndex; j <= bracketEndIndex; j++) {
+			containBracketCode += splittedShaderCode[j];
+		}
+
+		return containBracketCode;
 	}
 
 	/**
