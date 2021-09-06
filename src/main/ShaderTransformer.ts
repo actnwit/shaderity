@@ -63,8 +63,8 @@ export default class ShaderTransformer {
 	 * in the second or later line will be removed.
 	 */
 	private static __convertOrInsertVersionGLSLES1(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
-		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+		const reg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, reg);
 
 		splittedShaderCode.unshift('#version 100');
 	}
@@ -81,8 +81,8 @@ export default class ShaderTransformer {
 	 * in the second or later line will be removed.
 	 */
 	private static __convertOrInsertVersionGLSLES3(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
-		this.__removeFirstMatchingLine(splittedShaderCode, inReg);
+		const reg = /^(?![\/])[\t ]*#[\t ]*version[\t ]+.*/;
+		this.__removeFirstMatchingLine(splittedShaderCode, reg);
 
 		splittedShaderCode.unshift('#define GLSL_ES3');
 		splittedShaderCode.unshift('#version 300 es');
@@ -94,21 +94,20 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
-		const inReg = /^(?![\/])[\t ]*in[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
+		const reg = /^(?![\/])[\t ]*in[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 
-		// inAsES1 is used as the second argument to the String.prototype.replace method.
-		let inAsES1;
+		let replaceFunc;
 		if (isFragmentShader) {
-			inAsES1 = function (match: string, p1: string) {
+			replaceFunc = function (match: string, p1: string) {
 				return 'varying ' + p1;
 			}
 		} else {
-			inAsES1 = function (match: string, p1: string) {
+			replaceFunc = function (match: string, p1: string) {
 				return 'attribute ' + p1;
 			}
 		}
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES1);
+		this.__replaceLine(splittedShaderCode, reg, replaceFunc);
 	}
 
 	/**
@@ -121,15 +120,14 @@ export default class ShaderTransformer {
 	 */
 	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean) {
 
-		let inAsES1;
 		if (isFragmentShader) {
 			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
-			inAsES1 = function (match: string, p1: string) {
+			const replaceFunc = function (match: string, p1: string) {
 				return 'varying ' + p1;
 			}
-			this.__replaceLine(splittedShaderCode, reg, inAsES1);
+			this.__replaceLine(splittedShaderCode, reg, replaceFunc);
 		}
 	}
 
@@ -141,11 +139,11 @@ export default class ShaderTransformer {
 	 */
 
 	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
-		const outReg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
+		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			const match = splittedShaderCode[i].match(outReg);
+			const match = splittedShaderCode[i].match(reg);
 			if (match) {
 				splittedShaderCode[i] = match[1];
 				variableName = match[3];
@@ -201,8 +199,8 @@ export default class ShaderTransformer {
 	 * Find the "layout" qualifier in the shader code and remove it
 	 */
 	private static __removeLayout(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
-		this.__replaceLine(splittedShaderCode, inReg, '');
+		const reg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
+		this.__replaceLine(splittedShaderCode, reg, '');
 	}
 
 	/**
@@ -211,10 +209,10 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __removePrecisionForES3(splittedShaderCode: string[]) {
-		const inReg = /^(?![\/])[\t ]*precision[\t ]+(highp|mediump|lowp)[\t ]+(\w+)[\t ]*;/;
+		const reg = /^(?![\/])[\t ]*precision[\t ]+(highp|mediump|lowp)[\t ]+(\w+)[\t ]*;/;
 
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			const match = splittedShaderCode[i].match(inReg);
+			const match = splittedShaderCode[i].match(reg);
 			if (match != null) {
 				if (
 					match[2] === 'int' ||
@@ -407,10 +405,10 @@ export default class ShaderTransformer {
 			return;
 		}
 
-		const inReg = /^(?![\/])[\t ]*attribute[\t ]+/g;
-		const inAsES3 = 'in ';
+		const reg = /^(?![\/])[\t ]*attribute[\t ]+/g;
+		const replaceStr = 'in ';
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES3);
+		this.__replaceLine(splittedShaderCode, reg, replaceStr);
 	}
 
 	/**
@@ -419,10 +417,10 @@ export default class ShaderTransformer {
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertVarying(splittedShaderCode: string[], isFragmentShader: boolean) {
-		const inReg = /^(?![\/])[\t ]*varying[\t ]+/g;
-		const inAsES3 = isFragmentShader ? 'in ' : 'out ';
+		const reg = /^(?![\/])[\t ]*varying[\t ]+/g;
+		const replaceStr = isFragmentShader ? 'in ' : 'out ';
 
-		this.__replaceLine(splittedShaderCode, inReg, inAsES3);
+		this.__replaceLine(splittedShaderCode, reg, replaceStr);
 	}
 
 	/**
@@ -433,9 +431,9 @@ export default class ShaderTransformer {
 	private static __convertTextureCube(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(textureCube)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -446,9 +444,9 @@ export default class ShaderTransformer {
 	private static __convertTexture2D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2D)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -459,9 +457,9 @@ export default class ShaderTransformer {
 	private static __convertTexture2DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture2DProj)(${sbl}+)`, 'g');
-		const inAsES3 = 'textureProj';
+		const replaceStr = 'textureProj';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -472,9 +470,9 @@ export default class ShaderTransformer {
 	private static __convertTexture3D(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3D)(${sbl}+)`, 'g');
-		const inAsES3 = 'texture';
+		const replaceStr = 'texture';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	/**
@@ -485,24 +483,24 @@ export default class ShaderTransformer {
 	private static __convertTexture3DProd(splittedShaderCode: string[]) {
 		const sbl = this.__regSymbols();
 		const reg = new RegExp(`(${sbl}+)(texture3DProj)(${sbl}+)`, 'g');
-		const inAsES3 = 'textureProj';
+		const replaceStr = 'textureProj';
 
-		this.__replaceLine(splittedShaderCode, reg, '$1' + inAsES3 + '$3');
+		this.__replaceLine(splittedShaderCode, reg, '$1' + replaceStr + '$3');
 	}
 
 	private static __regSymbols() {
 		return `[!"#$%&'()\*\+\-\.,\/:;<=>?@\[\\\]^` + '`{|}~\t\n ]';
 	}
 
-	private static __replaceLine(splittedShaderCode: string[], inReg: RegExp, inAsES1: any) {
+	private static __replaceLine(splittedShaderCode: string[], reg: RegExp, replacement: any) {
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			splittedShaderCode[i] = splittedShaderCode[i].replace(inReg, inAsES1);
+			splittedShaderCode[i] = splittedShaderCode[i].replace(reg, replacement);
 		}
 	}
 
-	private static __removeFirstMatchingLine(splittedShaderCode: string[], inReg: RegExp) {
+	private static __removeFirstMatchingLine(splittedShaderCode: string[], reg: RegExp) {
 		for (let i = 0; i < splittedShaderCode.length; i++) {
-			if (splittedShaderCode[i].match(inReg)) {
+			if (splittedShaderCode[i].match(reg)) {
 				splittedShaderCode.splice(i, 1);
 				break;
 			}
