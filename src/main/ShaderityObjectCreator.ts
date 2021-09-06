@@ -19,6 +19,8 @@ import {
 	ShaderStructMemberObject,
 	ShaderConstantStructValueObject,
 	ShaderUniformStructObject,
+	ShaderUniformBufferObject,
+	ShaderUBOVariableObject,
 	ShaderFunctionObject,
 } from '../types/type';
 import Utility from './Utility';
@@ -58,6 +60,7 @@ export default class ShaderityObjectCreator {
 	private __varyings: ShaderVaryingObject[] = [];
 	private __uniforms: ShaderUniformObject[] = [];
 	private __uniformStructs: ShaderUniformStructObject[] = [];
+	private __uniformBufferObjects: ShaderUniformBufferObject[] = [];
 	private __functions: ShaderFunctionObject[][] = []; // first index represent dependency level
 	private __mainFunctionCode: string = 'void main() {}';
 	private __outputColorVariableName: string = 'renderTarget0'; // for fragment shader only
@@ -263,6 +266,39 @@ export default class ShaderityObjectCreator {
 		});
 	}
 
+	// for es3
+	public addUniformBufferObjectDeclaration(
+		blockName: string,
+		variableObjects: ShaderUBOVariableObject[],
+		options?: {
+			instanceName?: ShaderPrecisionType
+		}
+	) {
+		const isDuplicateBlockName =
+			this.__uniformBufferObjects.some(ubo => ubo.blockName === blockName);
+		if (isDuplicateBlockName) {
+			console.error(`addUniformBufferObjectDeclaration: duplicate block name ${blockName}`);
+			return;
+		}
+
+		for (const ubo of this.__uniformBufferObjects) {
+			for (const uboVariableObject of ubo.variableObjects) {
+				for (const variableObject of variableObjects) {
+					if (uboVariableObject.variableName === variableObject.variableName) {
+						console.error(`addUniformBufferObjectDeclaration: duplicate variable name ${variableObject.variableName}`);
+						return;
+					}
+				}
+			}
+		}
+
+		this.__uniformBufferObjects.push({
+			blockName,
+			variableObjects,
+			instanceName: options?.instanceName,
+		});
+	}
+
 	// the return value Id is a value to delete the function
 	// the main function is defined (updated) by the updateMainFunction method
 	public addFunctionDefinition(
@@ -464,6 +500,17 @@ export default class ShaderityObjectCreator {
 		this.__uniformStructs.splice(matchedIndex, 1);
 	}
 
+	public removeUniformBufferObjectDeclaration(blockName: string) {
+		const matchedIndex =
+			this.__uniformBufferObjects.findIndex(ubo => ubo.blockName === blockName);
+		if (matchedIndex === -1) {
+			console.warn(`removeUniformStructDeclaration: the variable name ${blockName} is not exist`);
+			return;
+		}
+
+		this.__uniformBufferObjects.splice(matchedIndex, 1);
+	}
+
 	public removeFunctionDefinition(functionId: number) {
 		this.__fillEmptyFunctions();
 
@@ -531,6 +578,7 @@ export default class ShaderityObjectCreator {
 			+ this.__createOutputColorDeclarationShaderCode()
 			+ this.__createUniformDeclarationShaderCode()
 			+ this.__createUniformStructDeclarationShaderCode()
+			+ this.__createUniformBufferObjectShaderCode()
 			+ this.__createFunctionDefinitionShaderCode()
 			+ this.__createMainFunctionDefinitionShaderCode();
 
@@ -743,6 +791,26 @@ export default class ShaderityObjectCreator {
 			}
 
 			shaderCode += `uniform ${structName} ${uniformStruct.variableName};\n`;
+		}
+
+		return Utility._addLineFeedCodeIfNotNullString(shaderCode);
+	}
+
+	private __createUniformBufferObjectShaderCode(): string {
+		let shaderCode = '';
+		for (const ubo of this.__uniformBufferObjects) {
+			shaderCode += `layout (std140) uniform ${ubo.blockName} {\n`;
+
+			for (let i = 0; i < ubo.variableObjects.length; i++) {
+				const variableObj = ubo.variableObjects[i];
+				shaderCode += `  ${variableObj.type} ${variableObj.variableName};\n`;
+			}
+
+			if (ubo.instanceName != null) {
+				shaderCode += `} ${ubo.instanceName};\n`;
+			} else {
+				shaderCode += `};\n`;
+			}
 		}
 
 		return Utility._addLineFeedCodeIfNotNullString(shaderCode);

@@ -1489,6 +1489,132 @@ void main() {}
 `);
 });
 
+test('test addUniformBufferObjectDeclaration method in ShaderityObjectCreator', async() => {
+  const uboVariableObjectA = {
+    type: 'mat4x3',
+    variableName: 'testVarA',
+  };
+  const uboVariableObjectB = {
+    type: 'uvec2',
+    variableName: 'testVarB',
+  };
+  const uboVariableObjectC = {
+    type: 'int',
+    variableName: 'testVarC',
+  };
+  const uboVariableObjectD = {
+    type: 'vec4',
+    variableName: 'testVarD',
+  };
+  const uboVariableObjectE = {
+    type: 'vec4',
+    variableName: 'testVarE[4096]',
+  };
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockA', [uboVariableObjectA, uboVariableObjectB]);
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockB', [uboVariableObjectC, uboVariableObjectD], { instanceName: 'instanceB' });
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockC', [uboVariableObjectE]);
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+layout (std140) uniform testInterfaceBlockA {
+  mat4x3 testVarA;
+  uvec2 testVarB;
+};
+layout (std140) uniform testInterfaceBlockB {
+  int testVarC;
+  vec4 testVarD;
+} instanceB;
+layout (std140) uniform testInterfaceBlockC {
+  vec4 testVarE[4096];
+};
+
+void main() {}
+`);
+});
+
+test('test removeUniformBufferObjectDeclaration method in ShaderityObjectCreator', async() => {
+  const uboVariableObjectA = {
+    type: 'mat4x3',
+    variableName: 'testVarA',
+  };
+  const uboVariableObjectB = {
+    type: 'uvec2',
+    variableName: 'testVarB',
+  };
+  const uboVariableObjectC = {
+    type: 'int',
+    variableName: 'testVarC',
+  };
+  const uboVariableObjectD = {
+    type: 'vec4',
+    variableName: 'testVarD',
+  };
+  const uboVariableObjectE = {
+    type: 'vec4',
+    variableName: 'testVarE[4096]',
+  };
+
+  const shaderityObjectCreator = Shaderity.createShaderityObjectCreator('vertex');
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockA', [uboVariableObjectA, uboVariableObjectB]);
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockB', [uboVariableObjectC, uboVariableObjectD], { instanceName: 'instanceB' });
+  shaderityObjectCreator.addUniformBufferObjectDeclaration('testInterfaceBlockC', [uboVariableObjectE]);
+
+  shaderityObjectCreator.removeUniformBufferObjectDeclaration('testInterfaceBlockB');
+
+  const resultShaderityObj = shaderityObjectCreator.createShaderityObject();
+  expect(resultShaderityObj.code).toBe(`#version 300 es
+
+precision highp int;
+precision highp float;
+precision highp sampler2D;
+precision highp samplerCube;
+precision highp sampler3D;
+precision highp sampler2DArray;
+precision highp isampler2D;
+precision highp isamplerCube;
+precision highp isampler3D;
+precision highp isampler2DArray;
+precision highp usampler2D;
+precision highp usamplerCube;
+precision highp usampler3D;
+precision highp usampler2DArray;
+precision highp sampler2DShadow;
+precision highp samplerCubeShadow;
+precision highp sampler2DArrayShadow;
+
+layout (std140) uniform testInterfaceBlockA {
+  mat4x3 testVarA;
+  uvec2 testVarB;
+};
+layout (std140) uniform testInterfaceBlockC {
+  vec4 testVarE[4096];
+};
+
+void main() {}
+`);
+});
+
 test('test addFunctionDefinition method in ShaderityObjectCreator', async() => {
   const funcA = `vec3 add(vec3 vecA, vec3 vecB) {
   return vecA + vecB;
