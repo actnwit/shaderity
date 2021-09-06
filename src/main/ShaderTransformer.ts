@@ -164,7 +164,7 @@ export default class ShaderTransformer {
 			return;
 		}
 
-		const closeBracketReg = /(.*)}/g;
+		const closeBracketReg = /(.*)\}[\n\t ]*$/;
 
 		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
 			const line = splittedShaderCode[i];
