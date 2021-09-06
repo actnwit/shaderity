@@ -14,7 +14,7 @@ export default class ShaderTransformer {
 		embedErrorsInOutput: boolean
 	) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
-		this.__removeES3Qualifier(splittedShaderCode);
+		this.__removeES3Qualifier(splittedShaderCode, embedErrorsInOutput);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		this.__removePrecisionForES3(splittedShaderCode);
@@ -184,8 +184,8 @@ export default class ShaderTransformer {
 	 * Find the qualifier for es3 only in the shader code and remove it
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __removeES3Qualifier(splittedShaderCode: string[]) {
-		this.__removeVaryingQualifier(splittedShaderCode);
+	private static __removeES3Qualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
+		this.__removeVaryingQualifier(splittedShaderCode, embedErrorsInOutput);
 		this.__removeLayout(splittedShaderCode);
 	}
 
@@ -193,15 +193,19 @@ export default class ShaderTransformer {
 	 * @private
 	 * Find the "flat" and "smooth" qualifier in the shader code and remove it
 	 */
-	private static __removeVaryingQualifier(splittedShaderCode: string[]) {
+	private static __removeVaryingQualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*(flat|smooth)[\t ]*((in|out)[\t ]+.*)/;
-		const asES1 = function (match: string, p1: string, p2: string) {
-			if (p1 === 'flat') {
-				console.error('__removeVaryingQualifier: glsl es1 does not support flat qualifier');
-			}
-			return p2;
+		const errorMessage = '__removeVaryingQualifier: glsl es1 does not support flat qualifier';
+
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			splittedShaderCode[i] = splittedShaderCode[i].replace(reg, (match: string, p1: string, p2: string) => {
+				if (p1 === 'flat') {
+					this.__outError(splittedShaderCode, i + 1, errorMessage, embedErrorsInOutput);
+					return match;
+				}
+				return p2;
+			});
 		}
-		this.__replaceLine(splittedShaderCode, reg, asES1);
 	}
 
 	/**
