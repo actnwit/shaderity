@@ -90,7 +90,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the 'in' modifier in the shader code and replace it with the GLSL ES1 modifier('attribute' or 'varying')
+	 * Find the 'in' qualifier in the shader code and replace it with the GLSL ES1 qualifier('attribute' or 'varying')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertIn(splittedShaderCode: string[], isFragmentShader: boolean) {
@@ -113,9 +113,9 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "out" modifier in the shader code and modify the shader code.
-	 * If the shader stage is vertex, the "out" modifiers will be replaced by "varying" modifier.
-	 * If the shader stage is fragment and the shader has "out" modifiers, the "out" modifiers will
+	 * Find the "out" qualifier in the shader code and modify the shader code.
+	 * If the shader stage is vertex, the "out" qualifiers will be replaced by "varying" qualifier.
+	 * If the shader stage is fragment and the shader has "out" qualifiers, the "out" qualifiers will
 	 * be deleted and the variable is used to assign a value to gl_FragColor.
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
@@ -136,8 +136,8 @@ export default class ShaderTransformer {
 	/**
 	 * @private
 	 * This method is a part of __convertOut method.
-	 * This method deletes the "out" modifiers and adds the line for assigning to gl_FragColor.
-	 * If the shader does not have the "out" modifiers, this method does nothing.
+	 * This method deletes the "out" qualifiers and adds the line for assigning to gl_FragColor.
+	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
 	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
@@ -182,7 +182,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "layout" modifier in the shader code and remove it
+	 * Find the "layout" qualifier in the shader code and remove it
 	 */
 	private static __removeLayout(splittedShaderCode: string[]) {
 		const inReg = /^(?![\/])[\t ]*layout[\t ]*\([\t ]*location[\t ]*\=[\t ]*\d[\t ]*\)[\t ]+/g;
@@ -191,7 +191,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the "precision" modifier in the shader code and remove it if the "precision" modifier is valid for only GLSL ES3
+	 * Find the "precision" qualifier in the shader code and remove it if the "precision" qualifier is valid for only GLSL ES3
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __removePrecisionForES3(splittedShaderCode: string[]) {
@@ -383,7 +383,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the 'attribute' modifier in the vertex shader code and replace it with the GLSL ES3 modifier('in')
+	 * Find the 'attribute' qualifier in the vertex shader code and replace it with the GLSL ES3 qualifier('in')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertAttribute(splittedShaderCode: string[], isFragmentShader: boolean) {
@@ -399,7 +399,7 @@ export default class ShaderTransformer {
 
 	/**
 	 * @private
-	 * Find the 'varying' modifier in the shader code and replace it with the GLSL ES3 modifier('in' or 'out')
+	 * Find the 'varying' qualifier in the shader code and replace it with the GLSL ES3 qualifier('in' or 'out')
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
 	private static __convertVarying(splittedShaderCode: string[], isFragmentShader: boolean) {
