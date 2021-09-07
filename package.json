@@ -11,7 +11,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx tsc",
-    "build-test": "webpack",
+    "build-test": "webpack --config ./webpack_for_test.config.js",
     "prepare": "npx tsc",
     "serv": "node server.js",
     "test": "yarn test-unit",
