@@ -1,4 +1,4 @@
-const Shaderity = require('../dist/index').default;
+const Shaderity = require('../dist/esm/index').default;
 const simpleFragment = require('../dist/index_test').simpleFragment;
 const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragmentES1 = require('../dist/index_test').textureFragmentES1;

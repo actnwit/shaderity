@@ -1,9 +1,9 @@
 module.exports = {
-  "transform": {
+  transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
-  "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-  "moduleFileExtensions": [
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  moduleFileExtensions: [
     "ts",
     "tsx",
     "js",
@@ -11,5 +11,5 @@ module.exports = {
     "json",
     "node"
   ],
-  "rootDir": process.cwd(),
+  rootDir: process.cwd(),
 };
