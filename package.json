@@ -15,7 +15,6 @@
     "build-umd-dev": "webpack --config ./config/webpack/webpack.config.development.js",
     "build-umd-prod": "webpack --config ./config/webpack/webpack.config.production.js",
     "build-esm": "webpack --config ./config/webpack/webpack.config.common_module.js",
-    "prepare": "npx tsc",
     "serv": "node server.js",
     "test": "yarn test-unit",
     "test-unit": "jest --config jest.config.js ./test",
