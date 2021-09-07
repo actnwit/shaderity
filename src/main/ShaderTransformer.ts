@@ -261,7 +261,11 @@ export default class ShaderTransformer {
 
 			const matchTextureProj = line.match(/textureProj(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTextureProj) {
-				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(
+					splittedShaderCode,
+					i,
+					embedErrorsInOutput
+				);
 
 				const variableName = matchTextureProj[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
@@ -278,7 +282,11 @@ export default class ShaderTransformer {
 
 			const matchTexture = line.match(/texture(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTexture) {
-				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(
+					splittedShaderCode,
+					i,
+					embedErrorsInOutput
+				);
 
 				const variableName = matchTexture[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
@@ -337,7 +345,11 @@ export default class ShaderTransformer {
 	 * This method finds sampler types from the function arguments and
 	 * creates a map with variable names as keys and types as values.
 	 */
-	private static __createArgumentSamplerMap(splittedShaderCode: string[], lineIndex: number) {
+	private static __createArgumentSamplerMap(
+		splittedShaderCode: string[],
+		lineIndex: number,
+		embedErrorsInOutput: boolean
+	) {
 		const argumentSamplerMap: Map<string, string> = new Map();
 
 		for (let i = lineIndex; i >= 0; i--) {
@@ -371,7 +383,8 @@ export default class ShaderTransformer {
 				const samplerType = samplerVariableMatch[2];
 				const name = samplerVariableMatch[3];
 				if (argumentSamplerMap.get(name)) {
-					console.error('__createArgumentSamplerMap: duplicate variable name');
+					const errorMessage = '__createArgumentSamplerMap: duplicate variable name';
+					this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 				}
 				argumentSamplerMap.set(name, samplerType);
 			}
