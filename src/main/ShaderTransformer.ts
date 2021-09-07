@@ -255,7 +255,7 @@ export default class ShaderTransformer {
 		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
 
 		let argumentSamplerMap: Map<string, string> | undefined;
-		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
+		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, embedErrorsInOutput);
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
 
@@ -313,16 +313,18 @@ export default class ShaderTransformer {
 	 * This method finds uniform declarations of sampler types in the shader and
 	 * creates a map with variable names as keys and types as values.
 	 */
-	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
+	private static __createUniformSamplerMap(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const uniformSamplerMap: Map<string, string> = new Map();
 
-		for (const line of splittedShaderCode) {
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			const line = splittedShaderCode[i];
 			const match = line.match(/^(?![\/])[\t ]*uniform*[\t ]*(highp|mediump|lowp|)[\t ]*(sampler\w+)[\t ]+(\w+)/);
 			if (match) {
 				const samplerType = match[2];
 				const name = match[3];
 				if (uniformSamplerMap.get(name)) {
-					console.error('__createUniformSamplerMap: duplicate variable name');
+					const errorMessage = '__createUniformSamplerMap: duplicate variable name';
+					this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 				}
 				uniformSamplerMap.set(name, samplerType);
 			}
