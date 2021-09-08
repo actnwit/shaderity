@@ -8,13 +8,17 @@ export default class ShaderTransformer {
 	 * @private
 	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
 	 */
-	static _transformToGLSLES1(splittedShaderCode: string[], isFragmentShader: boolean) {
+	static _transformToGLSLES1(
+		splittedShaderCode: string[],
+		isFragmentShader: boolean,
+		embedErrorsInOutput: boolean
+	) {
 		this.__convertOrInsertVersionGLSLES1(splittedShaderCode);
-		this.__removeES3Qualifier(splittedShaderCode);
+		this.__removeES3Qualifier(splittedShaderCode, embedErrorsInOutput);
 		this.__convertIn(splittedShaderCode, isFragmentShader);
-		this.__convertOut(splittedShaderCode, isFragmentShader);
+		this.__convertOut(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		this.__removePrecisionForES3(splittedShaderCode);
-		this.__convertTextureFunctionToES1(splittedShaderCode);
+		this.__convertTextureFunctionToES1(splittedShaderCode, embedErrorsInOutput);
 		const transformedSplittedShaderCode = splittedShaderCode;
 
 		return transformedSplittedShaderCode;
@@ -42,11 +46,16 @@ export default class ShaderTransformer {
 	 * @private
 	 * Translate a GLSL shader code to a shader code of specified GLSL version
 	 */
-	static _transformTo(version: ShaderVersion, splittedShaderCode: string[], isFragmentShader: boolean) {
+	static _transformTo(
+		version: ShaderVersion,
+		splittedShaderCode: string[],
+		isFragmentShader: boolean,
+		embedErrorsInOutput: boolean
+	) {
 		if (version.match(/webgl2|es3/i)) {
 			return this._transformToGLSLES3(splittedShaderCode, isFragmentShader);
 		} else if (version.match(/webgl1|es1/i)) {
-			return this._transformToGLSLES1(splittedShaderCode, isFragmentShader);
+			return this._transformToGLSLES1(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		} else {
 			console.error('Invalid Version')
 			return splittedShaderCode;
@@ -118,10 +127,9 @@ export default class ShaderTransformer {
 	 * be deleted and the variable is used to assign a value to gl_FragColor.
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean) {
-
+	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean, embedErrorsInOutput: boolean) {
 		if (isFragmentShader) {
-			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode);
+			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode, embedErrorsInOutput);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 			const replaceFunc = function (match: string, p1: string) {
@@ -138,7 +146,7 @@ export default class ShaderTransformer {
 	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
-	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[]) {
+	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
@@ -152,10 +160,11 @@ export default class ShaderTransformer {
 		}
 
 		if (variableName == null) {
+			// no out variable in the shader
 			return;
 		}
 
-		const closeBracketReg = /(.*)}/g;
+		const closeBracketReg = /(.*)\}[\n\t ]*$/;
 
 		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
 			const line = splittedShaderCode[i];
@@ -166,7 +175,8 @@ export default class ShaderTransformer {
 			}
 		}
 
-		console.error('__removeOutKeywordAndAddGLFragColor: invalid main function code');
+		const errorMessage = '__removeOutKeywordAndAddGLFragColor: Not found the closing brackets for the main function';
+		this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
 	}
 
 	/**
@@ -174,8 +184,8 @@ export default class ShaderTransformer {
 	 * Find the qualifier for es3 only in the shader code and remove it
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __removeES3Qualifier(splittedShaderCode: string[]) {
-		this.__removeVaryingQualifier(splittedShaderCode);
+	private static __removeES3Qualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
+		this.__removeVaryingQualifier(splittedShaderCode, embedErrorsInOutput);
 		this.__removeLayout(splittedShaderCode);
 	}
 
@@ -183,15 +193,19 @@ export default class ShaderTransformer {
 	 * @private
 	 * Find the "flat" and "smooth" qualifier in the shader code and remove it
 	 */
-	private static __removeVaryingQualifier(splittedShaderCode: string[]) {
+	private static __removeVaryingQualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*(flat|smooth)[\t ]*((in|out)[\t ]+.*)/;
-		const asES1 = function (match: string, p1: string, p2: string) {
-			if (p1 === 'flat') {
-				console.error('__removeVaryingQualifier: glsl es1 does not support flat qualifier');
-			}
-			return p2;
+		const errorMessage = '__removeVaryingQualifier: glsl es1 does not support flat qualifier';
+
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			splittedShaderCode[i] = splittedShaderCode[i].replace(reg, (match: string, p1: string, p2: string) => {
+				if (p1 === 'flat') {
+					this.__outError(splittedShaderCode, i + 1, errorMessage, embedErrorsInOutput);
+					return match;
+				}
+				return p2;
+			});
 		}
-		this.__replaceLine(splittedShaderCode, reg, asES1);
 	}
 
 	/**
@@ -235,42 +249,44 @@ export default class ShaderTransformer {
 	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertTextureFunctionToES1(splittedShaderCode: string[]) {
+	private static __convertTextureFunctionToES1(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const sbl = this.__regSymbols();
 		const regTextureProj = new RegExp(`(${sbl}+)textureProj(Lod|)(${sbl}+)`, 'g');
 		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
 
 		let argumentSamplerMap: Map<string, string> | undefined;
-		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode);
+		const uniformSamplerMap = this.__createUniformSamplerMap(splittedShaderCode, embedErrorsInOutput);
 		for (let i = 0; i < splittedShaderCode.length; i++) {
 			const line = splittedShaderCode[i];
 
 			const matchTextureProj = line.match(/textureProj(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTextureProj) {
-				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(
+					splittedShaderCode,
+					i,
+					embedErrorsInOutput
+				);
 
 				const variableName = matchTextureProj[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
-					let textureFunc: string;
 					if (samplerType === 'sampler2D') {
-						textureFunc = 'texture2DProj';
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1texture2DProj$2$3');
 					} else {
-						textureFunc = '';
-						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
-					}
-
-					if (textureFunc !== '') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1' + textureFunc + '$2$3');
+						const errorMessage = '__convertTextureFunctionToES1: do not support ' + samplerType + ' type';
+						this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 					}
 				}
 				continue;
 			}
 
-
 			const matchTexture = line.match(/texture(Lod|)[\t ]*\([\t ]*(\w+),/);
 			if (matchTexture) {
-				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(splittedShaderCode, i);
+				argumentSamplerMap = argumentSamplerMap ?? this.__createArgumentSamplerMap(
+					splittedShaderCode,
+					i,
+					embedErrorsInOutput
+				);
 
 				const variableName = matchTexture[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
@@ -282,7 +298,8 @@ export default class ShaderTransformer {
 						textureFunc = 'textureCube';
 					} else {
 						textureFunc = '';
-						console.error('__convertTextureFunctionToES1: do not support ' + samplerType + ' type');
+						const errorMessage = '__convertTextureFunctionToES1: do not support ' + samplerType + ' type';
+						this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 					}
 
 					if (textureFunc !== '') {
@@ -304,16 +321,18 @@ export default class ShaderTransformer {
 	 * This method finds uniform declarations of sampler types in the shader and
 	 * creates a map with variable names as keys and types as values.
 	 */
-	private static __createUniformSamplerMap(splittedShaderCode: string[]) {
+	private static __createUniformSamplerMap(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const uniformSamplerMap: Map<string, string> = new Map();
 
-		for (const line of splittedShaderCode) {
+		for (let i = 0; i < splittedShaderCode.length; i++) {
+			const line = splittedShaderCode[i];
 			const match = line.match(/^(?![\/])[\t ]*uniform*[\t ]*(highp|mediump|lowp|)[\t ]*(sampler\w+)[\t ]+(\w+)/);
 			if (match) {
 				const samplerType = match[2];
 				const name = match[3];
 				if (uniformSamplerMap.get(name)) {
-					console.error('__createUniformSamplerMap: duplicate variable name');
+					const errorMessage = '__createUniformSamplerMap: duplicate variable name';
+					this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 				}
 				uniformSamplerMap.set(name, samplerType);
 			}
@@ -326,7 +345,11 @@ export default class ShaderTransformer {
 	 * This method finds sampler types from the function arguments and
 	 * creates a map with variable names as keys and types as values.
 	 */
-	private static __createArgumentSamplerMap(splittedShaderCode: string[], lineIndex: number) {
+	private static __createArgumentSamplerMap(
+		splittedShaderCode: string[],
+		lineIndex: number,
+		embedErrorsInOutput: boolean
+	) {
 		const argumentSamplerMap: Map<string, string> = new Map();
 
 		for (let i = lineIndex; i >= 0; i--) {
@@ -360,7 +383,8 @@ export default class ShaderTransformer {
 				const samplerType = samplerVariableMatch[2];
 				const name = samplerVariableMatch[3];
 				if (argumentSamplerMap.get(name)) {
-					console.error('__createArgumentSamplerMap: duplicate variable name');
+					const errorMessage = '__createArgumentSamplerMap: duplicate variable name';
+					this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
 				}
 				argumentSamplerMap.set(name, samplerType);
 			}
@@ -504,6 +528,34 @@ export default class ShaderTransformer {
 				splittedShaderCode.splice(i, 1);
 				break;
 			}
+		}
+	}
+
+	private static __outError(
+		splittedShaderCode: string[],
+		lineIndex: number,
+		errorMessage: string,
+		embedErrorsInOutput: boolean
+	) {
+		if (embedErrorsInOutput) {
+			const shaderOutputMessage = `// line ${lineIndex}: ${errorMessage}\n`;
+			const closeBracketReg = /(.*)\}[\n\t ]*$/;
+			for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
+				const line = splittedShaderCode[i];
+				if (line.match(closeBracketReg)) {
+					break;
+				}
+
+				if (splittedShaderCode[i] === shaderOutputMessage) {
+					// avoid duplicate error message
+					return;
+				}
+			}
+
+			console.error(errorMessage);
+			splittedShaderCode.push(shaderOutputMessage);
+		} else {
+			throw new Error(errorMessage);
 		}
 	}
 }

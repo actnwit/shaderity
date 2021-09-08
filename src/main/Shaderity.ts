@@ -12,12 +12,21 @@ export default class Shaderity {
 
 	/**
 	 * Translate a GLSL ES3 shader code to a GLSL ES1 shader code
+	 * @param obj Shaderity object to translate to glsl es1
+	 * @param embedErrorsInOutput If true, when there is an error in the conversion,
+	 *    the error and the number of lines are output at the bottom of the return
+	 *    value ShaderityObject.code. If false, throw an error.
+	 * @returns ShaderityObject whose code property is the shader code for GLSL ES1
 	 */
-	public static transformToGLSLES1(obj: ShaderityObject) {
+	public static transformToGLSLES1(obj: ShaderityObject, embedErrorsInOutput = false) {
 		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
-			= ShaderTransformer._transformToGLSLES1(splittedShaderCode, obj.isFragmentShader);
+			= ShaderTransformer._transformToGLSLES1(
+				splittedShaderCode,
+				obj.isFragmentShader,
+				embedErrorsInOutput
+			);
 		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
@@ -51,11 +60,16 @@ export default class Shaderity {
 	/**
 	 * Translate a GLSL shader code to a shader code of specified GLSL version
 	 */
-	public static transformTo(version: ShaderVersion, obj: ShaderityObject) {
+	public static transformTo(version: ShaderVersion, obj: ShaderityObject, embedErrorsInOutput = false) {
 		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
-			= ShaderTransformer._transformTo(version, splittedShaderCode, obj.isFragmentShader);
+			= ShaderTransformer._transformTo(
+				version,
+				splittedShaderCode,
+				obj.isFragmentShader,
+				embedErrorsInOutput
+			);
 		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
