@@ -77,3 +77,6 @@ tests/baselines/reference/dt
 TEST-results.xml
 .rpt2_cache
 dist
+
+samples/**/*.js
+samples/**/*.js.map

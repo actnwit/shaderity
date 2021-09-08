@@ -19,7 +19,8 @@
     "test": "yarn test-unit",
     "test-unit": "jest --config jest.config.js ./test",
     "test-coverage": "jest --coverage",
-    "doc": "typedoc --includeDeclarations --ignoreCompilerErrors --exclude '**/*+(test|d).ts' --out ./docs/ ./src/"
+    "doc": "typedoc --includeDeclarations --ignoreCompilerErrors --exclude '**/*+(test|d).ts' --out ./docs/ ./src/",
+    "watch-samples": "tsc-watch -p ./samples/ --onSuccess \"node server.js\""
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
@@ -34,10 +35,12 @@
     "puppeteer": "^1.17.0",
     "raw-loader": "^3.0.0",
     "reflect-metadata": "^0.1.13",
+    "requirejs": "^2.3.6",
     "rimraf": "^2.6.3",
     "shaderity-loader": "0.0.16",
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.2",
+    "tsc-watch": "^4.5.0",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.1",
     "webpack": "^4.33.0",
