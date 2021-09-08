@@ -11,23 +11,23 @@ void fetch(
 ) {
 
   texture(texture2, v_texcoord2);
-  textureCube(texture1, v_texcoord3);
+  texture(texture1, v_texcoord3);
   textureProj(texture2, v_texcoord3);
 
   for(float i = 0.0; i < 5.0; i++) {
 
   }
 
-  textureCubeLod(texture1, v_texcoord3, 0.0);
+  textureLod(texture1, v_texcoord3, 0.0);
   texture(texture2, v_texcoord2);
-  textureCube(texture1, v_texcoord3);
+  texture(texture1, v_texcoord3);
   textureProj(texture2, v_texcoord3);
   textureProjLod(texture2, v_texcoord3, 0.0);
 }
 
 void fetch2(samplerCube texture2) {
   texture(texture1, v_texcoord2);
-  textureCube(texture2, v_texcoord3);
+  texture(texture2, v_texcoord3);
   textureProj(texture1, v_texcoord3);
 
   if(true) {
@@ -40,7 +40,7 @@ void fetch2(samplerCube texture2) {
 
   textureLod(texture1, v_texcoord2, 0.0);
   texture(texture1, v_texcoord2);
-  textureCube(texture2, v_texcoord3);
+  texture(texture2, v_texcoord3);
   textureProj(texture1, v_texcoord3);
 }
 
