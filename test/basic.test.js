@@ -128,11 +128,16 @@ varying vec2 v_texcoord2;
 varying vec3 v_texcoord3;
 uniform sampler2D texture1;
 uniform samplerCube texture2;
+uniform sampler2D texture3;
+uniform sampler2D texture4;
+uniform sampler2D texture5;
 
 void fetch(
   mediump samplerCube texture1,
-  sampler2D texture2
+  sampler2D texture2,
+  out samplerCube texture3
 ) {
+  texture3 = texture1;
 
   texture2D(texture2, v_texcoord2);
   textureCube(texture1, v_texcoord3);
@@ -149,7 +154,11 @@ void fetch(
   texture2DProjLod(texture2, v_texcoord3, 0.0);
 }
 
-void fetch2(samplerCube texture2) {
+void fetch2(
+  samplerCube texture2,
+  in samplerCube texture4,
+  const in samplerCube texture5
+) {
   texture2D(texture1, v_texcoord2);
   textureCube(texture2, v_texcoord3);
   texture2DProj(texture1, v_texcoord3);
@@ -166,6 +175,10 @@ void fetch2(samplerCube texture2) {
   texture2D(texture1, v_texcoord2);
   textureCube(texture2, v_texcoord3);
   texture2DProj(texture1, v_texcoord3);
+
+  texture2D(texture3, v_texcoord3);
+  textureCube(texture4, v_texcoord3);
+  textureCube(texture5, v_texcoord3);
 }
 
 void main () {
