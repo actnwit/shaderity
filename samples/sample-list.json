@@ -1,5 +1,6 @@
 {
   "ShaderityObjectCreator": [
-    "Vertex_Shaderity_Object_Creating"
+    "Vertex_Shaderity_Object_Creating",
+    "Fragment_Shaderity_Object_Creating"
   ]
 }
