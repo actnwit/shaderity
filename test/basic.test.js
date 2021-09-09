@@ -147,11 +147,11 @@ void fetch(
 
   }
 
-  textureCubeLod(texture1, v_texcoord3, 0.0);
+  textureCubeLodEXT(texture1, v_texcoord3, 0.0);
   texture2D(texture2, v_texcoord2);
   textureCube(texture1, v_texcoord3);
   texture2DProj(texture2, v_texcoord3);
-  texture2DProjLod(texture2, v_texcoord3, 0.0);
+  texture2DProjLodEXT(texture2, v_texcoord3, 0.0);
 }
 
 void fetch2(
@@ -171,7 +171,7 @@ void fetch2(
   if(test) {
   }
 
-  texture2DLod(texture1, v_texcoord2, 0.0);
+  texture2DLodEXT(texture1, v_texcoord2, 0.0);
   texture2D(texture1, v_texcoord2);
   textureCube(texture2, v_texcoord3);
   texture2DProj(texture1, v_texcoord3);
