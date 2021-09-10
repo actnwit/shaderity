@@ -170,18 +170,34 @@ export default class ShaderTransformer {
 
 	private static __addGLFragColor(variableName: string, splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const closeBracketReg = /(.*)\}[\n\t ]*$/;
+		const returnReg = /[\n\t ]*return[\n\t ]*;/;
+		const mainFuncStartReg = /(^|^(?![\/])[\t\n ]+)void[\t\n ]+main([\t\n ]|\(|$)/;
+		const fragColorCode = `  gl_FragColor = ${variableName};`;
 
+		let setGlFragColorInLastLine = false;
 		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
 			const line = splittedShaderCode[i];
-			if (line.match(closeBracketReg)) {
-				const fragColorCode = `  gl_FragColor = ${variableName};`;
+			if (!setGlFragColorInLastLine && line.match(closeBracketReg)) {
+				// add gl_FragColor to last line of main function
 				splittedShaderCode[i] = line.replace(closeBracketReg, `$1\n${fragColorCode}\n}\n`);
-				return;
+				setGlFragColorInLastLine = true;
+			}
+
+			if (line.match(returnReg)) {
+				// add gl_FragColor just before return
+				splittedShaderCode.splice(i, 0, fragColorCode);
+			}
+
+			if (line.match(mainFuncStartReg)) {
+				// add gl_FragColor only in the main function
+				break;
 			}
 		}
 
-		const errorMessage = '__removeOutQualifier: Not found the closing brackets for the main function';
-		this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
+		if (!setGlFragColorInLastLine) {
+			const errorMessage = '__removeOutQualifier: Not found the closing brackets for the main function';
+			this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
+		}
 	}
 
 	/**
