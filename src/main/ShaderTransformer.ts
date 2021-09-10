@@ -129,7 +129,13 @@ export default class ShaderTransformer {
 	 */
 	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean, embedErrorsInOutput: boolean) {
 		if (isFragmentShader) {
-			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode, embedErrorsInOutput);
+			const variableName = this.__removeOutQualifier(splittedShaderCode, embedErrorsInOutput);
+			if (variableName == null) {
+				// no out qualifier
+				return;
+			}
+
+			this.__addGLFragColor(variableName, splittedShaderCode, embedErrorsInOutput);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 			const replaceFunc = function (match: string, p1: string) {
@@ -146,7 +152,7 @@ export default class ShaderTransformer {
 	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
-	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
+	private static __removeOutQualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
@@ -159,11 +165,10 @@ export default class ShaderTransformer {
 			}
 		}
 
-		if (variableName == null) {
-			// no out variable in the shader
-			return;
-		}
+		return variableName;
+	}
 
+	private static __addGLFragColor(variableName: string, splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const closeBracketReg = /(.*)\}[\n\t ]*$/;
 
 		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
@@ -175,7 +180,7 @@ export default class ShaderTransformer {
 			}
 		}
 
-		const errorMessage = '__removeOutKeywordAndAddGLFragColor: Not found the closing brackets for the main function';
+		const errorMessage = '__removeOutQualifier: Not found the closing brackets for the main function';
 		this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
 	}
 
