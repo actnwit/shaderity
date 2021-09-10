@@ -84,7 +84,7 @@ export default class ShaderityObjectCreator {
 		this.__defineDirectiveNames.push(defineDirectiveName);
 	}
 
-	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'require') {
+	public addExtension(extensionName: string, behavior: ShaderExtensionBehavior = 'enable') {
 		const isDuplicate =
 			this.__extensions.some(extension => extension.extensionName === extensionName);
 		if (isDuplicate) {
