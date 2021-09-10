@@ -1,0 +1,9 @@
+{
+  "ShaderityObjectCreator": [
+    "Vertex_Shaderity_Object_Creating",
+    "Fragment_Shaderity_Object_Creating"
+  ],
+  "ShaderTransformer": [
+    "ShaderTransformerFromES3ToES1"
+  ]
+}
