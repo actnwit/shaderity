@@ -18,7 +18,7 @@ export default class ShaderTransformer {
 		this.__convertIn(splittedShaderCode, isFragmentShader);
 		this.__convertOut(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		this.__removePrecisionForES3(splittedShaderCode);
-		this.__convertTextureFunctionToES1(splittedShaderCode, embedErrorsInOutput);
+		this.__convertTextureFunctionToES1(splittedShaderCode, isFragmentShader, embedErrorsInOutput);
 		const transformedSplittedShaderCode = splittedShaderCode;
 
 		return transformedSplittedShaderCode;
@@ -249,7 +249,7 @@ export default class ShaderTransformer {
 	 * replace it with the GLSL ES1 method('texture2D', 'texture2D', and so on)
 	 * This method directly replace the elements of the splittedShaderCode variable.
 	 */
-	private static __convertTextureFunctionToES1(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
+	private static __convertTextureFunctionToES1(splittedShaderCode: string[], isFragmentShader: boolean, embedErrorsInOutput: boolean) {
 		const sbl = this.__regSymbols();
 		const regTextureProj = new RegExp(`(${sbl}+)textureProj(Lod|)(${sbl}+)`, 'g');
 		const regTexture = new RegExp(`(${sbl}+)texture(Lod|)(${sbl}+)`, 'g');
@@ -267,11 +267,13 @@ export default class ShaderTransformer {
 					embedErrorsInOutput
 				);
 
+				const isLodMethod = matchTextureProj[1] === 'Lod';
+				const extensionStr = isFragmentShader && isLodMethod ? `EXT` : ``;
 				const variableName = matchTextureProj[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
 					if (samplerType === 'sampler2D') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, '$1texture2DProj$2$3');
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTextureProj, `$1texture2DProj$2${extensionStr}$3`);
 					} else {
 						const errorMessage = '__convertTextureFunctionToES1: do not support ' + samplerType + ' type';
 						this.__outError(splittedShaderCode, i, errorMessage, embedErrorsInOutput);
@@ -288,6 +290,8 @@ export default class ShaderTransformer {
 					embedErrorsInOutput
 				);
 
+				const isLodMethod = matchTexture[1] === 'Lod';
+				const extensionStr = isFragmentShader && isLodMethod ? `EXT` : ``;
 				const variableName = matchTexture[2];
 				const samplerType = argumentSamplerMap?.get(variableName) ?? uniformSamplerMap.get(variableName);
 				if (samplerType != null) {
@@ -303,7 +307,7 @@ export default class ShaderTransformer {
 					}
 
 					if (textureFunc !== '') {
-						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, '$1' + textureFunc + '$2$3');
+						splittedShaderCode[i] = splittedShaderCode[i].replace(regTexture, `$1${textureFunc}$2${extensionStr}$3`);
 					}
 				}
 				continue;

@@ -4,6 +4,7 @@ const simpleVertex = require('../dist/index_test').simpleVertex;
 const textureFragmentES1 = require('../dist/index_test').textureFragmentES1;
 const textureFragmentES3 = require('../dist/index_test').textureFragmentES3;
 const textureFuncFragmentES3 = require('../dist/index_test').textureFuncFragmentES3;
+const textureFuncVertexES3 = require('../dist/index_test').textureFuncVertexES3;
 const textureFuncComplicatedES3Shader = require('../dist/index_test').textureFuncComplicatedES3Shader;
 const dynamicTemplateFragment = require('../dist/index_test').dynamicTemplateFragment;
 const insertDefinitionVertex = require('../dist/index_test').insertDefinitionVertex;
@@ -121,6 +122,40 @@ void main () {
 });
 
 test('convert to ES1 correctly (texture 3)', async() => {
+  expect(Shaderity.transformTo('glsl es1', textureFuncVertexES3).code).toBe(`#version 100
+attribute vec2 a_texcoord;
+attribute vec3 a_texcoord3;
+uniform sampler2D texture1;
+uniform samplerCube texture2;
+uniform mediump samplerCube texture3;
+
+void fetch(
+  samplerCube texture1,
+  sampler2D texture2
+) {
+  gl_FragColor = texture2DLod(texture2, a_texcoord);
+  gl_FragColor = textureCubeLod(texture1, a_texcoord3);
+  gl_FragColor = textureCube(texture3, a_texcoord3);
+  gl_FragColor = texture2DProj(texture2, a_texcoord);
+}
+
+void fetch2(
+  samplerCube texture2,
+  // sampler2D texture1
+) {
+  gl_FragColor = texture2D(texture1, a_texcoord);
+  gl_FragColor = textureCube(texture2, a_texcoord3);
+  gl_FragColor = texture2DProj(texture1, a_texcoord);
+}
+
+void main () {
+  fetch(texture2, texture1);
+  fetch2(texture2, texture1);
+}
+`);
+});
+
+test('convert to ES1 correctly (texture 4)', async() => {
   expect(Shaderity.transformTo('glsl es1', textureFuncComplicatedES3Shader).code).toBe(`#version 100
 precision highp float;
 
@@ -147,11 +182,11 @@ void fetch(
 
   }
 
-  textureCubeLod(texture1, v_texcoord3, 0.0);
+  textureCubeLodEXT(texture1, v_texcoord3, 0.0);
   texture2D(texture2, v_texcoord2);
   textureCube(texture1, v_texcoord3);
   texture2DProj(texture2, v_texcoord3);
-  texture2DProjLod(texture2, v_texcoord3, 0.0);
+  texture2DProjLodEXT(texture2, v_texcoord3, 0.0);
 }
 
 void fetch2(
@@ -171,7 +206,7 @@ void fetch2(
   if(test) {
   }
 
-  texture2DLod(texture1, v_texcoord2, 0.0);
+  texture2DLodEXT(texture1, v_texcoord2, 0.0);
   texture2D(texture1, v_texcoord2);
   textureCube(texture2, v_texcoord3);
   texture2DProj(texture1, v_texcoord3);
