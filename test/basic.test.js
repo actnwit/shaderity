@@ -16,6 +16,7 @@ const attributeAndVaryingPrecisionES3 = require('../dist/index_test').attributeA
 const layoutAttributeES3 = require('../dist/index_test').layoutAttributeES3;
 const outToGlFragColorES3 = require('../dist/index_test').outToGlFragColorES3;
 const smoothVaryingES3 = require('../dist/index_test').smoothVaryingES3;
+const outQualifierFragmentES3 = require('../dist/index_test').outQualifierFragmentES3;
 
 
 test('detect shader stage correctly', async() => {
@@ -220,6 +221,22 @@ void main () {
   fetch(texture2, texture1);
   fetch2(texture2);
 }
+`);
+});
+
+test('insertGlFragColor', async() => {
+  expect(Shaderity.transformTo('WebGL1', outQualifierFragmentES3).code).toBe(`#version 100
+vec4 rt0;
+
+void main () {
+  if(false){
+  gl_FragColor = rt0;
+    return;
+  }
+
+  gl_FragColor = rt0;
+}
+
 `);
 });
 

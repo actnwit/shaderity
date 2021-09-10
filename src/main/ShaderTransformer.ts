@@ -129,7 +129,13 @@ export default class ShaderTransformer {
 	 */
 	private static __convertOut(splittedShaderCode: string[], isFragmentShader: boolean, embedErrorsInOutput: boolean) {
 		if (isFragmentShader) {
-			this.__removeOutKeywordAndAddGLFragColor(splittedShaderCode, embedErrorsInOutput);
+			const variableName = this.__removeOutQualifier(splittedShaderCode, embedErrorsInOutput);
+			if (variableName == null) {
+				// no out qualifier
+				return;
+			}
+
+			this.__addGLFragColor(variableName, splittedShaderCode, embedErrorsInOutput);
 		} else {
 			const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*\w+[\t ]*;)/;
 			const replaceFunc = function (match: string, p1: string) {
@@ -146,7 +152,7 @@ export default class ShaderTransformer {
 	 * If the shader does not have the "out" qualifiers, this method does nothing.
 	 */
 
-	private static __removeOutKeywordAndAddGLFragColor(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
+	private static __removeOutQualifier(splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const reg = /^(?![\/])[\t ]*out[\t ]+((highp|mediump|lowp|)[\t ]*\w+[\t ]*(\w+)[\t ]*;)/;
 
 		let variableName: string | undefined;
@@ -159,24 +165,39 @@ export default class ShaderTransformer {
 			}
 		}
 
-		if (variableName == null) {
-			// no out variable in the shader
-			return;
-		}
+		return variableName;
+	}
 
+	private static __addGLFragColor(variableName: string, splittedShaderCode: string[], embedErrorsInOutput: boolean) {
 		const closeBracketReg = /(.*)\}[\n\t ]*$/;
+		const returnReg = /[\n\t ]*return[\n\t ]*;/;
+		const mainFuncStartReg = /(^|^(?![\/])[\t\n ]+)void[\t\n ]+main([\t\n ]|\(|$)/;
+		const fragColorCode = `  gl_FragColor = ${variableName};`;
 
+		let setGlFragColorInLastLine = false;
 		for (let i = splittedShaderCode.length - 1; i >= 0; i--) {
 			const line = splittedShaderCode[i];
-			if (line.match(closeBracketReg)) {
-				const fragColorCode = `  gl_FragColor = ${variableName};`;
+			if (!setGlFragColorInLastLine && line.match(closeBracketReg)) {
+				// add gl_FragColor to last line of main function
 				splittedShaderCode[i] = line.replace(closeBracketReg, `$1\n${fragColorCode}\n}\n`);
-				return;
+				setGlFragColorInLastLine = true;
+			}
+
+			if (line.match(returnReg)) {
+				// add gl_FragColor just before return
+				splittedShaderCode.splice(i, 0, fragColorCode);
+			}
+
+			if (line.match(mainFuncStartReg)) {
+				// add gl_FragColor only in the main function
+				break;
 			}
 		}
 
-		const errorMessage = '__removeOutKeywordAndAddGLFragColor: Not found the closing brackets for the main function';
-		this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
+		if (!setGlFragColorInLastLine) {
+			const errorMessage = '__removeOutQualifier: Not found the closing brackets for the main function';
+			this.__outError(splittedShaderCode, splittedShaderCode.length, errorMessage, embedErrorsInOutput);
+		}
 	}
 
 	/**
