@@ -25,13 +25,13 @@ export type ReflectionUniform = {
 	name: string,
 	type: string,
 	semantic: string
-}
+};
 
 export type ReflectionVarying = {
 	name: string,
 	inout: "in" | "out",
 	type: VarType
-}
+};
 
 export type TemplateObject = {
 	[key: string]: string | TemplateObject
@@ -91,12 +91,12 @@ export type ShaderStructMemberObject = {
 	memberName: string,
 	type: ShaderUniformVarTypeES3,
 	precision?: ShaderPrecisionType,
-}
+};
 
 export type ShaderStructDefinitionObject = {
 	structName: string,
 	memberObjects: ShaderStructMemberObject[],
-}
+};
 
 export type ShaderConstantValueVarTypeES1 =
 	'float' | 'vec2' | 'vec3' | 'vec4' |
@@ -124,7 +124,7 @@ export type ShaderConstantStructValueObject = {
 	structName: string,
 	variableName: string,
 	values: {[memberName: string]: number[]},
-}
+};
 
 export type ShaderAttributeVarType =
 	'float' | 'vec2' | 'vec3' | 'vec4' |
@@ -187,7 +187,7 @@ export type ShaderUBOVarType = ShaderConstantValueVarTypeES3;
 export type ShaderUBOVariableObject = {
 	type: ShaderUBOVarType,
 	variableName: string,
-}
+};
 
 export type ShaderUniformBufferObject = {
 	blockName: string,
