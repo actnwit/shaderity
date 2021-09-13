@@ -13,7 +13,7 @@ declare const Shaderity: typeof _Shaderity;
   // We can edit each part using the methods written in brackets.
 
   // 1.  version information (no edit method)
-  // 2.  definition of directive (add/removeDefineDirective)
+  // 2.  definition of define directive (add/removeDefineDirective)
   // 3.  definition of extension (add/removeExtension)
   // 4.  declaration of global Precision (updateGlobalPrecision)
   // 5.  definition of struct (add/removeStructDefinition)
