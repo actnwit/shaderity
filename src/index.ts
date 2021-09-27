@@ -1,4 +1,6 @@
 import Shaderity from './main/Shaderity';
+import _ShaderityObjectCreator from './main/ShaderityObjectCreator';
+import _Reflection from './main/Reflection';
 
 import {
   AttributeSemantics as _AttributeSemantics,
@@ -32,6 +34,11 @@ import {
   VarType as _VarType,
 } from './types/type';
 
+export {
+  ShaderityObjectCreator as _ShaderityObjectCreator,
+  Reflection as _Reflection,
+}
+
 export type AttributeSemantics = _AttributeSemantics;
 export type ReflectionAttribute = _ReflectionAttribute;
 export type ReflectionUniform = _ReflectionUniform;
@@ -61,5 +68,7 @@ export type ShaderVersion = _ShaderVersion;
 export type TemplateObject = _TemplateObject;
 export type UniformSemantics = _UniformSemantics;
 export type VarType = _VarType;
+export type ShaderityObjectCreator = _ShaderityObjectCreator;
+export type Reflection = _Reflection;
 
 export default Shaderity
