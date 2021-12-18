@@ -10,6 +10,9 @@ Shaderity are composed from the several components.
 
 The name "Shaderity" was coined from the combination of "Shader" and "Integrity".
 
+BTW, Are you interested in node-based shader editing?
+Please check our [shaderity-graph](https://github.com/actnwit/shaderity-graph) out.
+
 ## Features
 
 ### Runtime features
