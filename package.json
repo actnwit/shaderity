@@ -36,7 +36,7 @@
     "reflect-metadata": "^0.1.13",
     "requirejs": "^2.3.6",
     "rimraf": "^2.6.3",
-    "shaderity-loader": "0.0.17",
+    "shaderity-loader": "0.0.18",
     "ts-jest": "^28.0.4",
     "ts-loader": "^6.0.2",
     "tsc-watch": "^4.5.0",

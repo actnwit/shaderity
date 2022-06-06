@@ -5247,10 +5247,10 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-shaderity-loader@0.0.17:
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/shaderity-loader/-/shaderity-loader-0.0.17.tgz#3762e84579bc5f2178dbbdd04b87dbb87e9de4e9"
-  integrity sha512-SxHrKxsH2rIhJzm03rYAktnwkND8CZ85Lxq4TvpSvZBnV+xIC2grEy1YLOjpKRfTdsZ6DmpMVJy0SQjut112JA==
+shaderity-loader@0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/shaderity-loader/-/shaderity-loader-0.0.18.tgz#e204166053c23229a701dd35024544bb7bfb9b50"
+  integrity sha512-au0f/hI9898trt4z0U/DwOT4aZZG//czicHqY2mEloxpvg9FLHCbs5/52+bMvP8JhhS54tB15kmw0I4cn5MJEA==
   dependencies:
     shaderity-node "0.0.7"
 
