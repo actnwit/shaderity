@@ -181,6 +181,7 @@ export default class Reflection {
 		this.__attributeSemanticsMap.set('texcoord$', 'TEXCOORD_0');
 		this.__attributeSemanticsMap.set('texcoord_?0', 'TEXCOORD_0');
 		this.__attributeSemanticsMap.set('texcoord_?1', 'TEXCOORD_1');
+		this.__attributeSemanticsMap.set('texcoord_?2', 'TEXCOORD_2');
 		this.__attributeSemanticsMap.set('normal', 'NORMAL');
 		this.__attributeSemanticsMap.set('tangent', 'TANGENT');
 		this.__attributeSemanticsMap.set('joint$', 'JOINTS_0');
