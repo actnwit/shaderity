@@ -76,7 +76,7 @@ tests/baselines/reference/dt
 .failed-tests
 TEST-results.xml
 .rpt2_cache
-dist
 
 samples/**/*.js
 samples/**/*.js.map
+.dccache
