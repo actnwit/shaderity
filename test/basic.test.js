@@ -97,3 +97,13 @@ test('test attribute variable reflection (ES3)', async() => {
     semantic: 'TEXCOORD_0'
   });
 });
+
+test('test varying variable reflection (ES3)', async() => {
+  const reflection = Shaderity.createReflectionObject(reflectionVertexES3);
+  reflection.reflect();
+  expect(reflection.varyings[0]).toStrictEqual({
+    name: 'v_position',
+    type: 'vec3',
+    inout: 'out'
+  });
+});
