@@ -19,6 +19,7 @@ import outQualifierFragmentES3Shader from '../assets/out_qualifier_fragment_es3.
 import elifFragmentShader from '../assets/elif.frag';
 import ifdefFragmentShader from '../assets/ifdef.frag';
 import ifdef2FragmentShader from '../assets/ifdef2.frag';
+import ifdef3FragmentShader from '../assets/ifdef3.frag';
 
 exports.simpleFragment = simpleFragmentShader;
 exports.simpleVertex = simpleVertexShader;
@@ -41,3 +42,4 @@ exports.outQualifierFragmentES3 = outQualifierFragmentES3Shader;
 exports.elifFragment = elifFragmentShader;
 exports.ifdefFragment = ifdefFragmentShader;
 exports.ifdef2Fragment = ifdef2FragmentShader;
+exports.ifdef3Fragment = ifdef3FragmentShader;
