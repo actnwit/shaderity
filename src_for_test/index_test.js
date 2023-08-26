@@ -16,6 +16,7 @@ import layoutAttributeES3Shader from '../assets/layout_attribute_es3.vert';
 import outToGlFragColorES3Shader from '../assets/out_to_gl_frag_color.frag';
 import smoothVaryingES3Shader from '../assets/smooth_varying_es3.vert';
 import outQualifierFragmentES3Shader from '../assets/out_qualifier_fragment_es3.frag';
+import elifFragmentShader from '../assets/elif.frag';
 import ifdefFragmentShader from '../assets/ifdef.frag';
 import ifdef2FragmentShader from '../assets/ifdef2.frag';
 
@@ -37,5 +38,6 @@ exports.layoutAttributeES3 = layoutAttributeES3Shader;
 exports.outToGlFragColorES3 = outToGlFragColorES3Shader;
 exports.smoothVaryingES3 = smoothVaryingES3Shader;
 exports.outQualifierFragmentES3 = outQualifierFragmentES3Shader;
+exports.elifFragment = elifFragmentShader;
 exports.ifdefFragment = ifdefFragmentShader;
 exports.ifdef2Fragment = ifdef2FragmentShader;

@@ -2,12 +2,13 @@ export default class PreProcessor {
     public static process(splittedLines: string[]): string[] {
         const define = /#define[\t ]+(\w+)/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
-        const outputHistory: boolean[] = [];
-        let outputFlg = true;
+        const elif = /#elif[\t ]+defined\((\w+)\)/;
         const _else = /#else/;
         const endif = /#endif/;
+        const outputHistory: boolean[] = [];
+        let outputFlg = true;
         const definitions: string[] = [];
-        const ifdefs: string[] = [];
+        const ifdefs: string[][] = [];
         const outputLines: string[] = [];
 
         for (const line of splittedLines) {
@@ -25,7 +26,7 @@ export default class PreProcessor {
                 if (re != null) {
                     outputHistory.push(outputFlg);
                     const toCheckDef = re[1];
-                    ifdefs.push(toCheckDef);
+                    ifdefs.push([toCheckDef]);
                     if (definitions.indexOf(toCheckDef) === -1) {
                         outputFlg = false;
                     }
@@ -33,15 +34,38 @@ export default class PreProcessor {
                 }
             }
 
-            if (outputHistory.indexOf(false) === -1) {
-                const re = line.match(_else);
+            if (outputHistory.indexOf(false) === -1) { // #elif
+                const re = line.match(elif);
                 if (re != null) {
-                    const currentIfdef = ifdefs[ifdefs.length - 1];
-                    if (definitions.indexOf(currentIfdef) === -1) {
+                    const toCheckDef = re[1];
+                    const currentIfdefs = ifdefs[ifdefs.length - 1];
+                    let notFound = true;
+                    for (const currentIfdef of currentIfdefs) {
+                        if (definitions.indexOf(currentIfdef) !== -1) {
+                            notFound = false;
+                        }
+                    }
+                    if (notFound && definitions.indexOf(toCheckDef) !== -1) {
                         outputFlg = true;
                     } else {
                         outputFlg = false;
                     }
+                    currentIfdefs.push(toCheckDef);
+                    isPragma = true;
+                }
+            }
+
+            if (outputHistory.indexOf(false) === -1) { // #else
+                const re = line.match(_else);
+                if (re != null) {
+                    const currentIfdefs = ifdefs[ifdefs.length - 1];
+                    let outputFlgInner = true;
+                    for (const currentIfdef of currentIfdefs) {
+                        if (definitions.indexOf(currentIfdef) !== -1) {
+                            outputFlgInner = false;
+                        }
+                    }
+                    outputFlg = outputFlgInner;
                     isPragma = true;
                 }
             }
