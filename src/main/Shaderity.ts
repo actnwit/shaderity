@@ -4,6 +4,7 @@ import ShaderTransformer from './ShaderTransformer';
 import ShaderEditor from './ShaderEditor';
 import Utility from './Utility';
 import ShaderityObjectCreator from './ShaderityObjectCreator';
+import PreProcessor from './PreProcessor';
 
 export default class Shaderity {
 	// =========================================================================================================
@@ -70,6 +71,23 @@ export default class Shaderity {
 				obj.isFragmentShader,
 				embedErrorsInOutput
 			);
+		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
+
+		const resultObj: ShaderityObject = {
+			code: resultCode,
+			shaderStage: obj.shaderStage,
+			isFragmentShader: obj.isFragmentShader,
+		};
+
+		return resultObj;
+	}
+
+	public static processPragma(obj: ShaderityObject) {
+		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
+
+		const transformedSplittedShaderCode
+			= PreProcessor.process(splittedShaderCode);
+
 		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
 		const resultObj: ShaderityObject = {
