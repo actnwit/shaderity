@@ -8,6 +8,10 @@ test('test ifdef', async() => {
 in vec4 vColor;
 
 
+in vec4 vColor2;
+
+in vec4 vNormal;
+
 void main() {
   gl_FlagColor = vColor;
 }

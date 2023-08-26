@@ -5,7 +5,8 @@ export default class PreProcessor {
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const _else = /#else/;
         const endif = /#endif/;
-        const stack: string[] = [];
+        const definitions: string[] = [];
+        const ifdefs: string[] = [];
         const outputLines: string[] = [];
 
         for (const line of splittedLines) {
@@ -14,7 +15,7 @@ export default class PreProcessor {
             { // #define
                 const re = line.match(define);
                 if (re != null) {
-                    stack.push(re[1]);
+                    definitions.push(re[1]);
                     isPragma = true;
                 }
             }
@@ -23,7 +24,8 @@ export default class PreProcessor {
                 const re = line.match(ifdef);
                 if (re != null) {
                     const toCheckDef = re[1];
-                    if (stack.indexOf(toCheckDef) === -1) {
+                    ifdefs.push(toCheckDef);
+                    if (definitions.indexOf(toCheckDef) === -1) {
                         ignoreFlg = true;
                     }
                     isPragma = true;
@@ -33,7 +35,12 @@ export default class PreProcessor {
             {
                 const re = line.match(_else);
                 if (re != null) {
-
+                    const currentIfdef = ifdefs[ifdefs.length - 1];
+                    if (definitions.indexOf(currentIfdef) === -1) {
+                        ignoreFlg = false;
+                    } else {
+                        ignoreFlg = true;
+                    }
                     isPragma = true;
                 }
             }
@@ -43,6 +50,7 @@ export default class PreProcessor {
                 if (re != null) {
                     ignoreFlg = false;
                     isPragma = true;
+                    ifdefs.pop();
                 }
             }
 
