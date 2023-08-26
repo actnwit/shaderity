@@ -118,7 +118,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ 
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\"code\":\"precision mediump float;\\n\\n#define GL_ES\\n#define GL_ES2\\n#define GL_ES4\\n\\n#ifdef GL_ES\\nin vec4 vColor;\\n#elif defined(GL_ES2)\\nin vec4 vColor2;\\n#endif\\n\\n#ifdef GL_ES3\\nin vec4 vColor3;\\n#elif defined(GL_ES4)\\nin vec4 vColor4;\\n#endif\\n\\n#ifdef GL_ES5\\nin vec4 vColor5;\\n#elif defined(GL_ES6)\\nin vec4 vColor6;\\n#else\\nin vec4 vColor7;\\n#endif\",\"shaderStage\":\"fragment\",\"isFragmentShader\":true});\n\n//# sourceURL=webpack:///./assets/elif.frag?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\"code\":\"precision mediump float;\\n\\n#define GL_ES\\n#define GL_ES2\\n#define GL_ES4\\n\\n#ifdef GL_ES\\nin vec4 vColor;\\n#elif defined(GL_ES2)\\nin vec4 vColor2;\\n#endif\\n\\n#ifdef GL_ES3\\nin vec4 vColor3;\\n#elif defined(GL_ES4)\\nin vec4 vColor4;\\n#endif\\n\\n#ifdef GL_ES5\\nin vec4 vColor5;\\n#elif defined(GL_ES6)\\nin vec4 vColor6;\\n#else\\nin vec4 vColor7;\\n#endif\\n\",\"shaderStage\":\"fragment\",\"isFragmentShader\":true});\n\n//# sourceURL=webpack:///./assets/elif.frag?");
 
 /***/ }),
 
