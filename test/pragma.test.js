@@ -27,6 +27,9 @@ test('test double ifdef', async() => {
 in vec4 vColor;
     in vec4 vTexcoord2;
 
+in vec4 vColor;
+    in vec4 vTexcoord3;
+
 in vec4 vTexcoord7;
 
 in vec4 vTexcoord10;

@@ -14,6 +14,17 @@ in vec4 vColor;
 in vec4 vTexcoord4;
 #endif
 
+#ifdef GL_ES
+in vec4 vColor;
+  #ifdef GL_ES_2
+    in vec4 vTexcoord2;
+  #else
+    in vec4 vTexcoord3;
+  #endif
+#else
+in vec4 vTexcoord4;
+#endif
+
 #ifdef GL_ES_4
 in vec4 vColor;
   #ifdef GL_ES
