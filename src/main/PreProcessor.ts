@@ -73,7 +73,9 @@ export default class PreProcessor {
             { // #endif
                 const re = line.match(endif);
                 if (re != null) {
-                    outputFlg = true;
+                    if (outputHistory.indexOf(false) === -1) {
+                        outputFlg = true;
+                    }
                     isPragma = true;
                     ifdefs.pop();
                     outputHistory.pop();

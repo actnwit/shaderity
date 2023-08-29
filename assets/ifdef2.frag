@@ -68,3 +68,13 @@ in vec4 vColor;
   #endif
 in vec4 vTexcoord4;
 #endif
+
+#ifdef GL_ES2
+in vec4 vTexcoord1;
+  #ifdef GL_ES_2
+    in vec4 vTexcoord2;
+  #else
+    in vec4 vTexcoord3;
+  #endif
+in vec4 vTexcoord4;
+#endif
