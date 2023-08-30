@@ -56,7 +56,7 @@ in vec4 vColor7;
 `);
 });
 
-test('test double ifdef', async() => {
+test('test triple ifdef', async() => {
     expect(Shaderity.processPragma(ifdef3Fragment).code).toBe(`precision mediump float;
 
 
@@ -70,5 +70,6 @@ in vec4 vColor;
     in vec4 vTexcoord0;
       in vec4 vTexcoord1;
 in vec4 vTexcoord4;
+
 `);
 });
