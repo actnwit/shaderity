@@ -85,13 +85,13 @@ export default class PreProcessor {
         if (startLineStr) {
             startLine = splittedLines.findIndex(line => line.includes(startLineStr));
             if (startLine === -1) {
-                startLine = 0;
+                return splittedLines;
             }
         }
         if (endLineStr) {
             endLine = splittedLines.findIndex(line => line.includes(endLineStr));
             if (endLine === -1) {
-                endLine = splittedLines.length;
+                return splittedLines;
             }
         }
         for (let i = 0; i < startLine; i++) {
