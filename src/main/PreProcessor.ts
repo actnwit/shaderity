@@ -6,6 +6,7 @@ export default class PreProcessor {
         const _else = /#else/;
         const endif = /#endif/;
         const outputHistory: boolean[] = [];
+        const previousOutputStates: boolean[] = [];
         let outputFlg = true;
         const definitions: string[] = [];
         const ifdefs: string[][] = [];
@@ -23,28 +24,35 @@ export default class PreProcessor {
                 }
             }
 
-            if (outputHistory.indexOf(false) === -1) { // #ifdef
+            { // #ifdef
                 const re = line.match(ifdef);
                 if (re != null) {
+                    previousOutputStates.push(outputFlg);
                     outputHistory.push(outputFlg);
                     const toCheckDef = re[1];
                     ifdefs.push([toCheckDef]);
-                    if (definitions.indexOf(toCheckDef) === -1) {
-                        outputFlg = false;
-                        ifdefMatched.push(false);
+                    
+                    if (outputFlg) {
+                        if (definitions.indexOf(toCheckDef) === -1) {
+                            outputFlg = false;
+                            ifdefMatched.push(false);
+                        } else {
+                            ifdefMatched.push(true);
+                        }
                     } else {
-                        ifdefMatched.push(true);
+                        ifdefMatched.push(false);
                     }
                     isPragma = true;
                 }
             }
 
-            if (outputHistory.indexOf(false) === -1) { // #elif
+            { // #elif
                 const re = line.match(elif);
                 if (re != null) {
                     const toCheckDef = re[1];
                     const currentIfdefs = ifdefs[ifdefs.length - 1];
-                    if (!ifdefMatched[ifdefMatched.length - 1]) {
+                    
+                    if (previousOutputStates[previousOutputStates.length - 1] && !ifdefMatched[ifdefMatched.length - 1]) {
                         if (definitions.indexOf(toCheckDef) !== -1) {
                             outputFlg = true;
                             ifdefMatched[ifdefMatched.length - 1] = true;
@@ -59,10 +67,14 @@ export default class PreProcessor {
                 }
             }
 
-            if (outputHistory.indexOf(false) === -1) { // #else
+            { // #else
                 const re = line.match(_else);
                 if (re != null) {
-                    outputFlg = !ifdefMatched[ifdefMatched.length - 1];
+                    if (previousOutputStates[previousOutputStates.length - 1]) {
+                        outputFlg = !ifdefMatched[ifdefMatched.length - 1];
+                    } else {
+                        outputFlg = false;
+                    }
                     isPragma = true;
                 }
             }
@@ -70,13 +82,12 @@ export default class PreProcessor {
             { // #endif
                 const re = line.match(endif);
                 if (re != null) {
-                    if (outputHistory.indexOf(false) === -1) {
-                        outputFlg = outputHistory[outputHistory.length - 1];
-                    }
+                    outputFlg = previousOutputStates[previousOutputStates.length - 1];
                     isPragma = true;
                     ifdefs.pop();
                     ifdefMatched.pop();
                     outputHistory.pop();
+                    previousOutputStates.pop();
                 }
             }
 
