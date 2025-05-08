@@ -11,7 +11,8 @@ export default class PreProcessor {
         const ifdefs: string[][] = [];
         const outputLines: string[] = [];
 
-        for (const line of splittedLines) {
+        for (let i = 0; i < splittedLines.length; i++) {
+            const line = splittedLines[i];
             let isPragma = false;
             { // #define
                 const re = line.match(define);
