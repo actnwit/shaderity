@@ -84,9 +84,15 @@ export default class PreProcessor {
         let endLine = splittedLines.length;
         if (startLineStr) {
             startLine = splittedLines.findIndex(line => line.includes(startLineStr));
+            if (startLine === -1) {
+                startLine = 0;
+            }
         }
         if (endLineStr) {
             endLine = splittedLines.findIndex(line => line.includes(endLineStr));
+            if (endLine === -1) {
+                endLine = splittedLines.length;
+            }
         }
         for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
