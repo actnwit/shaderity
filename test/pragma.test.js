@@ -3,6 +3,7 @@ const ifdefFragment = require('../dist/index_test').ifdefFragment;
 const ifdef2Fragment = require('../dist/index_test').ifdef2Fragment;
 const elifFragment = require('../dist/index_test').elifFragment;
 const ifdef3Fragment = require('../dist/index_test').ifdef3Fragment;
+const complexMacroFragment = require('../dist/index_test').complexMacroFragment;
 
 test('test ifdef', async() => {
     expect(Shaderity.processPragma(ifdefFragment).code).toBe(`precision mediump float;
@@ -71,5 +72,15 @@ in vec4 vColor;
       in vec4 vTexcoord1;
 in vec4 vTexcoord4;
 
+`);
+});
+
+test('test complex macro', async() => {
+  console.log(Shaderity.processPragma(complexMacroFragment).code);
+    expect(Shaderity.processPragma(complexMacroFragment).code).toBe(`    // バージョン1より新しい
+    // リリースビルド
+    // Windows または Linux
+    // MACOSではない
+    // 複雑な条件による分岐
 `);
 });

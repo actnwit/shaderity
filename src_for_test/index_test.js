@@ -20,6 +20,7 @@ import elifFragmentShader from '../assets/elif.frag';
 import ifdefFragmentShader from '../assets/ifdef.frag';
 import ifdef2FragmentShader from '../assets/ifdef2.frag';
 import ifdef3FragmentShader from '../assets/ifdef3.frag';
+import complexMacroFragmentShader from '../assets/complex_macro.frag';
 
 exports.simpleFragment = simpleFragmentShader;
 exports.simpleVertex = simpleVertexShader;
@@ -43,3 +44,4 @@ exports.elifFragment = elifFragmentShader;
 exports.ifdefFragment = ifdefFragmentShader;
 exports.ifdef2Fragment = ifdef2FragmentShader;
 exports.ifdef3Fragment = ifdef3FragmentShader;
+exports.complexMacroFragment = complexMacroFragmentShader;
