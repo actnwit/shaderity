@@ -1,6 +1,6 @@
 {
   "name": "shaderity",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "main": "./dist/esm/index.js",
   "files": [
     "dist"
