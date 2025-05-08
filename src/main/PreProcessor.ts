@@ -94,6 +94,10 @@ export default class PreProcessor {
                 endLine = splittedLines.length;
             }
         }
+        for (let i = 0; i < startLine; i++) {
+            const line = splittedLines[i];
+            outputLines.push(line);
+        }
         for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
             let isPragma = false;
@@ -181,6 +185,10 @@ export default class PreProcessor {
             if (outputFlg && !isPragma) {
                 outputLines.push(line);
             }
+        }
+        for (let i = endLine; i < splittedLines.length; i++) {
+            const line = splittedLines[i];
+            outputLines.push(line);
         }
         return outputLines;
     }
