@@ -9,6 +9,7 @@ export default class PreProcessor {
         let outputFlg = true;
         const definitions: string[] = [];
         const ifdefs: string[][] = [];
+        const ifdefMatched: boolean[] = [];
         const outputLines: string[] = [];
 
         for (let i = 0; i < splittedLines.length; i++) {
@@ -30,6 +31,9 @@ export default class PreProcessor {
                     ifdefs.push([toCheckDef]);
                     if (definitions.indexOf(toCheckDef) === -1) {
                         outputFlg = false;
+                        ifdefMatched.push(false);
+                    } else {
+                        ifdefMatched.push(true);
                     }
                     isPragma = true;
                 }
@@ -40,14 +44,13 @@ export default class PreProcessor {
                 if (re != null) {
                     const toCheckDef = re[1];
                     const currentIfdefs = ifdefs[ifdefs.length - 1];
-                    let notFound = true;
-                    for (const currentIfdef of currentIfdefs) {
-                        if (definitions.indexOf(currentIfdef) !== -1) {
-                            notFound = false;
+                    if (!ifdefMatched[ifdefMatched.length - 1]) {
+                        if (definitions.indexOf(toCheckDef) !== -1) {
+                            outputFlg = true;
+                            ifdefMatched[ifdefMatched.length - 1] = true;
+                        } else {
+                            outputFlg = false;
                         }
-                    }
-                    if (notFound && definitions.indexOf(toCheckDef) !== -1) {
-                        outputFlg = true;
                     } else {
                         outputFlg = false;
                     }
@@ -59,14 +62,7 @@ export default class PreProcessor {
             if (outputHistory.indexOf(false) === -1) { // #else
                 const re = line.match(_else);
                 if (re != null) {
-                    const currentIfdefs = ifdefs[ifdefs.length - 1];
-                    let outputFlgInner = true;
-                    for (const currentIfdef of currentIfdefs) {
-                        if (definitions.indexOf(currentIfdef) !== -1) {
-                            outputFlgInner = false;
-                        }
-                    }
-                    outputFlg = outputFlgInner;
+                    outputFlg = !ifdefMatched[ifdefMatched.length - 1];
                     isPragma = true;
                 }
             }
@@ -75,10 +71,11 @@ export default class PreProcessor {
                 const re = line.match(endif);
                 if (re != null) {
                     if (outputHistory.indexOf(false) === -1) {
-                        outputFlg = true;
+                        outputFlg = outputHistory[outputHistory.length - 1];
                     }
                     isPragma = true;
                     ifdefs.pop();
+                    ifdefMatched.pop();
                     outputHistory.pop();
                 }
             }

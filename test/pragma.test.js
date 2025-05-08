@@ -70,6 +70,5 @@ in vec4 vColor;
     in vec4 vTexcoord0;
       in vec4 vTexcoord1;
 in vec4 vTexcoord4;
-
 `);
 });
