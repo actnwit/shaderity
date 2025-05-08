@@ -64,7 +64,7 @@ export default class PreProcessor {
         }
     }
 
-    public static process(splittedLines: string[], startLine: number = 0, endLine: number = splittedLines.length): string[] {
+    public static process(splittedLines: string[], startLineStr?: string, endLineStr?: string): string[] {
         const define = /#define[\t ]+(\w+)(?:[\t ]+(\S+))?/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const ifndef = /#ifndef[\t ]+(\w+)/;
@@ -80,6 +80,14 @@ export default class PreProcessor {
 
         this.definitions.clear();
 
+        let startLine = 0;
+        let endLine = splittedLines.length;
+        if (startLineStr) {
+            startLine = splittedLines.findIndex(line => line.includes(startLineStr));
+        }
+        if (endLineStr) {
+            endLine = splittedLines.findIndex(line => line.includes(endLineStr));
+        }
         for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
             let isPragma = false;
