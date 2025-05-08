@@ -19,7 +19,7 @@ export default class Shaderity {
      * Translate a GLSL shader code to a shader code of specified GLSL version
      */
     static transformTo(version: ShaderVersion, obj: ShaderityObject, embedErrorsInOutput?: boolean): ShaderityObject;
-    static processPragma(obj: ShaderityObject): ShaderityObject;
+    static processPragma(obj: ShaderityObject, startLine?: number, endLine?: number | undefined): ShaderityObject;
     /**
      * Create an instance to create shaderity object.
      */

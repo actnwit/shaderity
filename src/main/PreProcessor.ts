@@ -64,7 +64,7 @@ export default class PreProcessor {
         }
     }
 
-    public static process(splittedLines: string[]): string[] {
+    public static process(splittedLines: string[], startLine: number = 0, endLine: number = splittedLines.length): string[] {
         const define = /#define[\t ]+(\w+)(?:[\t ]+(\S+))?/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const ifndef = /#ifndef[\t ]+(\w+)/;
@@ -80,7 +80,7 @@ export default class PreProcessor {
 
         this.definitions.clear();
 
-        for (let i = 0; i < splittedLines.length; i++) {
+        for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
             let isPragma = false;
 
