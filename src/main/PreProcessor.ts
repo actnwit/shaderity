@@ -64,7 +64,7 @@ export default class PreProcessor {
         }
     }
 
-    public static process(splittedLines: string[], startLineStr?: string, endLineStr?: string): string[] {
+    public static process(splittedLines: string[], definitions: string[] = [], startLineStr?: string, endLineStr?: string): string[] {
         const define = /#define[\t ]+(\w+)(?:[\t ]+(\S+))?/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const ifndef = /#ifndef[\t ]+(\w+)/;
@@ -79,6 +79,9 @@ export default class PreProcessor {
         const outputLines: string[] = [];
 
         this.definitions.clear();
+        for (const definition of definitions) {
+            this.definitions.set(definition, "1");
+        }
 
         let startLine = 0;
         let endLine = splittedLines.length;
