@@ -9,9 +9,11 @@ const config = merge(baseConfig, {
     filename: 'shaderity.js',
     chunkFilename: 'shaderity-[name].js',
     path: path.resolve(__dirname, './../../dist/umd'),
-    library: 'Shaderity',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
+    library: {
+      name: 'Shaderity',
+      type: 'umd',
+      export: 'default',
+    },
   },
   devtool: 'inline-source-map',
   plugins: [

@@ -9,9 +9,11 @@ const config = merge(baseConfig, {
     filename: 'shaderity.min.js',
     chunkFilename: 'shaderity-[name].min.js',
     path: path.resolve(__dirname, './../../dist/umd'),
-    library: 'Shaderity',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
+    library: {
+      name: 'Shaderity',
+      type: 'umd',
+      export: 'default',
+    },
   },
   plugins: [
     new webpack.optimize.LimitChunkCountPlugin({

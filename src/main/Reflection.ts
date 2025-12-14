@@ -16,9 +16,9 @@ import {
  */
 export default class Reflection {
 	private static readonly attributeAndVaryingTypeRegExp
-		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4)[\t ]+(\w+);/;
+		= /[\t ]+(float|int|uint|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|uvec2|uvec3|uvec4)[\t ]+(\w+);/;
 	private static readonly uniformTypeRegExp
-		= /[\t ]+(float|int|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
+		= /[\t ]+(float|int|uint|vec2|vec3|vec4|mat2|mat3|mat4|ivec2|ivec3|ivec4|uvec2|uvec3|uvec4|sampler2D|samplerCube|sampler3D)[\t ]+(\w+);/;
 	private static readonly semanticRegExp = /<.*semantic[\t ]*=[\t ]*(\w+).*>/;
 
 	private __attributeSemanticsMap = new Map<string, string>();

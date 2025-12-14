@@ -10,7 +10,9 @@ const config = merge(baseConfig, {
     filename: 'index.js',
     chunkFilename: 'shaderity-[name].js',
     path: path.resolve(__dirname, './../../dist/esm'),
-    libraryTarget: 'commonjs-module',
+    library: {
+      type: 'commonjs-module',
+    },
   },
   devtool: 'inline-source-map',
   plugins: [
