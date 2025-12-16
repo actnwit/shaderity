@@ -101,5 +101,7 @@ test('test complex macro', async() => {
 #define FEATURE_A
 #define BETA
     // 複雑な条件による分岐
+    // 空白なしのif文
+#ifVERSION==2 // プラグマとして認識しない
 `);
 });

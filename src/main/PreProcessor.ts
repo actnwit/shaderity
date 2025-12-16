@@ -68,8 +68,8 @@ export default class PreProcessor {
         const define = /#define[\t ]+(\w+)(?:[\t ]+(\S+))?/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const ifndef = /#ifndef[\t ]+(\w+)/;
-        const _if = /#if[\t ]+(.+)/;
-        const elif = /#elif[\t ]+(.+)/;
+        const _if = /#if(?:\s+|(?=\())(.*)/;
+        const elif = /#elif(?:\s+|(?=\())(.*)/;
         const _else = /#else/;
         const endif = /#endif/;
         const previousOutputStates: boolean[] = [];

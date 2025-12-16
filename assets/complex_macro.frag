@@ -21,3 +21,7 @@
 #if defined(FEATURE_A) && (VERSION > 2 || defined(BETA))
     // 複雑な条件による分岐
 #endif
+#if(VERSION==2)
+    // 空白なしのif文
+#endif
+#ifVERSION==2 // プラグマとして認識しない
