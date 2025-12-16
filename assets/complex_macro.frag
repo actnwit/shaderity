@@ -1,4 +1,7 @@
 #define VERSION 2
+#ifndef VERSION
+    #define VERSION 0
+#endif
 #if VERSION > 1
     // バージョン1より新しい
 #endif

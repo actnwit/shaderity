@@ -108,8 +108,10 @@ export default class PreProcessor {
             { // #define
                 const re = line.match(define);
                 if (re != null) {
-                    const [_, name, value = "1"] = re;
-                    this.definitions.set(name, value);
+                    if (outputFlg) {
+                        const [_, name, value = "1"] = re;
+                        this.definitions.set(name, value);
+                    }
                     if (!remainDefine) {
                         isPragma = true;
                     }
