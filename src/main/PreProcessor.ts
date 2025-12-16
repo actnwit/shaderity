@@ -103,14 +103,13 @@ export default class PreProcessor {
         }
         for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
-            let isPragma = false;
+            let isCondiiton = false;
 
             { // #define
                 const re = line.match(define);
                 if (re != null) {
                     const [_, name, value = "1"] = re;
                     this.definitions.set(name, value);
-                    isPragma = true;
                 }
             }
 
@@ -139,7 +138,7 @@ export default class PreProcessor {
                     } else {
                         ifdefMatched.push(false);
                     }
-                    isPragma = true;
+                    isCondiiton = true;
                 }
             }
 
@@ -158,7 +157,7 @@ export default class PreProcessor {
                         outputFlg = false;
                     }
                     currentIfdefs.push(condition);
-                    isPragma = true;
+                    isCondiiton = true;
                 }
             }
 
@@ -170,7 +169,7 @@ export default class PreProcessor {
                     } else {
                         outputFlg = false;
                     }
-                    isPragma = true;
+                    isCondiiton = true;
                 }
             }
 
@@ -178,14 +177,14 @@ export default class PreProcessor {
                 const re = line.match(endif);
                 if (re != null) {
                     outputFlg = previousOutputStates[previousOutputStates.length - 1];
-                    isPragma = true;
+                    isCondiiton = true;
                     ifdefs.pop();
                     ifdefMatched.pop();
                     previousOutputStates.pop();
                 }
             }
 
-            if (outputFlg && !isPragma) {
+            if (outputFlg && !isCondiiton) {
                 outputLines.push(line);
             }
         }
