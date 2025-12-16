@@ -64,7 +64,7 @@ export default class PreProcessor {
         }
     }
 
-    public static process(splittedLines: string[], definitions: string[] = [], startLineStr?: string, endLineStr?: string): string[] {
+    public static process(splittedLines: string[], remainDefine: boolean, definitions: string[] = [], startLineStr?: string, endLineStr?: string): string[] {
         const define = /#define[\t ]+(\w+)(?:[\t ]+(\S+))?/;
         const ifdef = /#ifdef[\t ]+(\w+)/;
         const ifndef = /#ifndef[\t ]+(\w+)/;
@@ -103,13 +103,16 @@ export default class PreProcessor {
         }
         for (let i = startLine; i < endLine; i++) {
             const line = splittedLines[i];
-            let isCondiiton = false;
+            let isPragma = false;
 
             { // #define
                 const re = line.match(define);
                 if (re != null) {
                     const [_, name, value = "1"] = re;
                     this.definitions.set(name, value);
+                    if (!remainDefine) {
+                        isPragma = true;
+                    }
                 }
             }
 
@@ -138,7 +141,7 @@ export default class PreProcessor {
                     } else {
                         ifdefMatched.push(false);
                     }
-                    isCondiiton = true;
+                    isPragma = true;
                 }
             }
 
@@ -157,7 +160,7 @@ export default class PreProcessor {
                         outputFlg = false;
                     }
                     currentIfdefs.push(condition);
-                    isCondiiton = true;
+                    isPragma = true;
                 }
             }
 
@@ -169,7 +172,7 @@ export default class PreProcessor {
                     } else {
                         outputFlg = false;
                     }
-                    isCondiiton = true;
+                    isPragma = true;
                 }
             }
 
@@ -177,14 +180,14 @@ export default class PreProcessor {
                 const re = line.match(endif);
                 if (re != null) {
                     outputFlg = previousOutputStates[previousOutputStates.length - 1];
-                    isCondiiton = true;
+                    isPragma = true;
                     ifdefs.pop();
                     ifdefMatched.pop();
                     previousOutputStates.pop();
                 }
             }
 
-            if (outputFlg && !isCondiiton) {
+            if (outputFlg && !isPragma) {
                 outputLines.push(line);
             }
         }

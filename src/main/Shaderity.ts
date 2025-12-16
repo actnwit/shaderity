@@ -82,11 +82,11 @@ export default class Shaderity {
 		return resultObj;
 	}
 
-	public static processPragma(obj: ShaderityObject, definitions: string[] = [], startLineStr?: string, endLineStr?: string) {
+	public static processPragma(obj: ShaderityObject, remainDefine: boolean, definitions: string[] = [], startLineStr?: string, endLineStr?: string) {
 		const splittedShaderCode = Utility._splitByLineFeedCode(obj.code);
 
 		const transformedSplittedShaderCode
-			= PreProcessor.process(splittedShaderCode, definitions, startLineStr, endLineStr);
+			= PreProcessor.process(splittedShaderCode, remainDefine, definitions, startLineStr, endLineStr);
 
 		const resultCode = Utility._joinSplittedLine(transformedSplittedShaderCode);
 
